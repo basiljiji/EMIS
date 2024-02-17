@@ -38,3 +38,66 @@ export const addTeacher = async (req, res, next) => {
     }
 
 };
+
+export const listTeachers = async (req, res, next) => {
+    try {
+        const teachers = await Teacher.find({ 'isDeleted.status': false });
+        res.status(200).json(teachers);
+    } catch (err) {
+        const error = new HttpError("Something went wrong", 500);
+        return next(error);
+    }
+};
+
+export const editTeacher = async (req, res, next) => {
+    try {
+        const { firstName, lastName, username, email, password } = req.body;
+        const teacherId = req.params.id;
+
+        const teacher = await Teacher.findOne({ _id: teacherId, 'isDeleted.status': false });
+
+        if (!teacher) {
+            const error = new HttpError("Teacher not found", 404);
+            return next(error);
+        }
+
+        if (firstName) teacher.firstName = firstName;
+        if (lastName) teacher.lastName = lastName;
+        if (username) teacher.username = username;
+        if (email) teacher.email = email;
+        if (password) teacher.password = password;
+
+        await teacher.save();
+
+        res.status(200).json({
+            message: "Teacher details updated successfully",
+        });
+    } catch (err) {
+        console.error(err);
+        const error = new HttpError("Something went wrong", 500);
+        return next(error);
+    }
+};
+
+export const deleteTeacher = async (req, res, next) => {
+    try {
+        const teacherId = req.params.id;
+
+        const teacher = await Teacher.findOne({ _id: teacherId, 'isDeleted.status': false });
+
+        if (!teacher) {
+            const error = new HttpError("No Teacher Found", 500);
+            return next(error);
+        } else {
+            teacher.isDeleted.status = true;
+            // teacher.isDeleted.deletedBy = userId;
+            teacher.isDeleted.deletedTime = Date.now();
+
+            await teacher.save();
+            res.status(201).json({ message: "Teacher Deleted" });
+        }
+    } catch (err) {
+        const error = new HttpError("Something went wrong", 500);
+        return next(error);
+    }
+};

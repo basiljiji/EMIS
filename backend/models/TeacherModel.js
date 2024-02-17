@@ -4,22 +4,32 @@ import bcrypt from 'bcryptjs';
 const teacherSchema = new mongoose.Schema({
     firstName: {
         type: String,
-        required: true
     },
     middleName: {
         type: String,
     },
     lastName: {
         type: String,
-        required: true
     },
     password: {
         type: String,
-        required: true
     },
     email: {
         type: String,
-        unique: true,
+    },
+    isDeleted: {
+        status: {
+            type: Boolean,
+            default: false
+        },
+        deletedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Admin'
+        },
+        deletedTime: {
+            type: Date,
+            default: Date.now()
+        }
     }
 }, {
     timestamps: true

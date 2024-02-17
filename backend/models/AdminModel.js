@@ -1,14 +1,7 @@
 import mongoose from 'mongoose';
 
 const adminSchema = new mongoose.Schema({
-    firstName: {
-        type: String,
-        required: true
-    },
-    middleName: {
-        type: String,
-    },
-    lastName: {
+    username: {
         type: String,
         required: true
     },
@@ -19,6 +12,14 @@ const adminSchema = new mongoose.Schema({
     email: {
         type: String,
         unique: true,
+    },
+    role: {
+        type: String,
+        default: "admin"
+    },
+    isActive: {
+        type: Boolean,
+        default: true
     }
 }, {
     timestamps: true

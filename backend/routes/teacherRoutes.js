@@ -1,8 +1,11 @@
-import express from 'express'
-import { addTeacher } from '../controller/teacherController.js';
+import express from 'express';
+import { addTeacher, deleteTeacher, editTeacher, listTeachers } from '../controller/teacherController.js';
 
-const router = express()
+const router = express();
 
-router.post('/add', addTeacher)
+router.post('/add', addTeacher);
+router.get('/', listTeachers);
+router.patch('/edit/:id', editTeacher);
+router.patch('/delete/:id', deleteTeacher);
 
-export default router
+export default router;
