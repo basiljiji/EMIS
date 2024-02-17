@@ -13,7 +13,7 @@ const Header = () => {
         className="py-3"
       >
         <Container>
-          <Navbar.Brand href="/">Proshop</Navbar.Brand>
+          <Navbar.Brand href="/">EMIS</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
