@@ -1,0 +1,11 @@
+// export const BASE_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : ''
+
+export const BASE_URL = 'http://localhost:5000'
+export const TEACHER_AUTH_URL = ''
+export const TEACHER_URL = '/teacher'
+export const ADMIN_URL = '/admin'
+export const ADMIN_CLASS_URL = 'admin/class'
+export const ADMIN_SECTION_URL = 'admin/section'
+export const ADMIN_SUBJECT_URL = 'admin/subject'
+export const ADMIN_HOUR_URL = 'admin/hour'
+export const FIXTURE_URL = '/fixtures'

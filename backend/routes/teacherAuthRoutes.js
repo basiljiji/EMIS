@@ -1,8 +1,9 @@
-import express from 'express';
-import { loginTeacher } from '../controller/teacherLoginController.js';
+import express from 'express'
+import { loginTeacher, logoutTeacher } from '../controller/teacherAuthController.js'
 
-const router = express();
+const router = express()
 
-router.post('/login', loginTeacher);
+router.post('/login', loginTeacher)
+router.post('/logout', logoutTeacher)
 
-export default router;
+export default router
