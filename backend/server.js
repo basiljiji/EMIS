@@ -6,6 +6,7 @@ import { errorHandler, notFound } from './utils/errorMiddleware.js';
 import teacherRoute from './routes/teacherRoutes.js';
 import adminAuthRoute from './routes/adminAuthRoutes.js';
 import classDetailshRoute from './routes/classDetailsRoutes.js';
+import sectionRoute from './routes/sectionRoutes.js';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.get('/', (req, res) => {
 app.use('/teacher', teacherRoute);
 app.use('/admin', adminAuthRoute);
 app.use('/admin/class', classDetailshRoute);
+app.use('/admin/section', sectionRoute);
 
 
 app.use(notFound);

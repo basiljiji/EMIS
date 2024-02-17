@@ -3,6 +3,7 @@ import { addClass, deleteClass, editClass, listClass } from '../controller/class
 
 const router = express();
 
+//Class
 router.get('/', listClass);
 router.post('/add', addClass);
 router.patch('/edit/:id', editClass);
