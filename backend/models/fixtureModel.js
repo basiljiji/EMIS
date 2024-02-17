@@ -1,26 +1,26 @@
 import mongoose from 'mongoose';
 
-const classDetailSchema = new mongoose.Schema({
-    class: {
-        type: String
-    },
-    section: {
-        type: String,
-    },
-    subject: {
-        type: String,
-    },
-    hour: {
-        type: Number,
-    }
-});
-
 const fixtureSchema = new Schema({
     teacher: {
         type: Schema.Types.ObjectId,
         ref: 'Teacher'
     },
-    classDetails: [classDetailSchema]
+    class: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Class'
+    },
+    section: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Section'
+    },
+    subject: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Subject'
+    },
+    hour: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Hour'
+    }
 }, {
     timestamps: true
 });

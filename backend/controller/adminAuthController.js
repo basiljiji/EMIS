@@ -1,0 +1,81 @@
+import Admin from "../models/AdminModel.js";
+import HttpError from "../utils/httpErrorMiddleware.js";
+import jwt from 'jsonwebtoken';
+
+
+export const loginAdmin = async (req, res, next) => {
+    try {
+
+        const { email, password } = req.body;
+        const admin = await Admin.findOne({ email });
+
+        if (admin && await admin.matchPassword(password)) {
+
+            const token = jwt.sign({ adminId: admin._id },
+                process.env.JWT_SECRET, {
+                expiresIn: '30d'
+            });
+
+            //Set JWT as HTTP-Only cookie
+            res.cookie('jwt', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV !== 'development',
+                sameSite: 'strict',
+                maxAge: 30 * 24 * 60 * 60 * 1000, //30 Days
+            });
+
+            res.status(200).json({ message: "Login Successful" });
+        } else {
+            const error = new HttpError("Invalid Username or Password", 404);
+            return next(error);
+        }
+    } catch (err) {
+        const error = new HttpError("Something Went Wrong", 500);
+        return next(error);
+    }
+
+
+};
+
+export const registerAdmin = async (req, res, next) => {
+    try {
+        const { username, email, password, role } = req.body;
+
+        const adminId = req.admin;
+
+        const superAdmin = await Admin.findOne({ _id: adminId, role: "SUPERADMIN" });
+
+        if (!superAdmin) {
+            const error = new HttpError("Could Not Add User", 400);
+            return next(error);
+        } else {
+            const adminExists = await Admin.findOne({ email });
+
+            if (adminExists) {
+                const error = new HttpError("Admin Already Exists", 400);
+                return next(error);
+            }
+
+            const admin = await Admin.create({
+                username,
+                email,
+                password,
+                role
+            });
+
+            if (admin) {
+                res.status(201).json({
+                    name: username,
+                    email: email
+                });
+            } else {
+                res.status(400);
+                const error = new HttpError("Invalid user data", 400);
+                return next(error);
+            }
+        }
+    } catch (err) {
+        const error = new HttpError("Something went wrong", 500);
+        return next(error);
+    }
+};
