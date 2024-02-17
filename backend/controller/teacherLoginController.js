@@ -1,4 +1,4 @@
-import Teacher from "../models/TeacherModel.js";
+import Teacher from "../models/teacherModel.js";
 import HttpError from "../utils/httpErrorMiddleware.js";
 import jwt from 'jsonwebtoken';
 

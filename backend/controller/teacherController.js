@@ -1,5 +1,5 @@
-import Admin from "../models/AdminModel.js";
-import Teacher from "../models/TeacherModel.js";
+import Admin from "../models/adminModel.js";
+import Teacher from "../models/teacherModel.js";
 import HttpError from "../utils/httpErrorMiddleware.js";
 
 
@@ -30,8 +30,7 @@ export const addTeacher = async (req, res, next) => {
 
             if (teacher) {
                 res.status(201).json({
-                    name: user.name,
-                    email: user.email,
+                    email: email,
                 });
             } else {
                 res.status(400);

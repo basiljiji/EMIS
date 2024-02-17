@@ -7,6 +7,10 @@ import teacherRoute from './routes/teacherRoutes.js';
 import adminAuthRoute from './routes/adminAuthRoutes.js';
 import classDetailshRoute from './routes/classDetailsRoutes.js';
 import sectionRoute from './routes/sectionRoutes.js';
+import hourRoute from './routes/hourRoutes.js';
+import subjectRoute from './routes/subjectRoutes.js';
+import fixtureRoute from './routes/fixtureRoutes.js';
+import teacherAuthRoute from './routes/teacherAuthRoutes.js';
 
 dotenv.config();
 
@@ -28,7 +32,12 @@ app.use('/teacher', teacherRoute);
 app.use('/admin', adminAuthRoute);
 app.use('/admin/class', classDetailshRoute);
 app.use('/admin/section', sectionRoute);
+app.use('/admin/hour', hourRoute);
+app.use('/admin/subject', subjectRoute);
 
+
+app.use('/fixture', fixtureRoute);
+app.use('/', teacherAuthRoute);
 
 app.use(notFound);
 app.use(errorHandler);

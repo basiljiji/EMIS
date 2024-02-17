@@ -1,4 +1,4 @@
-import Admin from "../models/AdminModel.js";
+import Admin from "../models/adminModel.js";
 import HttpError from "../utils/httpErrorMiddleware.js";
 import jwt from 'jsonwebtoken';
 

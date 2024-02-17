@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import Teacher from '../models/TeacherModel.js';
-import Admin from '../models/AdminModel.js';
+import Teacher from '../models/teacherModel.js';
+import Admin from '../models/adminModel.js';
 import HttpError from './httpErrorMiddleware.js';
 
 
