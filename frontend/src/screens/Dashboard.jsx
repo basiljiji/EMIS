@@ -1,8 +1,10 @@
-import React from "react"
+import React, { useState } from "react"
 import { Container, Row, Col, Form, Button, Table } from "react-bootstrap"
-import { useGetFixturesQuery } from "../slices/fixturesApiSlice"
+import { LinkContainer } from 'react-router-bootstrap'
+import { useAddFixtureMutation, useGetFixturesQuery } from "../slices/fixturesApiSlice"
 import Loader from "../components/Loader"
 import Message from '../components/Message'
+import { toast } from 'react-toastify'
 import { useGetHoursQuery } from "../slices/hourApiSlice"
 import { useGetSectionsQuery } from "../slices/sectionApiSlice"
 import { useGetSubjectsQuery } from "../slices/subjectApiSlice"
@@ -10,15 +12,46 @@ import { useGetClassesQuery } from "../slices/classApiSlice"
 
 
 const Dashboard = () => {
-    const { data: fixtures, isLoading, error } = useGetFixturesQuery()
+
+    const [classdata, setClassdata] = useState('')
+    const [section, setSection] = useState('')
+    const [subject, setSubject] = useState('')
+    const [hour, setHour] = useState('')
+
+    const { data: fixtures, isLoading, error, refetch } = useGetFixturesQuery()
     const { data: hours } = useGetHoursQuery()
     const { data: sections } = useGetSectionsQuery()
     const { data: subjects } = useGetSubjectsQuery()
     const { data: classes } = useGetClassesQuery()
 
-    
-    const submitHandler = () => {
-        console.log("submitted")
+    const [addFixture, { isLoading: loadingFixture }] = useAddFixtureMutation()
+
+    const submitHandler = async (e) => {
+        e.preventDefault()
+        try {
+            if (classdata && section && subject && hour) {
+                const result = await addFixture({
+                    classdata,
+                    section,
+                    subject,
+                    hour
+                })
+                refetch()
+                if (result && result.message) {
+                    toast.success(result.message)
+                } else {
+                    toast.success("Fixture Added")
+                }
+            } else {
+                toast.error("Please select all fields")
+            }
+        } catch (err) {
+            if (err.data && err.data.message === "Already Class Assigned") {
+                toast.error("Fixture already exists")
+            } else {
+                toast.error(err?.data?.message || err.error)
+            }
+        }
     }
     return (
         <>
@@ -47,6 +80,14 @@ const Dashboard = () => {
                                             <td>{fixture.section.section}</td>
                                             <td>{fixture.subject.subject}</td>
                                             <td>{fixture.hour.hour}</td>
+                                            <td >
+                                                <LinkContainer to={`/fixture/edit/${fixture._id}`} className="me-2">
+                                                    <Button variant="primary" >Edit</Button>
+                                                </LinkContainer>
+                                                <LinkContainer to='/'>
+                                                    <Button variant="danger" >Delete</Button>
+                                                </LinkContainer>
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -58,7 +99,7 @@ const Dashboard = () => {
                         <Form>
                             <Form.Group>
                                 <Form.Label>Select Class</Form.Label>
-                                <Form.Select aria-label="Select Class" defaultValue="">
+                                <Form.Select aria-label="Select Class" defaultValue="" onChange={(e) => setClassdata(e.target.value)}>
                                     <option disabled value="">
                                         -- Select Class --
                                     </option>
@@ -75,7 +116,7 @@ const Dashboard = () => {
                             </Form.Group>
                             <Form.Group>
                                 <Form.Label>Select Section</Form.Label>
-                                <Form.Select aria-label="Select Class" defaultValue="">
+                                <Form.Select aria-label="Select Class" defaultValue="" onChange={(e) => setSection(e.target.value)}>
                                     <option disabled value="">
                                         -- Select Section --
                                     </option>
@@ -92,7 +133,7 @@ const Dashboard = () => {
                             </Form.Group>
                             <Form.Group>
                                 <Form.Label>Select Subject</Form.Label>
-                               <Form.Select aria-label="Select Class" defaultValue="">
+                                <Form.Select aria-label="Select Class" defaultValue="" onChange={(e) => setSubject(e.target.value)}>
                                     <option disabled value="">
                                         -- Select Subject --
                                     </option>
@@ -109,7 +150,7 @@ const Dashboard = () => {
                             </Form.Group>
                             <Form.Group>
                                 <Form.Label>Select Hour</Form.Label>
-                                <Form.Select aria-label="Select Class" defaultValue="">
+                                <Form.Select aria-label="Select Class" defaultValue="" onChange={(e) => setHour(e.target.value)}>
                                     <option disabled value="">
                                         -- Select Hour --
                                     </option>

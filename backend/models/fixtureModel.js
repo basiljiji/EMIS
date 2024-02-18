@@ -3,23 +3,28 @@ import mongoose from 'mongoose';
 const fixtureSchema = new mongoose.Schema({
     teacher: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Teacher'
+        ref: 'Teacher',
+        required:true
     },
     class: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Class'
+        ref: 'Class',
+        required: true
     },
     section: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Section'
+        ref: 'Section',
+        required: true
     },
     subject: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Subject'
+        ref: 'Subject',
+        required: true
     },
     hour: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Hour'
+        ref: 'Hour',
+        required: true
     },
     date: {
         type: Date,

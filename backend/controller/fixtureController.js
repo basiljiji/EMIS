@@ -62,7 +62,7 @@ export const viewSingleFixture = async (req, res, next) => {
 
         const teacherId = req.teacher
 
-        const fixture = await Fixture.findOne({ teacher: teacherId, _id: fixtureId })
+        const fixture = await Fixture.findOne({ teacher: teacherId, _id: fixtureId }).populate('class', 'class').populate('subject', 'subject').populate('section', 'section').populate('hour', 'hour')
 
         if (!fixture) {
             const error = new HttpError("No Fixture Found", 500)

@@ -13,8 +13,6 @@ const generateToken = (res, userId) => {
         sameSite: 'strict',
         maxAge: 30 * 24 * 60 * 60 * 1000, //30 Days
     })
-
-    console.log('Cookie set successfully:', token)
 }
 
 export default generateToken

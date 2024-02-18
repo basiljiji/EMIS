@@ -7,9 +7,31 @@ export const fixtureSlice = apiSlice.injectEndpoints({
             query: () => ({
                 url: `${FIXTURE_URL}/`
             }),
+            providesTags: ['Fixtures'],
             keepUnusedDataFor: 5,
+        }),
+        addFixture: builder.mutation({
+            query: (data) => ({
+                url: `${FIXTURE_URL}/add`,
+                method: "POST",
+                body: data
+            }),
+            invalidatesTags: ['Fixtures']
+        }),
+        getFixtureDetails: builder.query({
+            query: (fixtureId) => ({
+                url: `${FIXTURE_URL}/${fixtureId}`
+            })
+        }),
+        editFixture: builder.mutation({
+            query: (data) => ({
+                url: `${FIXTURE_URL}/edit/${data.fixtureId}`,
+                method: 'PATCH',
+                body: data
+            }),
+            invalidatesTags: ['Fixtures']
         })
-    })
+    }),
 })
 
-export const { useGetFixturesQuery } = fixtureSlice
+export const { useGetFixturesQuery, useAddFixtureMutation, useGetFixtureDetailsQuery, useEditFixtureMutation } = fixtureSlice

@@ -14,7 +14,7 @@ export const loginAdmin = async (req, res, next) => {
             generateToken(res, admin._id)
 
 
-            res.status(200).json({ message: "Login Successful" })
+            res.status(200).json({ role: admin.role, email: admin.email, name: admin.username })
         } else {
             const error = new HttpError("Invalid Username or Password", 404)
             return next(error)
