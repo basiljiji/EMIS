@@ -1,6 +1,6 @@
 import Admin from "../models/adminModel.js"
 import HttpError from "../utils/httpErrorMiddleware.js"
-import jwt from 'jsonwebtoken'
+import generateToken from "../utils/generateToken.js"
 
 
 export const loginAdmin = async (req, res, next) => {
@@ -11,18 +11,8 @@ export const loginAdmin = async (req, res, next) => {
 
         if (admin && await admin.matchPassword(password)) {
 
-            const token = jwt.sign({ adminId: admin._id },
-                process.env.JWT_SECRET, {
-                expiresIn: '30d'
-            })
+            generateToken(res, admin._id)
 
-            //Set JWT as HTTP-Only cookie
-            res.cookie('jwt', token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV !== 'development',
-                sameSite: 'strict',
-                maxAge: 30 * 24 * 60 * 60 * 1000, //30 Days
-            })
 
             res.status(200).json({ message: "Login Successful" })
         } else {

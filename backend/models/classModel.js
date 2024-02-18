@@ -4,7 +4,7 @@ const classSchema = new mongoose.Schema({
     class: {
         type: String,
         required: true
-    }
+    },
 }, {
     timestamps: true
 });

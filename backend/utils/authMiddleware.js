@@ -8,10 +8,12 @@ export const authenticateTeacher = async (req, res, next) => {
     let token;
     token = req.cookies.jwt;
 
+    console.log(token)
+
     if (token) {
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            req.teacher = await Teacher.findById(decoded.teacherId).select('-password');
+            req.teacher = await Teacher.findById(decoded.userId).select('-password');
             next();
         } catch (err) {
             const error = new HttpError("Not Authorized, token failed", 401);
@@ -31,7 +33,7 @@ export const authenticateAdmin = async (req, res, next) => {
         if (token) {
             try {
                 const decoded = jwt.verify(token, process.env.JWT_SECRET);
-                req.admin = await Admin.findById(decoded.adminId).select('-password');
+                req.admin = await Admin.findById(decoded.userId).select('-password');
                 next();
             } catch (err) {
                 const error = new HttpError("Not Authorized, token failed", 401);

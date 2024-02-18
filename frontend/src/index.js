@@ -9,12 +9,17 @@ import store from './store'
 import reportWebVitals from './reportWebVitals'
 import HomeScreen from './screens/HomeScreen'
 import LoginScreen from './screens/LoginScreen'
+import AdminLoginScreen from './screens/AdminLoginScreen'
+import Dashboard from './screens/Dashboard'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<App />}>
       <Route index={true} path='/' element={<HomeScreen />} />
       <Route path='/login' element={<LoginScreen />} />
+      <Route path='/dashboard' element={<Dashboard />} />
+
+      <Route path='/admin/login' element={<AdminLoginScreen />} />
     </Route>
   )
 )
