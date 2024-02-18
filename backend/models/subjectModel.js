@@ -4,6 +4,20 @@ const subjectSchema = new mongoose.Schema({
     subject: {
         type: String,
         required: true
+    },
+    isDeleted: {
+        status: {
+            type: Boolean,
+            default: false
+        },
+        deletedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Admin'
+        },
+        deletedTime: {
+            type: Date,
+            default: Date.now()
+        }
     }
 }, {
     timestamps: true

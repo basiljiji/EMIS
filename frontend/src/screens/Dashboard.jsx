@@ -3,10 +3,20 @@ import { Container, Row, Col, Form, Button, Table } from "react-bootstrap"
 import { useGetFixturesQuery } from "../slices/fixturesApiSlice"
 import Loader from "../components/Loader"
 import Message from '../components/Message'
+import { useGetHoursQuery } from "../slices/hourApiSlice"
+import { useGetSectionsQuery } from "../slices/sectionApiSlice"
+import { useGetSubjectsQuery } from "../slices/subjectApiSlice"
+import { useGetClassesQuery } from "../slices/classApiSlice"
 
 
 const Dashboard = () => {
     const { data: fixtures, isLoading, error } = useGetFixturesQuery()
+    const { data: hours } = useGetHoursQuery()
+    const { data: sections } = useGetSectionsQuery()
+    const { data: subjects } = useGetSubjectsQuery()
+    const { data: classes } = useGetClassesQuery()
+
+    
     const submitHandler = () => {
         console.log("submitted")
     }
@@ -48,46 +58,70 @@ const Dashboard = () => {
                         <Form>
                             <Form.Group>
                                 <Form.Label>Select Class</Form.Label>
-                                <Form.Select aria-label="Select Class">
-                                    <option disabled selected>
+                                <Form.Select aria-label="Select Class" defaultValue="">
+                                    <option disabled value="">
                                         -- Select Class --
                                     </option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
+                                    {isLoading ? (
+                                        <option disabled>Loading...</option>
+                                    ) : error ? (
+                                        <option disabled>Error fetching hours</option>
+                                    ) : (
+                                        classes?.map((classdata) => (
+                                            <option key={classdata._id} value={classdata._id}>{classdata.class}</option>
+                                        ))
+                                    )}
                                 </Form.Select>
                             </Form.Group>
                             <Form.Group>
                                 <Form.Label>Select Section</Form.Label>
-                                <Form.Select aria-label="Select Section">
-                                    <option disabled selected>
+                                <Form.Select aria-label="Select Class" defaultValue="">
+                                    <option disabled value="">
                                         -- Select Section --
                                     </option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
+                                    {isLoading ? (
+                                        <option disabled>Loading...</option>
+                                    ) : error ? (
+                                        <option disabled>Error fetching sections</option>
+                                    ) : (
+                                        sections?.map((section) => (
+                                            <option key={section._id} value={section._id}>{section.section}</option>
+                                        ))
+                                    )}
                                 </Form.Select>
                             </Form.Group>
                             <Form.Group>
                                 <Form.Label>Select Subject</Form.Label>
-                                <Form.Select aria-label="Select Subject">
-                                    <option disabled selected>
+                               <Form.Select aria-label="Select Class" defaultValue="">
+                                    <option disabled value="">
                                         -- Select Subject --
                                     </option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
+                                    {isLoading ? (
+                                        <option disabled>Loading...</option>
+                                    ) : error ? (
+                                        <option disabled>Error fetching subjects</option>
+                                    ) : (
+                                        subjects?.map((subject) => (
+                                            <option key={subject._id} value={subject._id}>{subject.subject}</option>
+                                        ))
+                                    )}
                                 </Form.Select>
                             </Form.Group>
                             <Form.Group>
                                 <Form.Label>Select Hour</Form.Label>
-                                <Form.Select aria-label="Select Hour">
-                                    <option disabled selected>
+                                <Form.Select aria-label="Select Class" defaultValue="">
+                                    <option disabled value="">
                                         -- Select Hour --
                                     </option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
+                                    {isLoading ? (
+                                        <option disabled>Loading...</option>
+                                    ) : error ? (
+                                        <option disabled>Error fetching hours</option>
+                                    ) : (
+                                        hours?.map((hour) => (
+                                            <option key={hour._id} value={hour._id}>{hour.hour}</option>
+                                        ))
+                                    )}
                                 </Form.Select>
                             </Form.Group>
                             <Button className="mt-3" onClick={submitHandler}>

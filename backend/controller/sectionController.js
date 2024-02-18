@@ -3,7 +3,7 @@ import HttpError from "../utils/httpErrorMiddleware.js";
 
 export const listSection = async (req, res, next) => {
     try {
-        const sections = await Section.find({});
+        const sections = await Section.find({ 'isDeleted.status': false });
         res.status(200).json(sections);
     } catch (err) {
         const error = new HttpError("Something Went Wrong", 500);
