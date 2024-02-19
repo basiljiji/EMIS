@@ -47,7 +47,11 @@ export const listFixtures = async (req, res, next) => {
 
         const today = new Date().toISOString().substring(0, 10)
 
-        const fixtures = await Fixture.find({ teacher: teacherid, 'isDeleted.status': false, date: today }).populate('class', 'class').populate('subject', 'subject').populate('section', 'section').populate('hour', 'hour')
+        const fixtures = await Fixture.find({ teacher: teacherid, 'isDeleted.status': false, date: today })
+            .populate('section', 'section')
+            .populate('class', 'class')
+            .populate('subject', 'subject')
+            .populate('hour', 'hour')
         res.status(200).json(fixtures)
 
     } catch (err) {
@@ -62,13 +66,17 @@ export const viewSingleFixture = async (req, res, next) => {
 
         const teacherId = req.teacher
 
-        const fixture = await Fixture.findOne({ teacher: teacherId, _id: fixtureId }).populate('class', 'class').populate('subject', 'subject').populate('section', 'section').populate('hour', 'hour')
+        const fixture = await Fixture.findOne({ teacher: teacherId, _id: fixtureId })
+            .populate('class', 'class')
+            .populate('subject', 'subject')
+            .populate('section', 'section')
+            .populate('hour', 'hour')
 
         if (!fixture) {
             const error = new HttpError("No Fixture Found", 500)
             return next(error)
         } else {
-            res.status(200).json({ fixture })
+            res.status(200).json(fixture)
         }
 
     } catch (err) {
@@ -94,7 +102,7 @@ export const editFixture = async (req, res, next) => {
             return next(error)
         } else {
             if (classdata) fixture.class = classdata
-            if (section) fixture.section = subject
+            if (section) fixture.section = section
             if (subject) fixture.subject = subject
             if (hour) fixture.hour = hour
 

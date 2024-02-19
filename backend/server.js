@@ -5,6 +5,8 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import connectDB from './config/db.js'
 import { errorHandler, notFound } from './utils/errorMiddleware.js'
+import path from 'path'
+
 import teacherRoute from './routes/teacherRoutes.js'
 import adminAuthRoute from './routes/adminAuthRoutes.js'
 import classDetailshRoute from './routes/classDetailsRoutes.js'
@@ -13,6 +15,7 @@ import hourRoute from './routes/hourRoutes.js'
 import subjectRoute from './routes/subjectRoutes.js'
 import fixtureRoute from './routes/fixtureRoutes.js'
 import teacherAuthRoute from './routes/teacherAuthRoutes.js'
+import reportRoute from './routes/reportRoutes.js'
 
 
 connectDB()
@@ -25,6 +28,7 @@ app.use(cors())
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(express.static(path.join(new URL(import.meta.url).pathname, '../public')))
 app.use(cookieParser())
 
 app.get('/', (req, res) => {
@@ -37,6 +41,7 @@ app.use('/admin/class', classDetailshRoute)
 app.use('/admin/section', sectionRoute)
 app.use('/admin/hour', hourRoute)
 app.use('/admin/subject', subjectRoute)
+app.use('/admin/report', reportRoute)
 
 
 app.use('/fixture', fixtureRoute)

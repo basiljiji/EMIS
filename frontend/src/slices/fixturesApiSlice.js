@@ -21,7 +21,9 @@ export const fixtureSlice = apiSlice.injectEndpoints({
         getFixtureDetails: builder.query({
             query: (fixtureId) => ({
                 url: `${FIXTURE_URL}/${fixtureId}`
-            })
+            }),
+            providesTags: ['Fixtures'],
+            keepUnusedDataFor: 5,
         }),
         editFixture: builder.mutation({
             query: (data) => ({

@@ -37,20 +37,15 @@ const Dashboard = () => {
                     hour
                 })
                 refetch()
-                if (result && result.message) {
-                    toast.success(result.message)
-                } else {
-                    toast.success("Fixture Added")
+                console.log(result.data.message)
+                if (result && result.data.message) {
+                    toast.success(result.data.message)
                 }
             } else {
-                toast.error("Please select all fields")
+                toast.error("Please Select All Fields")
             }
         } catch (err) {
-            if (err.data && err.data.message === "Already Class Assigned") {
-                toast.error("Fixture already exists")
-            } else {
-                toast.error(err?.data?.message || err.error)
-            }
+            toast.error(err?.data?.message || err.error)
         }
     }
     return (
@@ -62,7 +57,7 @@ const Dashboard = () => {
                         {isLoading ? (
                             <Loader />
                         ) : error ? (
-                            <Message />
+                            <Message>{error}</Message>
                         ) : (
                             <Table striped bordered hover>
                                 <thead>
