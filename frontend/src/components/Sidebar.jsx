@@ -8,7 +8,7 @@ const Sidebar = () => {
     <Col xs={12} md={2} className="bg-light d-flex flex-column">
       <h4>Navigation</h4>
       <ul className="nav flex-column">
-        <li className="nav-item">
+        <li className="nav-item" variant="pills">
           <Link to="/admin/dashboard" className="nav-link">
             Dashboard
           </Link>

@@ -8,8 +8,15 @@ export const teacherSlice = apiSlice.injectEndpoints({
                 url: TEACHER_URL
             }),
             keepUnusedDataFor: 5,
+        }),
+        addTeacher: builder.mutation({
+            query: (data) => ({
+                url: `${TEACHER_URL}/add`,
+                method: "POST",
+                body: data
+            })
         })
-    })
+    }),
 })
 
-export const { useGetTeachersQuery } = teacherSlice
+export const { useGetTeachersQuery, useAddTeacherMutation } = teacherSlice

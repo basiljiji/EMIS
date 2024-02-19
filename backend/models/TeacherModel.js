@@ -11,12 +11,13 @@ const teacherSchema = new mongoose.Schema({
     lastName: {
         type: String,
     },
-    password: {
-        type: String,
-    },
     email: {
         type: String,
     },
+    password: {
+        type: String,
+    },
+
     isDeleted: {
         status: {
             type: Boolean,

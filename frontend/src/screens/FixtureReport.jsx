@@ -62,11 +62,14 @@ const FixtureReport = () => {
       headStyles: { fillColor: [100, 100, 255] },
     })
 
-    // Generate the PDF as a data URI
-    const pdfDataUri = doc.output("datauristring")
+    // Generate the PDF as a Blob
+    const pdfBlob = doc.output("blob")
+
+    // Create a URL for the Blob
+    const pdfUrl = URL.createObjectURL(pdfBlob)
 
     // Open the PDF in a new tab
-    window.open(pdfDataUri, "_blank")
+    window.open(pdfUrl, "_blank")
   }
 
   return (
