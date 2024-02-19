@@ -1,10 +1,10 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
 const fixtureSchema = new mongoose.Schema({
     teacher: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Teacher',
-        required:true
+        required: true
     },
     class: {
         type: mongoose.Schema.Types.ObjectId,
@@ -26,11 +26,14 @@ const fixtureSchema = new mongoose.Schema({
         ref: 'Hour',
         required: true
     },
+    portions: {
+        type: String
+    },
     date: {
         type: Date,
         default: () => {
-            const now = new Date().toISOString().substring(0, 10);
-            return now;
+            const now = new Date().toISOString().substring(0, 10)
+            return now
         }
     },
     isDeleted: {
@@ -49,8 +52,8 @@ const fixtureSchema = new mongoose.Schema({
     }
 }, {
     timestamps: true
-});
+})
 
-const Fixture = mongoose.model('Fixture', fixtureSchema);
+const Fixture = mongoose.model('Fixture', fixtureSchema)
 
-export default Fixture;
+export default Fixture

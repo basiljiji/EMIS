@@ -32,8 +32,15 @@ export const fixtureSlice = apiSlice.injectEndpoints({
                 body: data
             }),
             invalidatesTags: ['Fixtures']
+        }),
+        deleteFixture: builder.mutation({
+            query: (fixtureId) => ({
+                url: `${FIXTURE_URL}/delete/${fixtureId}`,
+                method: 'PATCH'
+            }),
+            invalidatesTags: ['Fixtures']
         })
     }),
 })
 
-export const { useGetFixturesQuery, useAddFixtureMutation, useGetFixtureDetailsQuery, useEditFixtureMutation } = fixtureSlice
+export const { useGetFixturesQuery, useAddFixtureMutation, useGetFixtureDetailsQuery, useEditFixtureMutation, useDeleteFixtureMutation } = fixtureSlice

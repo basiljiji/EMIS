@@ -1,23 +1,15 @@
-import { TEACHER_AUTH_URL } from "../constants"
+import { TEACHER_URL } from "../constants"
 import { apiSlice } from "./apiSlice"
 
-export const teacherApiSlice = apiSlice.injectEndpoints({
+export const teacherSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        login: builder.mutation({
-            query: (data) => ({
-                url: `${TEACHER_AUTH_URL}/login`,
-                method: "POST",
-                body: data
-            })
-        }),
-        logout: builder.mutation({
+        getTeachers: builder.query({
             query: () => ({
-                url: `${TEACHER_AUTH_URL}/logout`,
-                method: "POST"
-            })
+                url: TEACHER_URL
+            }),
+            keepUnusedDataFor: 5,
         })
     })
 })
 
-
-export const { useLoginMutation, useLogoutMutation } = teacherApiSlice
+export const { useGetTeachersQuery } = teacherSlice

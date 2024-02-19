@@ -16,6 +16,7 @@ import AdminDashboard from './screens/AdminDashboard'
 import PrivateRoute from './components/PrivateRoutes'
 import AdminRoute from './components/AdminRoute'
 import FixtureReport from './screens/FixtureReport'
+import TeacherManagement from './screens/TeacherManagement'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -33,6 +34,7 @@ const router = createBrowserRouter(
       <Route path='' element={<AdminRoute />}>
         <Route path='/admin/dashboard' element={<AdminDashboard />} />
         <Route path='/admin/reports' element={<FixtureReport />} />
+        <Route path='/admin/teacher' element={<TeacherManagement />} />
       </Route>
 
     </Route>

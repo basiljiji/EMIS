@@ -6,7 +6,15 @@ import HttpError from "../utils/httpErrorMiddleware.js"
 export const addFixture = async (req, res, next) => {
     try {
 
-        const { section, classdata, subject, hour } = req.body
+        const { section, classdata, subject, hour, portions } = req.body
+
+
+        // Check if portions length exceeds 188 characters
+        if (portions.length > 188) {
+            const error = new HttpError("Portions should not exceed 188 characters", 400)
+            return next(error)
+        }
+
         const teacherId = req.teacher
 
         const teacherData = await Teacher.findById(teacherId)
@@ -18,7 +26,7 @@ export const addFixture = async (req, res, next) => {
 
             const today = new Date().toISOString().substring(0, 10)
 
-            const hourdata = await Fixture.findOne({ teacher: teacherId, hour: hour, date: today })
+            const hourdata = await Fixture.findOne({ teacher: teacherId, hour: hour, date: today, 'isDeleted.status': false })
             if (hourdata) {
                 const error = new HttpError("Already Class Assigned", 500)
                 return next(error)
@@ -28,7 +36,8 @@ export const addFixture = async (req, res, next) => {
                     section,
                     class: classdata,
                     hour,
-                    teacher: teacherId
+                    teacher: teacherId,
+                    portions
                 })
                 res.status(200).json({ message: "Fixture Added" })
             }
@@ -88,7 +97,7 @@ export const viewSingleFixture = async (req, res, next) => {
 
 export const editFixture = async (req, res, next) => {
     try {
-        const { classdata, section, subject, hour } = req.body
+        const { classdata, section, subject, hour, portions } = req.body
         const fixtureId = req.params.id
 
         const teacherId = req.teacher
@@ -105,6 +114,7 @@ export const editFixture = async (req, res, next) => {
             if (section) fixture.section = section
             if (subject) fixture.subject = subject
             if (hour) fixture.hour = hour
+            if (portions) fixture.portions = portions
 
             await fixture.save()
             res.status(200).json({ message: "Fixture Edited" })

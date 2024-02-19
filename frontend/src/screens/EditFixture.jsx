@@ -1,5 +1,5 @@
-import React, { useState } from "react"
-import { useParams } from "react-router-dom"
+import React, { useState, useEffect } from "react"
+import { useParams, useNavigate } from "react-router-dom"
 import { Container, Form, Button } from "react-bootstrap"
 import { toast } from "react-toastify"
 import {
@@ -20,6 +20,7 @@ const EditFixture = () => {
   const [section, setSection] = useState("")
   const [subject, setSubject] = useState("")
   const [hour, setHour] = useState("")
+  const [portions, setPortions] = useState("")
 
   const {
     data: fixture,
@@ -35,24 +36,33 @@ const EditFixture = () => {
   const { data: subjects } = useGetSubjectsQuery()
   const { data: classes } = useGetClassesQuery()
 
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (fixture) {
+      setClassdata(fixture.class._id)
+      setSection(fixture.section._id)
+      setSubject(fixture.subject._id)
+      setHour(fixture.hour._id)
+      setPortions(fixture.portions)
+    }
+  }, [fixture])
+
   const submitHandler = async (e) => {
     e.preventDefault()
     try {
-      console.log(hour, classdata, section, subject, "1212")
-      if (classdata || section || subject || hour) {
+      if (classdata || section || subject || hour || portions) {
         const result = await editFixture({
           fixtureId,
           classdata,
           section,
           subject,
           hour,
+          portions,
         })
         refetch()
-        if (result && result.message) {
-          toast.success(result.message)
-        } else {
-          toast.success("Fixture Updated")
-        }
+        navigate("/dashboard")
+        toast.success("Fixture Updated")
       } else {
         toast.error("Oops !!")
       }
@@ -80,11 +90,12 @@ const EditFixture = () => {
           fixture.subject &&
           fixture.hour && (
             <Form>
-              <Form.Group>
+              <Form.Group className="mt-2">
                 <Form.Label>Select Class</Form.Label>
                 <Form.Select
                   aria-label="Select Class"
                   onChange={(e) => setClassdata(e.target.value)}
+                  value={classdata}
                 >
                   {classes?.map((classData) => (
                     <option
@@ -97,11 +108,12 @@ const EditFixture = () => {
                   ))}
                 </Form.Select>
               </Form.Group>
-              <Form.Group>
+              <Form.Group className="mt-2">
                 <Form.Label>Select Section</Form.Label>
                 <Form.Select
                   aria-label="Select Section"
                   onChange={(e) => setSection(e.target.value)}
+                  value={section}
                 >
                   {sections?.map((section) => (
                     <option
@@ -114,11 +126,12 @@ const EditFixture = () => {
                   ))}
                 </Form.Select>
               </Form.Group>
-              <Form.Group>
+              <Form.Group className="mt-2">
                 <Form.Label>Select Subject</Form.Label>
                 <Form.Select
                   aria-label="Select Subject"
                   onChange={(e) => setSubject(e.target.value)}
+                  value={subject}
                 >
                   {subjects?.map((subject) => (
                     <option
@@ -131,11 +144,12 @@ const EditFixture = () => {
                   ))}
                 </Form.Select>
               </Form.Group>
-              <Form.Group>
+              <Form.Group className="mt-2">
                 <Form.Label>Select Hour</Form.Label>
                 <Form.Select
                   aria-label="Select Hour"
                   onChange={(e) => setHour(e.target.value)}
+                  value={hour}
                 >
                   {hours?.map((hour) => (
                     <option
@@ -147,6 +161,19 @@ const EditFixture = () => {
                     </option>
                   ))}
                 </Form.Select>
+              </Form.Group>
+              <Form.Group
+                className="my-2"
+                controlId="exampleForm.ControlTextarea1"
+              >
+                <Form.Label>Portions</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={4}
+                  value={portions}
+                  onChange={(e) => setPortions(e.target.value)}
+                  maxLength={188}
+                />
               </Form.Group>
               <Button className="mt-3 bg-secondary" onClick={submitHandler}>
                 Update Fixture

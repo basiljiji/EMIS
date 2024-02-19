@@ -4,7 +4,7 @@ import { LinkContainer } from "react-router-bootstrap"
 import { useNavigate } from "react-router-dom"
 import { useSelector, useDispatch } from "react-redux"
 import { FaUser } from "react-icons/fa"
-import { useLogoutMutation } from "../slices/teacherApiSlice"
+import { useLogoutMutation } from "../slices/teacherAuthApiSlice"
 import { logout } from "../slices/authSlice"
 import logo from "../assets/logo.png"
 
