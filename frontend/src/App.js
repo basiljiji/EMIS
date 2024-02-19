@@ -10,7 +10,7 @@ function App() {
   return (
     <>
       <Header />
-      <main className="py-3">
+      <main>
         <Container fluid className='p-0'>
           <Outlet />
         </Container>

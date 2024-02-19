@@ -53,7 +53,7 @@ const TeacherManagement = () => {
 
   return (
     <AdminLayout>
-      <Container>
+      <Container className="py-3">
         <Row>
           <h4>Create Teacher</h4>
           <Form>

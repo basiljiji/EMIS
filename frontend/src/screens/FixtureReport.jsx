@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react"
-import { Table, Button } from "react-bootstrap"
+import { Table, Button, Container } from "react-bootstrap"
 import AdminLayout from "../components/AdminLayout"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
@@ -74,8 +74,8 @@ const FixtureReport = () => {
 
   return (
     <AdminLayout>
-      <>
-        <h3>Fixture Reports</h3>
+      <Container className="py-3">
+        <h3 className="pb-3">Fixture Reports</h3>
         {isLoading ? (
           <p>Loading...</p>
         ) : error ? (
@@ -115,7 +115,7 @@ const FixtureReport = () => {
           </div>
         )}
         <Button onClick={pdfHandler}>Generate PDF</Button>
-      </>
+      </Container>
     </AdminLayout>
   )
 }

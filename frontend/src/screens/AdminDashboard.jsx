@@ -5,7 +5,7 @@ const AdminDashboard = () => {
   return (
     <>
       <AdminLayout>
-        <h3>Admin Dashboard</h3>
+        <h3 className="py-3">Admin Dashboard</h3>
       </AdminLayout>
     </>
   )

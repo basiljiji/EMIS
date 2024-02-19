@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { Form, Row, Button, Col, InputGroup } from "react-bootstrap"
+import { Form, Row, Button, Col, InputGroup, Card } from "react-bootstrap"
 import { useNavigate, useLocation } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import FormContainer from "../components/FormContainer"
@@ -42,41 +42,43 @@ const LoginScreen = () => {
   }
   return (
     <FormContainer>
-      <Form
-        noValidate
-        validated={validated}
-        onSubmit={handleSubmit}
-        className=""
-      >
-        <Form.Group controlId="validationCustom01">
-          <Form.Label>Email</Form.Label>
-          <Form.Control
-            required
-            type="text"
-            placeholder="First name"
-            name="firstName"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-        </Form.Group>
-        <Form.Group controlId="validationCustom02" className="mb-3">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            required
-            type="password"
-            placeholder="Password"
-            name="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-        </Form.Group>
-        <Button type="submit" className="" disabled={isLoading}>
-          Login
-        </Button>
-        {isLoading && <Loader />}
-      </Form>
+      <Card className="p-5 shadow p-3 bg-body rounded login-card">
+        <Form
+          noValidate
+          validated={validated}
+          onSubmit={handleSubmit}
+          className=""
+        >
+          <Form.Group controlId="validationCustom01">
+            <Form.Label>Email</Form.Label>
+            <Form.Control
+              required
+              type="text"
+              placeholder="First name"
+              name="firstName"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group controlId="validationCustom02" className="mb-3 mt-3">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
+              required
+              type="password"
+              placeholder="Password"
+              name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+          </Form.Group>
+          <Button type="submit" className="" disabled={isLoading}>
+            Login
+          </Button>
+          {isLoading && <Loader />}
+        </Form>
+      </Card>
     </FormContainer>
   )
 }
