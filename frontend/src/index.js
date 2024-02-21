@@ -18,6 +18,7 @@ import AdminRoute from './components/AdminRoute'
 import FixtureReport from './screens/FixtureReport'
 import TeacherManagement from './screens/TeacherManagement'
 import EditTeacher from './screens/EditTeacher'
+import AdminResourceScreen from './screens/AdminResourceScreen'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -37,6 +38,7 @@ const router = createBrowserRouter(
         <Route path='/admin/reports' element={<FixtureReport />} />
         <Route path='/admin/teacher' element={<TeacherManagement />} />
         <Route path='/teacher/edit/:id' element={<EditTeacher />} />
+        <Route path='/admin/resource' element={<AdminResourceScreen />} />
       </Route>
 
     </Route>
