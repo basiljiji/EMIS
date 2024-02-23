@@ -1,7 +1,6 @@
 import fs from 'fs'
 import multer from 'multer'
 import HttpError from '../utils/httpErrorMiddleware.js'
-import Class from '../models/ClassModel.js'
 import Resource from '../models/resourceModel.js'
 import Folder from '../models/folderModel.js'
 
@@ -43,11 +42,30 @@ export const addFolder = async (req, res, next) => {
     }
 }
 
+export const getAllFolders = async (req, res, next) => {
+    try {
+        const folders = await Folder.find({ 'isDeleted.status': false })
+        res.status(200).json(folders)
+    } catch (err) {
+        const error = new HttpError('Something went wrong', 500)
+        return next(error)
+    }
+}
+
 
 // Controller function to handle file upload
 export const uploadFile = async (req, res, next) => {
+    
+    console.log(req.file)
+
+    if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded' })
+    }
 
     const folderName = req.params.folderName
+    // const { portionTitle } = req.body
+
+    console.log(folderName)
 
     const folderData = await Folder.findOne({ folderName })
 
@@ -56,18 +74,14 @@ export const uploadFile = async (req, res, next) => {
         return next(error)
     }
 
-    const { portionTitle } = req.body
 
-    if (!req.file) {
-        return res.status(400).json({ message: 'No file uploaded' })
-    }
 
-    const filePath = req.file.path.replace(/\\/g, '/')
+    const filePath = req.file.path.replace(/\\/g, '/').replace('public/', '')
 
     // Save the file path in the Resource model
     const resource = new Resource({
         filePath: filePath,
-        portionTitle,
+        // portionTitle,
         fileName: req.file.originalname,
         fileType: req.file.mimetype,
         fileSize: req.file.size,
@@ -92,8 +106,8 @@ export const getResourceByFolder = async (req, res, next) => {
         const folderName = req.params.folderName
 
         const folderData = await Folder.findOne({ folderName })
+
         if (folderData) {
-            console.log(folderData)
             const resources = await Resource.find({ folder: folderData._id }).populate('folder')
             res.status(200).json(resources)
         } else {
