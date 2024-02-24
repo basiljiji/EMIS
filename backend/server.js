@@ -18,6 +18,7 @@ import fixtureRoute from './routes/fixtureRoutes.js'
 import teacherAuthRoute from './routes/teacherAuthRoutes.js'
 import reportRoute from './routes/reportRoutes.js'
 import adminResourceRoute from './routes/adminResource.js'
+import teacherResourceRoute from './routes/teacherResourceRoutes.js'
 
 
 connectDB()
@@ -25,7 +26,7 @@ connectDB()
 const port = process.env.PORT || 5000
 
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const app = express()
 
@@ -52,8 +53,9 @@ app.use('/admin/report', reportRoute)
 app.use('/admin/resource', adminResourceRoute)
 
 
-app.use('/fixture', fixtureRoute)
 app.use('/', teacherAuthRoute)
+app.use('/fixture', fixtureRoute)
+app.use('/resource', teacherResourceRoute)
 
 app.use(notFound)
 app.use(errorHandler)

@@ -15,7 +15,7 @@ import Message from "../components/Message"
 import FixtureTable from "../components/FixtureTable"
 import FixtureForm from "../components/FixtureForm"
 
-const Dashboard = () => {
+const FixturesScreen = () => {
   const [classdata, setClassdata] = useState("")
   const [section, setSection] = useState("")
   const [subject, setSubject] = useState("")
@@ -59,7 +59,7 @@ const Dashboard = () => {
     if (window.confirm("Are you sure?")) {
       try {
         await deleteFixture(id)
-        toast.success("Product Deleted")
+        toast.success("Fixture Deleted")
         refetch()
       } catch (err) {
         toast.error(err?.data?.message || err.error)
@@ -103,4 +103,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard
+export default FixturesScreen

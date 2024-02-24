@@ -4,11 +4,19 @@ const folderSchema = new mongoose.Schema({
     folderName: {
         type: String,
     },
-    classdata: {
-        classAccess: {
+    accessTo: {
+        classAccess: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Class'
-        }
+        }],
+        sectionAccess: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Section'
+        }],
+        subjectAccess: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Subject'
+        }]
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,

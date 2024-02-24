@@ -10,7 +10,6 @@ import reportWebVitals from './reportWebVitals'
 import HomeScreen from './screens/HomeScreen'
 import LoginScreen from './screens/LoginScreen'
 import AdminLoginScreen from './screens/AdminLoginScreen'
-import Dashboard from './screens/Dashboard'
 import EditFixture from './screens/EditFixture'
 import AdminDashboard from './screens/AdminDashboard'
 import PrivateRoute from './components/PrivateRoutes'
@@ -20,6 +19,8 @@ import TeacherManagement from './screens/TeacherManagement'
 import EditTeacher from './screens/EditTeacher'
 import AdminResourceScreen from './screens/AdminResourceScreen'
 import ResourceScreen from './screens/ResourceScreen'
+import FixturesScreen from './screens/FixturesScreen'
+import TeacherDashboard from './screens/TeacherDashboard'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -29,7 +30,8 @@ const router = createBrowserRouter(
       <Route path='/admin/login' element={<AdminLoginScreen />} />
 
       <Route path='' element={<PrivateRoute />}>
-        <Route path='/dashboard' element={<Dashboard />} />
+        <Route path='/dashboard' element={<TeacherDashboard />} />
+        <Route path='/fixture' element={<FixturesScreen />} />
         <Route path='/fixture/edit/:id' element={<EditFixture />} />
       </Route>
 

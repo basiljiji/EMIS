@@ -122,7 +122,7 @@ const FixtureForm = ({
           />
         </Form.Group>
         <Button className="mt-3" onClick={submitHandler}>
-          Add Fixture
+          Open
         </Button>
       </Form>
     </>

@@ -1,12 +1,12 @@
 import fs from 'fs'
-import multer from 'multer'
 import HttpError from '../utils/httpErrorMiddleware.js'
 import Resource from '../models/resourceModel.js'
 import Folder from '../models/folderModel.js'
 
 export const addFolder = async (req, res, next) => {
     try {
-        const { folderName } = req.body
+        const { folderName, classdata, sectiondata, subjectdata } = req.body
+
 
         if (!folderName) {
             const error = new HttpError('Folder name is required', 400)
@@ -20,7 +20,8 @@ export const addFolder = async (req, res, next) => {
             return next(error)
         } else {
             await Folder.create({
-                folderName
+                folderName,
+                accessTo: { classAccess: classdata, sectionAccess: sectiondata, subjectAccess: subjectdata }
             })
             // Check if folder already exists
             const folderPath = `public/${folderName}`
@@ -55,7 +56,7 @@ export const getAllFolders = async (req, res, next) => {
 
 // Controller function to handle file upload
 export const uploadFile = async (req, res, next) => {
-    
+
     console.log(req.file)
 
     if (!req.file) {
