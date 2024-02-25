@@ -7,6 +7,7 @@ import { useGetSubjectsQuery } from "../slices/subjectApiSlice"
 import { useGetClassesQuery } from "../slices/classApiSlice"
 import { useFetchFoldersMutation } from "../slices/resourceTeacherSlice"
 import { FaFolder } from "react-icons/fa"
+import { LinkContainer } from "react-router-bootstrap"
 
 const TeacherDashboard = () => {
   const [classdata, setClassdata] = useState("")
@@ -90,11 +91,13 @@ const TeacherDashboard = () => {
                   <p>Error: {error.message}</p>
                 ) : filteredFolders && filteredFolders.length > 0 ? (
                   filteredFolders.map((folder) => (
-                    <Col key={folder.id} className="align-items-center">
-                      <Col xs="auto" className="text-center">
-                        <FaFolder style={{ width: "80px", height: "80px" }} />
-                        <p>{folder.folderName}</p>
-                      </Col>
+                    <Col key={folder._id} className="align-items-center">
+                      <LinkContainer to={`/resource/${folder.folderName}`}>
+                        <Col xs="auto" className="text-center">
+                          <FaFolder style={{ width: "80px", height: "80px" }} />
+                          <p>{folder.folderName}</p>
+                        </Col>
+                      </LinkContainer>
                     </Col>
                   ))
                 ) : (

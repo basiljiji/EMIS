@@ -21,6 +21,10 @@ import AdminResourceScreen from './screens/AdminResourceScreen'
 import ResourceScreen from './screens/ResourceScreen'
 import FixturesScreen from './screens/FixturesScreen'
 import TeacherDashboard from './screens/TeacherDashboard'
+import TeacherResourceScreen from './screens/TeacherResourceScreen'
+import ImageCanvas from './components/ImageCanvas'
+import PdfCanvas from './components/PdfCanvas'
+import MediaCanvas from './components/MediaCanvas'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -33,6 +37,10 @@ const router = createBrowserRouter(
         <Route path='/dashboard' element={<TeacherDashboard />} />
         <Route path='/fixture' element={<FixturesScreen />} />
         <Route path='/fixture/edit/:id' element={<EditFixture />} />
+        <Route path='/resource/:id' element={<TeacherResourceScreen />} />
+        <Route path='/resource/image' element={<ImageCanvas />} />
+        <Route path='/resource/pdf' element={<PdfCanvas />} />
+        <Route path='/resource/media' element={<MediaCanvas />} />
       </Route>
 
 
