@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { Navbar, Nav, Container, NavDropdown } from "react-bootstrap"
 import { LinkContainer } from "react-router-bootstrap"
 import { useNavigate } from "react-router-dom"
@@ -25,15 +25,27 @@ const Header = () => {
       console.log(err)
     }
   }
+
+  useEffect(() => {
+    const userInfoString = localStorage.getItem("userInfo")
+    if (userInfoString) {
+      const userInfo = JSON.parse(userInfoString)
+      const { loginTime } = userInfo
+      if (loginTime) {
+        const oneHour = 60 * 1000 // 1 hour in milliseconds
+        const currentTime = Date.now()
+        if (currentTime - parseInt(loginTime) >= oneHour) {
+          console.log("Logout")
+          logoutHandler()
+          const userInfoString = localStorage.removeItem("userInfo")
+        }
+      }
+    }
+  }, []) // Run this effect only once when the component mounts
+
   return (
     <header>
-      <Navbar
-        bg="dark"
-        variant="dark"
-        expand="lg"
-        collapseOnSelect
-        className="py-3"
-      >
+      <Navbar expand="lg" collapseOnSelect className="py-3">
         <Container>
           <LinkContainer to="/">
             <Navbar.Brand>

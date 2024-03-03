@@ -1,22 +1,46 @@
 import React, { useState, useEffect } from "react"
 import { useLocation } from "react-router-dom"
-import { Player } from "video-react"
-import "video-react/dist/video-react.css"
+import ReactPlayer from "react-player"
+import { useAddAccessedFilesMutation } from "../slices/periodApiSlice"
 
 const MediaCanvas = () => {
   const location = useLocation()
   const fileUrl = location.state?.fileUrl || ""
-  const [file, setFile] = useState(fileUrl)
+  const [totalPlayTime, setTotalPlayTime] = useState(0) // State to store total play time
+
+  const [addAccessedFiles] = useAddAccessedFilesMutation()
+
+  // Update total play time when video progresses
+  const handleProgress = (state) => {
+    setTotalPlayTime(state.playedSeconds)
+  }
 
   useEffect(() => {
-    setFile(fileUrl)
-  }, [fileUrl])
+    const fromTime = Date.now() // Get current time
+
+    const handleSubmit = async () => {
+      try {
+        const result = await addAccessedFiles({
+          fileUrl,
+          fromTime,
+          toTime: Date.now(),
+          duration: totalPlayTime,
+        })
+      } catch (error) {
+        console.error("Error submitting form:", error)
+      }
+    }
+
+    // Cleanup function to trigger handleSubmit on unmount
+    return () => {
+      handleSubmit()
+    }
+  }, [fileUrl, totalPlayTime, addAccessedFiles])
 
   return (
     <>
-      <Player>
-        <source src={file} />
-      </Player>
+      <ReactPlayer url={fileUrl} controls={true} onProgress={handleProgress} />
+      <p>Total Play Time: {Math.round(totalPlayTime)} seconds</p>
     </>
   )
 }

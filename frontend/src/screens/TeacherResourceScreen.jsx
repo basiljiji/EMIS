@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { Row, Col, Card, Button, Container } from "react-bootstrap"
 import { useParams, useNavigate } from "react-router-dom"
 import { useGetResourcesQuery } from "../slices/resourceAdminSlice"
+import { useAddAccessedFilesMutation } from "../slices/periodApiSlice"
 
 const TeacherResourceScreen = () => {
   const [selectedFile, setSelectedFile] = useState(null)
@@ -15,6 +16,7 @@ const TeacherResourceScreen = () => {
     refetch,
     error,
   } = useGetResourcesQuery(folderName)
+
 
   const handleFileClick = (file) => {
     setSelectedFile(file)
@@ -71,7 +73,7 @@ const TeacherResourceScreen = () => {
                         )
                       }
                     >
-                      Edit
+                      View
                     </Button>
                     <Button
                       variant="primary"

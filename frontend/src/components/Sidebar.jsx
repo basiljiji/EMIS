@@ -57,6 +57,30 @@ const Sidebar = () => {
           </Link>
         </Nav.Item>
         <Nav.Item>
+          <Link to="/admin/period" className="nav-link">
+            <FaBookOpen /> {/* Icon */}
+            <span className={`ps-2 ${collapsed ? "d-none" : ""}`}>
+              Period Management
+            </span>
+          </Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Link to="/admin/details" className="nav-link">
+            <FaBookOpen /> {/* Icon */}
+            <span className={`ps-2 ${collapsed ? "d-none" : ""}`}>
+              Class Management
+            </span>
+          </Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Link to="/admin/access" className="nav-link">
+            <FaBookOpen /> {/* Icon */}
+            <span className={`ps-2 ${collapsed ? "d-none" : ""}`}>
+              Access Management
+            </span>
+          </Link>
+        </Nav.Item>
+        <Nav.Item>
           <Link to="#" className="nav-link">
             <FaUser /> {/* Icon */}
             <span className={`ps-2 ${collapsed ? "d-none" : ""}`}>Profile</span>

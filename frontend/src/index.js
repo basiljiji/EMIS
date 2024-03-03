@@ -25,6 +25,8 @@ import TeacherResourceScreen from './screens/TeacherResourceScreen'
 import ImageCanvas from './components/ImageCanvas'
 import PdfCanvas from './components/PdfCanvas'
 import MediaCanvas from './components/MediaCanvas'
+import AdminDetailsScreen from './screens/AdminDetailsScreen'
+import AdminPeriod from './screens/AdminPeriod'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -51,6 +53,8 @@ const router = createBrowserRouter(
         <Route path='/teacher/edit/:id' element={<EditTeacher />} />
         <Route path='/admin/resource' element={<AdminResourceScreen />} />
         <Route path='/admin/resource/:id' element={<ResourceScreen />} />
+        <Route path='/admin/details' element={<AdminDetailsScreen />} />
+        <Route path='/admin/period' element={<AdminPeriod />} />
       </Route>
 
     </Route>

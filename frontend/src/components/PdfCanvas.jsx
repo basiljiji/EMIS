@@ -1,30 +1,47 @@
-import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { Viewer, Worker } from "@react-pdf-viewer/core";
-import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
-import { highlightPlugin, Trigger } from "@react-pdf-viewer/highlight";
-import "@react-pdf-viewer/default-layout/lib/styles/index.css";
-import "@react-pdf-viewer/core/lib/styles/index.css";
-import "@react-pdf-viewer/highlight/lib/styles/index.css";
-import * as PDFJS from "pdfjs-dist/build/pdf";
-import * as PDFJSWorker from "pdfjs-dist/build/pdf.worker";
+import React, { useEffect, useState } from "react"
+import { useLocation } from "react-router-dom"
+import { Viewer, Worker } from "@react-pdf-viewer/core"
+import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout"
+import { highlightPlugin, Trigger } from "@react-pdf-viewer/highlight"
+import "@react-pdf-viewer/default-layout/lib/styles/index.css"
+import "@react-pdf-viewer/core/lib/styles/index.css"
+import "@react-pdf-viewer/highlight/lib/styles/index.css"
+import * as PDFJS from "pdfjs-dist/build/pdf"
+import * as PDFJSWorker from "pdfjs-dist/build/pdf.worker"
+import { useAddAccessedFilesMutation } from "../slices/periodApiSlice"
 
-PDFJS.GlobalWorkerOptions.workerSrc = PDFJSWorker;
+PDFJS.GlobalWorkerOptions.workerSrc = PDFJSWorker
 
 const PdfCanvas = () => {
-  const location = useLocation();
-  const fileUrl = location.state?.fileUrl || "";
-  const [file, setFile] = useState(fileUrl);
+  const location = useLocation()
+  const fileUrl = location.state?.fileUrl || ""
+  const [file, setFile] = useState(fileUrl)
 
-  // Create new plugin instance
-  const defaultLayoutPluginInstance = defaultLayoutPlugin();
-  const highlightPluginInstance = highlightPlugin({
-    trigger: Trigger.None,
-  });
+  const [addAccessedFiles] = useAddAccessedFilesMutation()
 
   useEffect(() => {
-    setFile(fileUrl);
-  }, [fileUrl]);
+    const fromTime = Date.now()
+    const handleSubmit = async () => {
+      try {
+        const result = await addAccessedFiles({
+          fileUrl,
+          fromTime,
+          toTime: Date.now(),
+        })
+      } catch (error) {
+        console.error("Error submitting form:", error)
+      }
+    }
+
+    // Cleanup function to trigger handleSubmit on unmount
+    return () => {
+      handleSubmit()
+    }
+  }, [fileUrl, addAccessedFiles])
+
+  useEffect(() => {
+    setFile(fileUrl)
+  }, [fileUrl])
 
   const renderToolbar = (toolbarSlot) => {
     return (
@@ -49,13 +66,12 @@ const PdfCanvas = () => {
           </div>
         </div>
       </div>
-    );
-  };
+    )
+  }
 
   const handlePenDrawClick = () => {
-    // Implement your pen draw feature logic here
-    console.log("Pen Draw feature clicked");
-  };
+    console.log("Pen Draw feature clicked")
+  }
 
   return (
     <div
@@ -68,12 +84,15 @@ const PdfCanvas = () => {
       <Worker workerUrl="../../node_modules/pdfjs-dist/build/pdf.worker.min.js">
         <Viewer
           fileUrl={fileUrl}
-          plugins={[defaultLayoutPluginInstance, highlightPluginInstance]}
+          plugins={[
+            defaultLayoutPlugin(),
+            highlightPlugin({ trigger: Trigger.None }),
+          ]}
           renderToolbar={renderToolbar}
         />
       </Worker>
     </div>
-  );
-};
+  )
+}
 
-export default PdfCanvas;
+export default PdfCanvas

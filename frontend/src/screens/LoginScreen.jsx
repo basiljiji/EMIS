@@ -34,7 +34,7 @@ const LoginScreen = () => {
     e.preventDefault()
     try {
       const res = await login({ email, password }).unwrap()
-      dispatch(setCredentials({ ...res }))
+      dispatch(setCredentials({ ...res, loginTime: Date.now() }))
       navigate(redirect)
     } catch (err) {
       toast.error(err?.data?.message || err.error)
@@ -42,7 +42,7 @@ const LoginScreen = () => {
   }
   return (
     <FormContainer>
-      <Card className="p-5 shadow p-3 bg-body rounded login-card">
+      <Card className="p-5 shadow bg-body rounded login-card">
         <Form
           noValidate
           validated={validated}

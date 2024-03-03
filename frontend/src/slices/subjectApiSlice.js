@@ -8,8 +8,15 @@ export const subjectSlice = apiSlice.injectEndpoints({
                 url: ADMIN_SUBJECT_URL
             }),
             keepUnusedDataFor: 5,
+        }),
+        addSubject: builder.mutation({
+            query: (data) => ({
+                url: 'ADMIN_SUBJECT_URL/add',
+                method: 'POST',
+                body: data
+            })
         })
     })
 })
 
-export const { useGetSubjectsQuery } = subjectSlice
+export const { useGetSubjectsQuery, useAddSubjectMutation } = subjectSlice

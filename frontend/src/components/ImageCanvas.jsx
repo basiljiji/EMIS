@@ -3,6 +3,7 @@ import { ReactSketchCanvas } from "react-sketch-canvas"
 import { useParams, useLocation } from "react-router-dom"
 import { FiPenTool, FiRotateCcw, FiRotateCw, FiTrash2 } from "react-icons/fi"
 import { BiEraser } from "react-icons/bi"
+import { useAddAccessedFilesMutation } from "../slices/periodApiSlice"
 
 const somePreserveAspectRatio = [
   "none",
@@ -23,16 +24,34 @@ const ImageCanvas = () => {
   const [preserveAspectRatio, setPreserveAspectRatio] = useState("none")
   const [backgroundImage, setBackgroundImage] = useState(fileUrl)
 
+  const [addAccessedFiles] = useAddAccessedFilesMutation()
+
+  useEffect(() => {
+    const fromTime = Date.now() // Get current time
+    const handleSubmit = async () => {
+      try {
+        const result = await addAccessedFiles({
+          fileUrl,
+          fromTime,
+          toTime: Date.now(), // Get current time
+        })
+      } catch (error) {
+        console.error("Error submitting form:", error)
+      }
+    }
+
+    // Cleanup function to trigger handleSubmit on unmount
+    return () => {
+      handleSubmit()
+    }
+  }, [fileUrl, addAccessedFiles])
+
   useEffect(() => {
     setBackgroundImage(fileUrl)
   }, [fileUrl])
 
   const handlePreserveAspectRatioChange = (event) => {
     setPreserveAspectRatio(event.target.value)
-  }
-
-  const handleBackgroundImageChange = (event) => {
-    setBackgroundImage(event.target.value)
   }
 
   const canvasRef = useRef(null)

@@ -19,6 +19,7 @@ import teacherAuthRoute from './routes/teacherAuthRoutes.js'
 import reportRoute from './routes/reportRoutes.js'
 import adminResourceRoute from './routes/adminResource.js'
 import teacherResourceRoute from './routes/teacherResourceRoutes.js'
+import periodRoute from './routes/periodRoutes.js'
 
 
 connectDB()
@@ -56,6 +57,7 @@ app.use('/admin/resource', adminResourceRoute)
 app.use('/', teacherAuthRoute)
 app.use('/fixture', fixtureRoute)
 app.use('/resource', teacherResourceRoute)
+app.use('/period', periodRoute)
 
 app.use(notFound)
 app.use(errorHandler)

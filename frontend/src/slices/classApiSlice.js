@@ -8,8 +8,21 @@ export const classSlice = apiSlice.injectEndpoints({
                 url: ADMIN_CLASS_URL
             }),
             keepUnusedDataFor: 5,
+        }),
+        addClass: builder.mutation({
+            query: (data) => ({
+                url: `${ADMIN_CLASS_URL}/add`,
+                method: 'POST',
+                body: data
+            })
+        }),
+        deleteClass: builder.mutation({
+            query: (classId) => ({
+                url: `${ADMIN_CLASS_URL}/delete/${classId}`,
+                method: 'DELETE'
+            })
         })
     })
 })
 
-export const { useGetClassesQuery } = classSlice
+export const { useGetClassesQuery, useAddClassMutation, useDeleteClassMutation } = classSlice

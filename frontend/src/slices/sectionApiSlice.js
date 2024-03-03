@@ -8,8 +8,15 @@ export const sectionSlice = apiSlice.injectEndpoints({
                 url: ADMIN_SECTION_URL
             }),
             keepUnusedDataFor: 5,
+        }),
+        addSection: builder.mutation({
+            query: (data) => ({
+                url: 'ADMIN_SECTION_URL/add',
+                method: 'POST',
+                body: data
+            })
         })
     })
 })
 
-export const { useGetSectionsQuery } = sectionSlice
+export const { useGetSectionsQuery , useAddSectionMutation } = sectionSlice
