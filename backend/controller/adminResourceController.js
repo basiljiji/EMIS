@@ -54,7 +54,6 @@ export const getAllFolders = async (req, res, next) => {
 }
 
 
-// Controller function to handle file upload
 export const uploadFile = async (req, res, next) => {
 
     console.log(req.file)
@@ -64,9 +63,6 @@ export const uploadFile = async (req, res, next) => {
     }
 
     const folderName = req.params.folderName
-    // const { portionTitle } = req.body
-
-    console.log(folderName)
 
     const folderData = await Folder.findOne({ folderName })
 
@@ -116,6 +112,61 @@ export const getResourceByFolder = async (req, res, next) => {
         }
     } catch (err) {
         const error = new HttpError('Something went wrong', 500)
+        return next(error)
+    }
+}
+
+export const renameFolder = async (req, res, next) => {
+    try {
+        const folderId = req.params.id
+        const { folderName } = req.body
+
+        const folder = await Folder.findOneAndUpdate({ _id: folderId }, { folderName })
+        res.status(200).json({ message: "Folder Renamed" })
+
+    } catch (err) {
+        const error = new HttpError('Something Went Wrong', 500)
+        return next(error)
+    }
+}
+
+export const editAccessFolder = async (req, res, next) => {
+    try {
+        const folderId = req.params.id
+        const { classdata, sectiondata, subjectdata } = req.body
+
+        const folder = await Folder.findOneAndUpdate(
+            { _id: folderId },
+            { accessTo: { classAccess: classdata, sectionAccess: sectiondata, subjectAccess: subjectdata } },
+            { upsert: true, new: true }
+        )
+
+        res.json({ message: "Folder Access Updated" })
+    } catch (err) {
+        const error = new HttpError('Something Went Wrong', 500)
+        return next(error)
+    }
+}
+
+
+
+export const deleteFolder = async (req, res, next) => {
+    try {
+        const folderId = req.params.id
+        const deleteFolderDetail = await Folder.findById(folderId)
+        if (deleteFolderDetail) {
+            deleteFolderDetail.isDeleted.status = true
+            deleteFolderDetail.isDeleted.deletedBy = req.admin
+            deleteFolderDetail.isDeleted.deletedTime = Date.now()
+
+            await deleteFolderDetail.save()
+
+            res.status(200).json({ message: "Folder Deleted" })
+        } else {
+            res.status(404).json({ message: "Folder not found" })
+        }
+    } catch (err) {
+        const error = new HttpError('Something Went Wrong', 500)
         return next(error)
     }
 }

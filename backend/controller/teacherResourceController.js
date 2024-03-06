@@ -5,8 +5,6 @@ export const fetchFolders = async (req, res, next) => {
     try {
         const { classdata, sectiondata, subjectdata } = req.body
 
-        console.log(classdata, "foldee")
-
         let filter = {}
 
         if (classdata && sectiondata) {
@@ -42,7 +40,6 @@ export const fetchResources = async (req, res, next) => {
         const { folderName } = req.params.folderName
         const folders = await Folder.findOne({ folderName })
 
-        console.log(folders,"1212")
 
         if (!folders) {
             const error = new HttpError('No Folder Found', 404)
@@ -55,3 +52,4 @@ export const fetchResources = async (req, res, next) => {
         return next(error)
     }
 }
+

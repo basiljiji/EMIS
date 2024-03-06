@@ -14,17 +14,10 @@ const TeacherDashboard = () => {
   const [section, setSection] = useState("")
   const [subject, setSubject] = useState("")
 
-  const {
-    data: allFolders,
-    isLoading,
-    refetch,
-    error,
-  } = useGetAllFoldersQuery()
-
+  const { data: allFolders, isLoading, error } = useGetAllFoldersQuery()
   const { data: classes } = useGetClassesQuery()
   const { data: sections } = useGetSectionsQuery()
   const { data: subjects } = useGetSubjectsQuery()
-
   const [fetchFolder] = useFetchFoldersMutation()
 
   // Filter folders based on selected class, section, and subject
@@ -46,8 +39,15 @@ const TeacherDashboard = () => {
   return (
     <>
       <Container>
-        <Row>
+        <Row className="text-end">
           <Col>
+            <LinkContainer to="/resource/canvas">
+              <Button className="bg-success mt-2">Open Canvas</Button>
+            </LinkContainer>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={3}>
             <Form>
               <Form.Label className="mt-3">Select Class:</Form.Label>
               <Form.Select onChange={(e) => setClassdata(e.target.value)}>
@@ -83,8 +83,8 @@ const TeacherDashboard = () => {
           </Col>
           <Col>
             <Row>
-              <h3>List Folders</h3>
-              {classdata || section || subject ? (
+              <h4>List Folders</h4>
+              {classdata && section && subject ? (
                 isLoading ? (
                   <p>Loading...</p>
                 ) : error ? (
@@ -94,7 +94,13 @@ const TeacherDashboard = () => {
                     <Col key={folder._id} className="align-items-center">
                       <LinkContainer to={`/resource/${folder.folderName}`}>
                         <Col xs="auto" className="text-center">
-                          <FaFolder style={{ width: "80px", height: "80px" }} />
+                          <FaFolder
+                            style={{
+                              width: "80px",
+                              height: "80px",
+                              color: "gold",
+                            }}
+                          />
                           <p>{folder.folderName}</p>
                         </Col>
                       </LinkContainer>
@@ -107,7 +113,6 @@ const TeacherDashboard = () => {
             </Row>
           </Col>
         </Row>
-        <Row></Row>
       </Container>
     </>
   )

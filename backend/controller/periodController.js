@@ -1,11 +1,14 @@
 import Period from "../models/periodModel.js"
 import HttpError from "../utils/httpErrorMiddleware.js"
-import mongoose from 'mongoose'
 
 export const addAccessData = async (req, res, next) => {
     try {
         const { fileUrl, fromTime, toTime, duration } = req.body
         const teacherId = req.teacher
+
+        console.log(req.body, "period")
+
+        const calculatedDuration = duration ? duration : toTime - fromTime
 
         const period = await Period.findOneAndUpdate({
             teacher: teacherId,
@@ -16,7 +19,7 @@ export const addAccessData = async (req, res, next) => {
                     fileUrl: fileUrl,
                     fromTime: fromTime,
                     toTime: toTime,
-                    duration
+                    duration: calculatedDuration
                 }
             }
         }, { new: true })

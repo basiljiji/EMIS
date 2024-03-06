@@ -32,22 +32,22 @@ const Header = () => {
       const userInfo = JSON.parse(userInfoString)
       const { loginTime } = userInfo
       if (loginTime) {
-        const oneHour = 60 * 1000 // 1 hour in milliseconds
+        const oneHour = 60 * 60 * 1000
         const currentTime = Date.now()
         if (currentTime - parseInt(loginTime) >= oneHour) {
           console.log("Logout")
+          localStorage.removeItem("userInfo")
           logoutHandler()
-          const userInfoString = localStorage.removeItem("userInfo")
         }
       }
     }
-  }, []) // Run this effect only once when the component mounts
+  }, [])
 
   return (
     <header>
       <Navbar expand="lg" collapseOnSelect className="py-3">
         <Container>
-          <LinkContainer to="/">
+          <LinkContainer to="/dashboard">
             <Navbar.Brand>
               <img src={logo} alt="EMIS" width="50px" />
             </Navbar.Brand>
@@ -55,14 +55,14 @@ const Header = () => {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <LinkContainer to="/">
-                <Nav.Link>Home</Nav.Link>
+              <LinkContainer to="/dashboard">
+                <Nav.Link className="text-light">Home</Nav.Link>
               </LinkContainer>
-              <LinkContainer to="/">
-                <Nav.Link>Links</Nav.Link>
+              <LinkContainer to="/dashboard">
+                <Nav.Link className="text-light">Links</Nav.Link>
               </LinkContainer>
-              <LinkContainer to="/">
-                <Nav.Link>FAQ</Nav.Link>
+              <LinkContainer to="/dashboard">
+                <Nav.Link className="text-light">FAQ</Nav.Link>
               </LinkContainer>
             </Nav>
             <Nav className="ms-auto">
@@ -83,7 +83,7 @@ const Header = () => {
                 </NavDropdown>
               ) : (
                 <LinkContainer to="/login">
-                  <Nav.Link>
+                  <Nav.Link className="text-light">
                     <FaUser /> Login
                   </Nav.Link>
                 </LinkContainer>

@@ -69,7 +69,7 @@ export const listTeachers = async (req, res, next) => {
 
 export const editTeacher = async (req, res, next) => {
     try {
-        const { firstName, lastName, username, email, password } = req.body
+        const { firstName, middleName, lastName, email, password } = req.body
         const teacherId = req.params.id
 
         const adminId = req.admin
@@ -86,7 +86,7 @@ export const editTeacher = async (req, res, next) => {
 
             if (firstName) teacher.firstName = firstName
             if (lastName) teacher.lastName = lastName
-            if (username) teacher.username = username
+            if (middleName) teacher.middleName = middleName
             if (email) teacher.email = email
             if (password) teacher.password = password
 
@@ -123,6 +123,17 @@ export const deleteTeacher = async (req, res, next) => {
             await teacher.save()
             res.status(201).json({ message: "Teacher Deleted" })
         }
+    } catch (err) {
+        const error = new HttpError("Something went wrong", 500)
+        return next(error)
+    }
+}
+
+export const getTeachersById = async (req, res, next) => {
+    try {
+        const teacherId = req.params.id
+        const teacher = await Teacher.findOne({ _id: teacherId, 'isDeleted.status': false })
+        res.status(200).json(teacher)
     } catch (err) {
         const error = new HttpError("Something went wrong", 500)
         return next(error)

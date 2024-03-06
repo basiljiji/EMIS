@@ -90,11 +90,11 @@ const AdminResourceScreen = () => {
   return (
     <AdminLayout>
       <Container className="py-3 justify-content-between ">
-        <Row>
-          <Col>
+        <Row className="justify-content-between">
+          <Col xs="auto">
             <h5>Admin Resource Screen</h5>
           </Col>
-          <Col>
+          <Col xs="auto">
             <Button onClick={() => setShowModal(true)}>New Folder</Button>
           </Col>
         </Row>
@@ -105,16 +105,25 @@ const AdminResourceScreen = () => {
           ) : error ? (
             <p>Error: {error.message}</p>
           ) : (
-            allFolders.map((folder) => (
-              <Col key={folder.id} className="align-items-center">
-                <LinkContainer to={`/admin/resource/${folder.folderName}`}>
-                  <Col xs="auto" className="text-center">
-                    <FaFolder style={{ width: "80px", height: "80px" }} />
-                    <p>{folder.folderName}</p>
-                  </Col>
-                </LinkContainer>
-              </Col>
-            ))
+            <Row xs={3} md={6} lg={8} className="g-4">
+              {allFolders.map((folder) => (
+                <Col key={folder.id}>
+                  {/* Folder Icon */}
+                  <LinkContainer to={`/admin/resource/${folder.folderName}`}>
+                    <Col xs="auto" className="text-center">
+                      <FaFolder
+                        style={{
+                          width: "80px",
+                          height: "80px",
+                          color: "gold",
+                        }}
+                      />
+                      <p>{folder.folderName}</p>
+                    </Col>
+                  </LinkContainer>
+                </Col>
+              ))}
+            </Row>
           )}
         </Row>
       </Container>

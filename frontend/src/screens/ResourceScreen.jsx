@@ -7,6 +7,7 @@ import {
   useGetResourcesQuery,
   useUploadReourcesMutation,
 } from "../slices/resourceAdminSlice"
+import commonImage from "../assets/pdf-thumbnail.png" // Import the common image
 
 const ResourceScreen = () => {
   const [selectedFile, setSelectedFile] = useState("")
@@ -56,7 +57,7 @@ const ResourceScreen = () => {
 
   return (
     <AdminLayout>
-      <Row>
+      <Row className="mb-3">
         <Form>
           <Form.Group controlId="upload" className="my-2">
             <Form.Label>Resources</Form.Label>
@@ -77,23 +78,37 @@ const ResourceScreen = () => {
           resources.map((resource) => (
             <Col className="col-md-3" key={resource._id}>
               <Card>
-                <Card.Img
-                  variant="top"
-                  src={`http://localhost:5000/${resource.filePath}`}
-                  alt={resource.fileName}
-                  onClick={() => handleImageClick(resource.filePath)}
-                />
+                {/* Conditionally render image or common image based on file type */}
+                {resource.fileType.startsWith("image") ? (
+                  <Card.Img
+                    variant="top"
+                    src={`http://localhost:5000/${resource.filePath}`}
+                    alt={resource.fileName}
+                    onClick={() => handleImageClick(resource.filePath)}
+                  />
+                ) : (
+                  <Card.Img
+                    variant="top"
+                    src={commonImage} // Use the imported common image
+                    alt="Common Image"
+                    style={{ width: "80px", height: "80px" }}
+                  />
+                )}
                 <Card.Body>
-                  <Card.Title>{resource.fileName}</Card.Title>
-                  <Card.Text>File Size: {resource.fileSize}</Card.Text>
-                  <Button
-                    variant="primary"
-                    href={`http://localhost:5000/${resource.filePath}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Card.Title style={{ fontSize: "15px" }}>
+                    {resource.fileName}
+                  </Card.Title>
+                  <Card.Text
+                    style={{
+                      fontSize: "14px",
+                      fontFamily: "Arial",
+                    }}
                   >
-                    Download
-                  </Button>
+                    File Size:{" "}
+                    {resource.fileSize
+                      ? (resource.fileSize / (1024 * 1024)).toFixed(2) + " MB"
+                      : "Unknown"}
+                  </Card.Text>
                 </Card.Body>
               </Card>
             </Col>

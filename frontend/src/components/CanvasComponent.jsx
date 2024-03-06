@@ -5,24 +5,7 @@ import { FiPenTool, FiRotateCcw, FiRotateCw, FiTrash2 } from "react-icons/fi"
 import { BiEraser } from "react-icons/bi"
 import { useAddAccessedFilesMutation } from "../slices/periodApiSlice"
 
-const somePreserveAspectRatio = [
-  "none",
-  "xMinYMin",
-  "xMidYMin",
-  "xMaxYMin",
-  "xMinYMid",
-  "xMidYMid",
-  "xMaxYMid",
-  "xMinYMax",
-  "xMidYMax",
-  "xMaxYMax",
-]
-
-const ImageCanvas = () => {
-  const location = useLocation()
-  const fileUrl = location.state?.fileUrl || ""
-  const [preserveAspectRatio, setPreserveAspectRatio] = useState("none")
-  const [backgroundImage, setBackgroundImage] = useState(fileUrl)
+const CanvasComponent = () => {
   const [strokeColor, setStrokeColor] = useState("#000000") // Default color
 
   const [addAccessedFiles] = useAddAccessedFilesMutation()
@@ -32,7 +15,7 @@ const ImageCanvas = () => {
     const handleSubmit = async () => {
       try {
         const result = await addAccessedFiles({
-          fileUrl,
+          fileUrl: "Canvas",
           fromTime,
           toTime: Date.now(), // Get current time
         })
@@ -40,20 +23,10 @@ const ImageCanvas = () => {
         console.error("Error submitting form:", error)
       }
     }
-
-    // Cleanup function to trigger handleSubmit on unmount
     return () => {
       handleSubmit()
     }
-  }, [fileUrl, addAccessedFiles])
-
-  useEffect(() => {
-    setBackgroundImage(fileUrl)
-  }, [fileUrl])
-
-  const handlePreserveAspectRatioChange = (event) => {
-    setPreserveAspectRatio(event.target.value)
-  }
+  }, [addAccessedFiles])
 
   const canvasRef = useRef(null)
   const [eraseMode, setEraseMode] = useState(false)
@@ -100,11 +73,10 @@ const ImageCanvas = () => {
 
   return (
     <div className="d-flex flex-column gap-2 p-2">
-      <h3>Tools</h3>
       <div className="d-flex gap-2 align-items-center ">
         <button
           type="button"
-          className="btn btn-sm btn-outline-primary"
+          className="btn btn-outline-success"
           disabled={!eraseMode}
           onClick={handlePenClick}
         >
@@ -112,7 +84,7 @@ const ImageCanvas = () => {
         </button>
         <button
           type="button"
-          className="btn btn-sm btn-outline-primary"
+          className="btn btn-outline-danger"
           disabled={eraseMode}
           onClick={handleEraserClick}
         >
@@ -152,21 +124,21 @@ const ImageCanvas = () => {
         <div className="vr" />
         <button
           type="button"
-          className="btn btn-sm btn-outline-primary"
+          className="btn btn-outline-primary"
           onClick={handleUndoClick}
         >
-          <FiRotateCcw /> Undo
+          <FiRotateCcw />
         </button>
         <button
           type="button"
-          className="btn btn-sm btn-outline-primary"
+          className="btn btn-outline-primary"
           onClick={handleRedoClick}
         >
-          <FiRotateCw /> Redo
+          <FiRotateCw />
         </button>
         <button
           type="button"
-          className="btn btn-sm btn-outline-primary"
+          className="btn btn-outline-danger"
           onClick={handleClearClick}
         >
           <FiTrash2 /> Clear
@@ -183,31 +155,11 @@ const ImageCanvas = () => {
           />
         </div>
       </div>
-      <div className="d-flex gap-2 flex-column">
-        <label htmlFor="preserveAspectRatio" className="form-label">
-          Preserve Aspect Ratio
-        </label>
-        <select
-          id="preserveAspectRatio"
-          className="form-select form-select-sm"
-          aria-label="Preserve Aspect Ratio options"
-          value={preserveAspectRatio}
-          onChange={handlePreserveAspectRatioChange}
-        >
-          {somePreserveAspectRatio.map((value) => (
-            <option key={value} value={value}>
-              {value}
-            </option>
-          ))}
-        </select>
-      </div>
       <div
         style={{ width: "100%", height: "100vh", border: "2px solid black" }}
       >
         <ReactSketchCanvas
           style={{ width: "100%", height: "100%" }}
-          backgroundImage={backgroundImage}
-          preserveBackgroundImageAspectRatio={preserveAspectRatio}
           ref={canvasRef}
           strokeWidth={strokeWidth}
           eraserWidth={eraserWidth}
@@ -218,4 +170,4 @@ const ImageCanvas = () => {
   )
 }
 
-export default ImageCanvas
+export default CanvasComponent

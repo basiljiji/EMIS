@@ -102,6 +102,14 @@ const AdminPeriod = () => {
     window.open(pdfUrl, "_blank")
   }
 
+  const getFileNameFromUrl = (url) => {
+    if (!url) return "" // Check if url is undefined or null
+
+    const regex = /\/([^/]+)$/ // Match the last part of the URL after the last '/'
+    const match = url.match(regex)
+    return match ? match[1] : "" // Return the matched filename or an empty string if no match
+  }
+
   return (
     <AdminLayout>
       <h1>Periods</h1>
@@ -171,6 +179,9 @@ const AdminPeriod = () => {
               </th>
               <th>LoggedIn</th>
               <th>LoggedOut</th>
+              <th>File Name</th>
+              <th>Duration(in Mins)</th>
+              <th>From Time to To Time</th>
             </tr>
           </thead>
           <tbody>
@@ -180,6 +191,28 @@ const AdminPeriod = () => {
                 <td>{formatDate(period.day)}</td>
                 <td>{formatTime(period.loggedIn)}</td>
                 <td>{formatTime(period.loggedOut)}</td>
+                <td>
+                  {period.accessedFiles.map((file, fileIndex) => (
+                    <div key={fileIndex}>
+                      {getFileNameFromUrl(file.fileUrl)}
+                    </div>
+                  ))}
+                </td>
+                <td>
+                  {period.accessedFiles.map((access, accessIndex) => (
+                    <div key={accessIndex}>
+                      {(access.duration / 60000).toFixed(2)} min
+                    </div>
+                  ))}
+                </td>
+                <td>
+                  {period.accessedFiles.map((fromtime, fromtimeIndex) => (
+                    <div key={fromtimeIndex}>
+                      {formatTime(fromtime.fromTime)} to{" "}
+                      {formatTime(fromtime.toTime)}
+                    </div>
+                  ))}
+                </td>
               </tr>
             ))}
           </tbody>

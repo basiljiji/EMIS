@@ -1,12 +1,13 @@
-import express from 'express';
-import { addTeacher, deleteTeacher, editTeacher, listTeachers } from '../controller/teacherController.js';
-import { authenticateAdmin } from '../utils/authMiddleware.js';
+import express from 'express'
+import { addTeacher, deleteTeacher, editTeacher, getTeachersById, listTeachers } from '../controller/teacherController.js'
+import { authenticateAdmin } from '../utils/authMiddleware.js'
 
-const router = express();
+const router = express()
 
-router.post('/add', authenticateAdmin, addTeacher);
-router.get('/', authenticateAdmin, listTeachers);
-router.patch('/edit/:id', authenticateAdmin, editTeacher);
-router.patch('/delete/:id', authenticateAdmin, deleteTeacher);
+router.get('/', authenticateAdmin, listTeachers)
+router.get('/:id', authenticateAdmin, getTeachersById)
+router.post('/add', authenticateAdmin, addTeacher)
+router.patch('/edit/:id', authenticateAdmin, editTeacher)
+router.patch('/delete/:id', authenticateAdmin, deleteTeacher)
 
-export default router;
+export default router

@@ -5,6 +5,7 @@ import { LinkContainer } from "react-router-bootstrap"
 import AdminLayout from "../components/AdminLayout"
 import {
   useAddTeacherMutation,
+  useDeleteTeacherMutation,
   useGetTeachersQuery,
 } from "../slices/teacherApiSlice"
 
@@ -20,8 +21,18 @@ const TeacherManagement = () => {
 
   const [addTeacher] = useAddTeacherMutation()
 
-  const deleteHandler = () => {
-    console.log("delete")
+  const [deleteTeacher] = useDeleteTeacherMutation()
+
+  const deleteHandler = async (id) => {
+    if (window.confirm("Are you sure?")) {
+      try {
+        await deleteTeacher(id)
+        toast.success("Teacher Data Deleted")
+        refetch()
+      } catch (err) {
+        toast.error(err?.data?.message || err.error)
+      }
+    }
   }
 
   const submitHandler = async (e) => {

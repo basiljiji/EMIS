@@ -15,8 +15,26 @@ export const teacherSlice = apiSlice.injectEndpoints({
                 method: "POST",
                 body: data
             })
+        }),
+        editTeacher: builder.mutation({
+            query: (data) => ({
+                url: `${TEACHER_URL}/edit/${data.teacherId}`,
+                method: "PATCH",
+                body: data
+            })
+        }),
+        deleteTeacher: builder.mutation({
+            query: (teacherId) => ({
+                url: `${TEACHER_URL}/delete/${teacherId}`,
+                method: "PATCH"
+            })
+        }),
+        teacherById: builder.query({
+            query: (teacherId) => ({
+                url: `${TEACHER_URL}/${teacherId}`
+            })
         })
     }),
 })
 
-export const { useGetTeachersQuery, useAddTeacherMutation } = teacherSlice
+export const { useGetTeachersQuery, useAddTeacherMutation, useEditTeacherMutation, useDeleteTeacherMutation, useTeacherByIdQuery } = teacherSlice

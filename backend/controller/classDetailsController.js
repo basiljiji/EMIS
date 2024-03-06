@@ -1,4 +1,4 @@
-import Class from "../models/ClassModel.js";
+import Class from "../models/classModel.js";
 import HttpError from "../utils/httpErrorMiddleware.js";
 
 export const listClass = async (req, res, next) => {
@@ -56,8 +56,15 @@ export const deleteClass = async (req, res, next) => {
     try {
         const classId = req.params.id;
 
-        const deleteClassDetail = await Class.findByIdAndDelete(classId);
+        const deleteClassDetail = await Class.findById(classId);
         if (deleteClassDetail) {
+
+            deleteClassDetail.isDeleted.status = true
+            deleteClassDetail.isDeleted.deletedBy = req.admin
+            deleteClassDetail.isDeleted.deletedTime = Date.now()
+
+            await deleteClassDetail.save()
+
             res.status(200).json({ message: "Class Deleted" });
         } else {
             const error = new HttpError("Class Not Found", 404);

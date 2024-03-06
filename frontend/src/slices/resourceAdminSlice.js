@@ -28,8 +28,29 @@ export const resourceAdminSlice = apiSlice.injectEndpoints({
                 body: formData
             }),
             keepUnusedDataFor: 5,
-        })
+        }),
+        renameFolder: builder.mutation({
+            query: (data) => ({
+                url: `${RESOURCE_URL}/folder/rename/${data.folderId}`,
+                method: 'PATCH',
+                body: data
+            })
+        }),
+        editFolderAccess: builder.mutation({
+            query: (data) => ({
+                url: `${RESOURCE_URL}/folder/access/${data.folderId}`,
+                method: 'PATCH',
+                body: data
+            })
+        }),
+        deleteFolder: builder.mutation({
+            query: (data) => ({
+                url: `${RESOURCE_URL}/folder/delete/${data.folderId}`,
+                method: 'PATCH',
+                body: data
+            })
+        }),
     })
 })
 
-export const { useAddFolderMutation, useGetAllFoldersQuery, useGetResourcesQuery, useUploadReourcesMutation } = resourceAdminSlice
+export const { useAddFolderMutation, useGetAllFoldersQuery, useGetResourcesQuery, useUploadReourcesMutation, useRenameFolderMutation, useEditFolderAccessMutation, useDeleteFolderMutation } = resourceAdminSlice

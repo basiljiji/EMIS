@@ -37,12 +37,6 @@ const Sidebar = () => {
           </Link>
         </Nav.Item>
         <Nav.Item>
-          <Link to="/admin/reports" className="nav-link">
-            <FaChartBar /> {/* Icon */}
-            <span className={`ps-2 ${collapsed ? "d-none" : ""}`}>Reports</span>
-          </Link>
-        </Nav.Item>
-        <Nav.Item>
           <Link to="/admin/teacher" className="nav-link">
             <FaUserFriends /> {/* Icon */}
             <span className={`ps-2 ${collapsed ? "d-none" : ""}`}>Teacher</span>
@@ -59,25 +53,19 @@ const Sidebar = () => {
         <Nav.Item>
           <Link to="/admin/period" className="nav-link">
             <FaBookOpen /> {/* Icon */}
-            <span className={`ps-2 ${collapsed ? "d-none" : ""}`}>
-              Period Management
-            </span>
+            <span className={`ps-2 ${collapsed ? "d-none" : ""}`}>Reports</span>
           </Link>
         </Nav.Item>
         <Nav.Item>
           <Link to="/admin/details" className="nav-link">
             <FaBookOpen /> {/* Icon */}
-            <span className={`ps-2 ${collapsed ? "d-none" : ""}`}>
-              Class Management
-            </span>
+            <span className={`ps-2 ${collapsed ? "d-none" : ""}`}>Classes</span>
           </Link>
         </Nav.Item>
         <Nav.Item>
-          <Link to="/admin/access" className="nav-link">
+          <Link to="/admin/folder" className="nav-link">
             <FaBookOpen /> {/* Icon */}
-            <span className={`ps-2 ${collapsed ? "d-none" : ""}`}>
-              Access Management
-            </span>
+            <span className={`ps-2 ${collapsed ? "d-none" : ""}`}>Access</span>
           </Link>
         </Nav.Item>
         <Nav.Item>

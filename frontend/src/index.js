@@ -27,22 +27,25 @@ import PdfCanvas from './components/PdfCanvas'
 import MediaCanvas from './components/MediaCanvas'
 import AdminDetailsScreen from './screens/AdminDetailsScreen'
 import AdminPeriod from './screens/AdminPeriod'
+import CanvasComponent from './components/CanvasComponent'
+import AdminFolderManagement from './screens/AdminFolderManagement'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<App />}>
-      <Route index={true} path='/' element={<HomeScreen />} />
+      {/* <Route index={true} path='/' element={<HomeScreen />} /> */}
       <Route path='/login' element={<LoginScreen />} />
       <Route path='/admin/login' element={<AdminLoginScreen />} />
 
       <Route path='' element={<PrivateRoute />}>
         <Route path='/dashboard' element={<TeacherDashboard />} />
-        <Route path='/fixture' element={<FixturesScreen />} />
-        <Route path='/fixture/edit/:id' element={<EditFixture />} />
+        {/* <Route path='/fixture' element={<FixturesScreen />} />
+        <Route path='/fixture/edit/:id' element={<EditFixture />} /> */}
         <Route path='/resource/:id' element={<TeacherResourceScreen />} />
         <Route path='/resource/image' element={<ImageCanvas />} />
         <Route path='/resource/pdf' element={<PdfCanvas />} />
         <Route path='/resource/media' element={<MediaCanvas />} />
+        <Route path='/resource/canvas' element={<CanvasComponent />} />
       </Route>
 
 
@@ -55,6 +58,7 @@ const router = createBrowserRouter(
         <Route path='/admin/resource/:id' element={<ResourceScreen />} />
         <Route path='/admin/details' element={<AdminDetailsScreen />} />
         <Route path='/admin/period' element={<AdminPeriod />} />
+        <Route path='/admin/folder' element={<AdminFolderManagement />} />
       </Route>
 
     </Route>

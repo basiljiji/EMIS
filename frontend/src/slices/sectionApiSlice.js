@@ -11,12 +11,25 @@ export const sectionSlice = apiSlice.injectEndpoints({
         }),
         addSection: builder.mutation({
             query: (data) => ({
-                url: 'ADMIN_SECTION_URL/add',
+                url: `${ADMIN_SECTION_URL}/add`,
                 method: 'POST',
                 body: data
+            })
+        }),
+        editSection: builder.mutation({
+            query: (data) => ({
+                url: `${ADMIN_SECTION_URL}/edit/${data.sectionId}`,
+                method: 'PATCH',
+                body: data
+            })
+        }),
+        deleteSection: builder.mutation({
+            query: (sectionId) => ({
+                url: `${ADMIN_SECTION_URL}/delete/${sectionId}`,
+                method: 'PATCH'
             })
         })
     })
 })
 
-export const { useGetSectionsQuery , useAddSectionMutation } = sectionSlice
+export const { useGetSectionsQuery, useAddSectionMutation, useEditSectionMutation, useDeleteSectionMutation } = sectionSlice

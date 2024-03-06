@@ -39,8 +39,20 @@ const MediaCanvas = () => {
 
   return (
     <>
-      <ReactPlayer url={fileUrl} controls={true} onProgress={handleProgress} />
-      <p>Total Play Time: {Math.round(totalPlayTime)} seconds</p>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "80vh",
+        }}
+      >
+        <ReactPlayer
+          url={fileUrl}
+          controls={true}
+          onProgress={handleProgress}
+        />
+      </div>
     </>
   )
 }

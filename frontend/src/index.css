@@ -1,8 +1,25 @@
-body {
-  margin: 0;
+/* App.css */
 
+html,
+body,
+#root {
+  height: 100%;
 }
 
+body {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+  /* Take up remaining vertical space */
+}
 
 textarea {
   resize: none;
@@ -13,12 +30,8 @@ p {
 }
 
 .login-card {
-  margin: 131px 0px;
   border: none;
-}
-
-.admin-login-card {
-  margin: 107px 0px;
+  margin-top: 90px;
 }
 
 .sidebar {
@@ -32,4 +45,20 @@ p {
 
 .toggle-btn {
   color: white !important;
+}
+
+header {
+  background-color: #2F456D;
+}
+
+footer {
+  background-color: #2F456D;
+}
+
+#username {
+  color: white;
+}
+
+.admin-login-card {
+  margin-top: 65px;
 }
