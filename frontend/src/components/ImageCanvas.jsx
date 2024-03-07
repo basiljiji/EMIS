@@ -21,7 +21,6 @@ const somePreserveAspectRatio = [
 const ImageCanvas = () => {
   const location = useLocation()
   const fileUrl = location.state?.fileUrl || ""
-  const [preserveAspectRatio, setPreserveAspectRatio] = useState("none")
   const [backgroundImage, setBackgroundImage] = useState(fileUrl)
   const [strokeColor, setStrokeColor] = useState("#000000") // Default color
 
@@ -50,10 +49,6 @@ const ImageCanvas = () => {
   useEffect(() => {
     setBackgroundImage(fileUrl)
   }, [fileUrl])
-
-  const handlePreserveAspectRatioChange = (event) => {
-    setPreserveAspectRatio(event.target.value)
-  }
 
   const canvasRef = useRef(null)
   const [eraseMode, setEraseMode] = useState(false)
@@ -100,11 +95,10 @@ const ImageCanvas = () => {
 
   return (
     <div className="d-flex flex-column gap-2 p-2">
-      <h3>Tools</h3>
       <div className="d-flex gap-2 align-items-center ">
         <button
           type="button"
-          className="btn btn-sm btn-outline-primary"
+          className="btn btn-outline-success"
           disabled={!eraseMode}
           onClick={handlePenClick}
         >
@@ -112,7 +106,7 @@ const ImageCanvas = () => {
         </button>
         <button
           type="button"
-          className="btn btn-sm btn-outline-primary"
+          className="btn btn-outline-danger"
           disabled={eraseMode}
           onClick={handleEraserClick}
         >
@@ -152,21 +146,21 @@ const ImageCanvas = () => {
         <div className="vr" />
         <button
           type="button"
-          className="btn btn-sm btn-outline-primary"
+          className="btn btn-outline-primary"
           onClick={handleUndoClick}
         >
-          <FiRotateCcw /> Undo
+          <FiRotateCcw />
         </button>
         <button
           type="button"
-          className="btn btn-sm btn-outline-primary"
+          className="btn btn-outline-primary"
           onClick={handleRedoClick}
         >
-          <FiRotateCw /> Redo
+          <FiRotateCw />
         </button>
         <button
           type="button"
-          className="btn btn-sm btn-outline-primary"
+          className="btn btn-outline-danger"
           onClick={handleClearClick}
         >
           <FiTrash2 /> Clear
@@ -183,31 +177,13 @@ const ImageCanvas = () => {
           />
         </div>
       </div>
-      <div className="d-flex gap-2 flex-column">
-        <label htmlFor="preserveAspectRatio" className="form-label">
-          Preserve Aspect Ratio
-        </label>
-        <select
-          id="preserveAspectRatio"
-          className="form-select form-select-sm"
-          aria-label="Preserve Aspect Ratio options"
-          value={preserveAspectRatio}
-          onChange={handlePreserveAspectRatioChange}
-        >
-          {somePreserveAspectRatio.map((value) => (
-            <option key={value} value={value}>
-              {value}
-            </option>
-          ))}
-        </select>
-      </div>
+
       <div
         style={{ width: "100%", height: "100vh", border: "2px solid black" }}
       >
         <ReactSketchCanvas
           style={{ width: "100%", height: "100%" }}
           backgroundImage={backgroundImage}
-          preserveBackgroundImageAspectRatio={preserveAspectRatio}
           ref={canvasRef}
           strokeWidth={strokeWidth}
           eraserWidth={eraserWidth}

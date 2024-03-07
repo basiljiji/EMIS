@@ -14,7 +14,6 @@ import classDetailshRoute from './routes/classDetailsRoutes.js'
 import sectionRoute from './routes/sectionRoutes.js'
 import hourRoute from './routes/hourRoutes.js'
 import subjectRoute from './routes/subjectRoutes.js'
-import fixtureRoute from './routes/fixtureRoutes.js'
 import teacherAuthRoute from './routes/teacherAuthRoutes.js'
 import reportRoute from './routes/reportRoutes.js'
 import adminResourceRoute from './routes/adminResource.js'
@@ -55,7 +54,6 @@ app.use('/admin/resource', adminResourceRoute)
 
 
 app.use('/', teacherAuthRoute)
-app.use('/fixture', fixtureRoute)
 app.use('/resource', teacherResourceRoute)
 app.use('/period', periodRoute)
 

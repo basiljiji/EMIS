@@ -58,6 +58,7 @@ const TeacherResourceScreen = () => {
               <Col className="col-md-3 mt-4" key={resource._id}>
                 <Card>
                   {(resource.filePath.endsWith(".jpg") ||
+                    resource.filePath.endsWith(".JPG") ||
                     resource.filePath.endsWith(".jpeg") ||
                     resource.filePath.endsWith(".png")) && (
                     <Card.Img

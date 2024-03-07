@@ -39,7 +39,13 @@ export const addAccessData = async (req, res, next) => {
 export const getAllPeriods = async (req, res, next) => {
     try {
         const periods = await Period.find({}).populate('teacher')
-        res.json(periods)
+
+        const filteredPeriods = periods.map(period => {
+            const filteredAccessedFiles = period.accessedFiles.filter(access => access.duration !== 0)
+            return { ...period.toObject(), accessedFiles: filteredAccessedFiles }
+        })
+
+        res.json(filteredPeriods)
     } catch (err) {
         const error = new HttpError("Something Went Wrong", 500)
         return next(error)

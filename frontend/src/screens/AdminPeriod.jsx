@@ -3,6 +3,8 @@ import { useGetAllPeriodsQuery } from "../slices/periodApiSlice"
 import AdminLayout from "../components/AdminLayout"
 import { Table, Form, Button, Row, Col, Container } from "react-bootstrap"
 import jsPDF from "jspdf"
+import { useGetTeachersQuery } from "../slices/teacherApiSlice"
+import autoTable from "jspdf-autotable"
 
 const AdminPeriod = () => {
   const { data: periods, isLoading, refetch, error } = useGetAllPeriodsQuery()
@@ -11,6 +13,8 @@ const AdminPeriod = () => {
   const [endDate, setEndDate] = useState("")
   const [sortOrder, setSortOrder] = useState("asc")
   const [sortField, setSortField] = useState("name")
+
+  const { data: teachers } = useGetTeachersQuery()
 
   // Function to format date as dd-mm-yyyy
   const formatDate = (dateString) => {
@@ -86,7 +90,7 @@ const AdminPeriod = () => {
     ])
 
     doc.setFontSize(16)
-    doc.text("Periods Report", 10, 20)
+    doc.text("Teacher Report", 10, 20)
 
     doc.autoTable({
       head: [columns],
@@ -112,57 +116,61 @@ const AdminPeriod = () => {
 
   return (
     <AdminLayout>
-      <h1>Periods</h1>
+      <h4 className="mt-3">Periods</h4>
       <Container>
         <Form>
-          <Form.Group controlId="teacherName">
-            <Form.Label>Teacher Name</Form.Label>
-            <Form.Control
-              as="select"
-              value={teacherName}
-              onChange={(e) => setTeacherName(e.target.value)}
-            >
-              <option value="">All</option>
-              {/* Populate dropdown with teacher names */}
-              {periods &&
-                periods.map((period, index) => (
-                  <option
-                    key={`${period.teacher.firstName}-${period.teacher.lastName}-${index}`}
-                  >
-                    {`${period.teacher.firstName} ${period.teacher.lastName}`}
-                  </option>
-                ))}
-            </Form.Control>
-          </Form.Group>
-          <Form.Group controlId="dateRange">
-            <Row>
-              <Col md={2}>
-                <Form.Label>Date Range</Form.Label>
-              </Col>
-              <Col md={2}>
+          <Row className="justify-content-between">
+            <Col md={5} xs="auto">
+              <Form.Group controlId="teacherName">
+                <Form.Label>Teacher Name</Form.Label>
                 <Form.Control
-                  type="date"
-                  placeholder="Start Date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-              </Col>
-              <Col md={2}>
-                <Form.Control
-                  type="date"
-                  placeholder="End Date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
-              </Col>
-            </Row>
-          </Form.Group>
+                  as="select"
+                  value={teacherName}
+                  onChange={(e) => setTeacherName(e.target.value)}
+                >
+                  <option value="">All</option>
+                  {/* Populate dropdown with teacher names */}
+                  {teachers &&
+                    teachers.map((teacher, index) => (
+                      <option
+                        key={`${teacher.firstName}-${teacher.lastName}-${index}`}
+                      >
+                        {`${teacher.firstName} ${teacher.lastName}`}
+                      </option>
+                    ))}
+                </Form.Control>
+              </Form.Group>
+            </Col>
+            <Col xs="auto">
+              <Form.Group controlId="dateRange">
+                <Row>
+                  <Form.Label>Date Range</Form.Label>
+                  <Col>
+                    <Form.Control
+                      type="date"
+                      placeholder="Start Date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                    />
+                  </Col>
+                  <Col>
+                    <Form.Control
+                      type="date"
+                      placeholder="End Date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                    />
+                  </Col>
+                </Row>
+              </Form.Group>
+            </Col>
+          </Row>
         </Form>
       </Container>
       {isLoading && <p>Loading...</p>}
       {error && <p>Error: {error.message}</p>}
       {periods && periods.length > 0 && (
-        <Table striped bordered hover>
+        <Table striped bordered hover className="my-4">
           <thead>
             <tr>
               <th>
@@ -220,7 +228,9 @@ const AdminPeriod = () => {
       )}
       {periods && periods.length === 0 && <p>No periods found.</p>}
 
-      <Button onClick={pdfHandler}>Generate PDF</Button>
+      <Button onClick={pdfHandler} className="mb-5">
+        Generate Report
+      </Button>
     </AdminLayout>
   )
 }

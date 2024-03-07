@@ -50,6 +50,12 @@ const TeacherManagement = () => {
             password,
           })
           refetch()
+          setFirstName("")
+          setLastName("")
+          setMiddleName("")
+          setEmail("")
+          setPassword("")
+          setConfirmPassword("")
           if (result && result.data.message) {
             toast.success(result.data.message)
           }
