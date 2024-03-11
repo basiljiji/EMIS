@@ -51,3 +51,17 @@ export const getAllPeriods = async (req, res, next) => {
         return next(error)
     }
 }
+
+export const addClassData = async (req, res, next) => {
+    try {
+
+        const teacher = req.teacher
+        const { classData, section, subject, folder } = req.body
+
+        const period = Period.findOneAndUpdate({teacher: teacher}, {})
+
+    } catch (err) {
+        const error = new HttpError("Something Went Wrong", 500)
+        return next(error)
+    }
+}

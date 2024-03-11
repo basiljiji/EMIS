@@ -111,7 +111,12 @@ const AdminPeriod = () => {
 
     const regex = /\/([^/]+)$/ // Match the last part of the URL after the last '/'
     const match = url.match(regex)
-    return match ? match[1] : "" // Return the matched filename or an empty string if no match
+
+    if (match && match[1]) {
+      return match[1]
+    } else {
+      return url // If no match found, return the original URL
+    }
   }
 
   return (

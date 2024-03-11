@@ -12,6 +12,24 @@ const periodSchema = new mongoose.Schema({
             return now
         }
     },
+    classData: [{
+        class: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Class'
+        },
+        section: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Section'
+        },
+        subject: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Subject'
+        },
+        folder: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Folder'
+        },
+    }],
     expired: {
         type: Boolean,
         default: false

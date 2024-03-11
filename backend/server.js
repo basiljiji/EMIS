@@ -15,7 +15,6 @@ import sectionRoute from './routes/sectionRoutes.js'
 import hourRoute from './routes/hourRoutes.js'
 import subjectRoute from './routes/subjectRoutes.js'
 import teacherAuthRoute from './routes/teacherAuthRoutes.js'
-import reportRoute from './routes/reportRoutes.js'
 import adminResourceRoute from './routes/adminResource.js'
 import teacherResourceRoute from './routes/teacherResourceRoutes.js'
 import periodRoute from './routes/periodRoutes.js'
@@ -39,9 +38,7 @@ const publicPath = path.join(__dirname, 'public') // Assuming your public direct
 app.use(express.static(publicPath))
 app.use(cookieParser())
 
-app.get('/', (req, res) => {
-    res.send('API IS RUNNING..!')
-})
+
 
 app.use('/teacher', teacherRoute)
 app.use('/admin', adminAuthRoute)
@@ -49,13 +46,24 @@ app.use('/admin/class', classDetailshRoute)
 app.use('/admin/section', sectionRoute)
 app.use('/admin/hour', hourRoute)
 app.use('/admin/subject', subjectRoute)
-app.use('/admin/report', reportRoute)
 app.use('/admin/resource', adminResourceRoute)
 
 
 app.use('/', teacherAuthRoute)
 app.use('/resource', teacherResourceRoute)
 app.use('/period', periodRoute)
+
+if (process.env.NODE_ENV === 'production') {
+    //set static folder
+    app.use(express.static(path.join(__dirname, '/frontend/build')))
+
+    //any route that is not api will be redirected to index.html
+    app.get('*', (req, res) => res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html')))
+} else {
+    app.get('/', (req, res) => {
+        res.send('API IS RUNNING..!')
+    })
+}
 
 app.use(notFound)
 app.use(errorHandler)
