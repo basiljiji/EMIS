@@ -24,7 +24,7 @@ export const addFolder = async (req, res, next) => {
                 accessTo: { classAccess: classdata, sectionAccess: sectiondata, subjectAccess: subjectdata }
             })
             // Check if folder already exists
-            const folderPath = `public/${folderName}`
+            const folderPath = `./public/${folderName}`
             if (!fs.existsSync(folderPath)) {
                 // Create folder
                 fs.mkdirSync(folderPath)
@@ -55,8 +55,6 @@ export const getAllFolders = async (req, res, next) => {
 
 
 export const uploadFile = async (req, res, next) => {
-
-    console.log(req.file)
 
     if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded' })
@@ -133,16 +131,40 @@ export const renameFolder = async (req, res, next) => {
 export const editAccessFolder = async (req, res, next) => {
     try {
         const folderId = req.params.id
-        const { classdata, sectiondata, subjectdata } = req.body
+        const { classdata, sectiondata, subjectdata } = req.body.accessTo
 
-        const folder = await Folder.findOneAndUpdate(
-            { _id: folderId },
-            { accessTo: { classAccess: classdata, sectionAccess: sectiondata, subjectAccess: subjectdata } },
-            { upsert: true, new: true }
-        )
+        // Ensure req.body contains required data
+        if (!classdata && !sectiondata && !subjectdata) {
+            const error = new HttpError('Missing data in request body', 400)
+            return next(error)
+        }
 
-        res.json({ message: "Folder Access Updated" })
+        const folder = await Folder.findById(folderId)
+
+        if (!folder) {
+            const error = new HttpError('Folder not found', 404)
+            return next(error)
+        }
+
+        // Update folder access
+        if (classdata && classdata.length > 0) {
+            folder.accessTo.classAccess.push(...classdata)
+        }
+        if (sectiondata && sectiondata.length > 0) {
+            folder.accessTo.sectionAccess.push(...sectiondata)
+        }
+        if (subjectdata && subjectdata.length > 0) {
+            folder.accessTo.subjectAccess.push(...subjectdata)
+        }
+
+        // Save the updated folder
+        await folder.save()
+
+        // Return updated folder in the response
+        res.json({ folder, message: "Folder Access Updated" })
     } catch (err) {
+        // Handle specific errors if needed
+        console.error(err)
         const error = new HttpError('Something Went Wrong', 500)
         return next(error)
     }
@@ -154,7 +176,17 @@ export const deleteFolder = async (req, res, next) => {
     try {
         const folderId = req.params.id
         const deleteFolderDetail = await Folder.findById(folderId)
+
         if (deleteFolderDetail) {
+            // Construct the folder path
+            const folderPath = `./public/${deleteFolderDetail.folderName}`
+
+            // Remove the folder directory and its contents
+            if (fs.existsSync(folderPath)) {
+                fs.rmdirSync(folderPath, { recursive: true })
+            }
+
+            // Mark the folder as deleted in the database
             deleteFolderDetail.isDeleted.status = true
             deleteFolderDetail.isDeleted.deletedBy = req.admin
             deleteFolderDetail.isDeleted.deletedTime = Date.now()
@@ -166,7 +198,22 @@ export const deleteFolder = async (req, res, next) => {
             res.status(404).json({ message: "Folder not found" })
         }
     } catch (err) {
+        console.error(err)
+        const error = new HttpError('Something Went Wrong', 500)
+        return next(error)
+    }
+};
+
+export const getSingleFolderData = async (req, res, next) => {
+    try {
+        const folderId = req.params.id
+
+        const folder = await Folder.findById(folderId)
+        res.status(200).json(folder)
+    } catch (err) {
         const error = new HttpError('Something Went Wrong', 500)
         return next(error)
     }
 }
+
+

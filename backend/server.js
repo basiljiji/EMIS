@@ -34,7 +34,7 @@ app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 // app.use(express.static(path.join(new URL(import.meta.url).pathname, '../public')))
-const publicPath = path.join(__dirname, 'public') // Assuming your public directory is in the same directory as your server file
+const publicPath = path.join(__dirname, '../public') // Assuming your public directory is in the same directory as your server file
 app.use(express.static(publicPath))
 app.use(cookieParser())
 

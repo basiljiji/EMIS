@@ -5,6 +5,6 @@ import { authenticateTeacher } from '../utils/authMiddleware.js'
 const router = express()
 
 router.post('/login', loginTeacher)
-router.post('/logout', authenticateTeacher, logoutTeacher)
+router.post('/logout', logoutTeacher)
 
 export default router

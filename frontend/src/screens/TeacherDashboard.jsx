@@ -8,6 +8,8 @@ import { useGetClassesQuery } from "../slices/classApiSlice"
 import { useFetchFoldersMutation } from "../slices/resourceTeacherSlice"
 import { FaFolder } from "react-icons/fa"
 import { LinkContainer } from "react-router-bootstrap"
+import { useNavigate } from "react-router-dom"
+import { useAddTeacherClassDataMutation } from "../slices/periodApiSlice"
 
 const TeacherDashboard = () => {
   const [classdata, setClassdata] = useState("")
@@ -19,6 +21,10 @@ const TeacherDashboard = () => {
   const { data: sections } = useGetSectionsQuery()
   const { data: subjects } = useGetSubjectsQuery()
   const [fetchFolder] = useFetchFoldersMutation()
+
+  const [addTeacherClassData] = useAddTeacherClassDataMutation()
+
+  const navigate = useNavigate()
 
   // Filter folders based on selected class, section, and subject
   const filteredFolders =
@@ -35,6 +41,21 @@ const TeacherDashboard = () => {
         : true // If no subject selected, always return true for subject match
       return classMatch && sectionMatch && subjectMatch
     })
+
+  const handleAccessData = async (folder) => {
+    try {
+      const result = await addTeacherClassData({
+        classId: classdata,
+        sectionId: section,
+        subjectId: subject,
+        folderId: folder._id,
+      })
+      navigate(`/resource/${folder.folderName}`)
+    } catch (err) {
+      console.error(err)
+      toast.error(err?.data?.message || err.error)
+    }
+  }
 
   return (
     <>
@@ -93,7 +114,11 @@ const TeacherDashboard = () => {
                   filteredFolders.map((folder) => (
                     <Col key={folder._id} className="align-items-center">
                       <LinkContainer to={`/resource/${folder.folderName}`}>
-                        <Col xs="auto" className="text-center">
+                        <Col
+                          xs="auto"
+                          className="text-center"
+                          onClick={() => handleAccessData(folder)}
+                        >
                           <FaFolder
                             style={{
                               width: "80px",

@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { FaUser } from "react-icons/fa"
 import { useLogoutMutation } from "../slices/teacherAuthApiSlice"
 import { logout } from "../slices/authSlice"
-import logo from "../assets/logo.jpg"
+import logo from "../assets/logo.png"
 
 const Header = () => {
   const { userInfo } = useSelector((state) => state.auth)
@@ -49,7 +49,7 @@ const Header = () => {
         <Container>
           <LinkContainer to="/dashboard">
             <Navbar.Brand>
-              <img src={logo} alt="EMIS" width="90px" height="30px" />
+              <img src={logo} alt="SMPS" width="30px" height="30px" />
             </Navbar.Brand>
           </LinkContainer>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />

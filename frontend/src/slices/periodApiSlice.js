@@ -16,8 +16,15 @@ export const periodSlice = apiSlice.injectEndpoints({
                 url: `${PERIOD_URL}/all`
             }),
             keepUnusedDataFor: 5,
+        }),
+        addTeacherClassData: builder.mutation({
+            query: (data) => ({
+                url: `${PERIOD_URL}/classdata`,
+                method: 'POST',
+                body: data
+            })
         })
     })
 })
 
-export const { useAddAccessedFilesMutation, useGetAllPeriodsQuery } = periodSlice
+export const { useAddAccessedFilesMutation, useGetAllPeriodsQuery, useAddTeacherClassDataMutation } = periodSlice

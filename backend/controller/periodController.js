@@ -6,8 +6,6 @@ export const addAccessData = async (req, res, next) => {
         const { fileUrl, fromTime, toTime, duration } = req.body
         const teacherId = req.teacher
 
-        console.log(req.body, "period")
-
         const calculatedDuration = duration ? duration : toTime - fromTime
 
         const period = await Period.findOneAndUpdate({
@@ -54,14 +52,37 @@ export const getAllPeriods = async (req, res, next) => {
 
 export const addClassData = async (req, res, next) => {
     try {
-
         const teacher = req.teacher
-        const { classData, section, subject, folder } = req.body
+        const { classId, sectionId, subjectId, folderId } = req.body
 
-        const period = Period.findOneAndUpdate({teacher: teacher}, {})
+        console.log(req.body, "123")
 
+        // Validate incoming data
+        if (!classId || !sectionId || !subjectId || !folderId) {
+            return res.status(400).json({ message: "Missing required fields" })
+        }
+
+        // Find the period document for the teacher
+        let period = await Period.findOne({ teacher })
+
+        // If no period exists, create a new one
+        if (!period) {
+            period = new Period({ teacher: req.teacher })
+        }
+
+        // Update classData
+        period.classData.push({ class: classId, section: sectionId, subject: subjectId, folder: folderId })
+
+        // Save the updated period
+        await period.save()
+
+        // Return updated period
+        res.status(200).json({ period })
     } catch (err) {
-        const error = new HttpError("Something Went Wrong", 500)
+        // Handle errors
+        console.error(err)
+        const error = new Error("Something Went Wrong")
+        error.status = 500
         return next(error)
     }
 }

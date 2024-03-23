@@ -77,7 +77,6 @@ const AdminResourceScreen = () => {
         sectiondata: checkedSections,
         subjectdata: checkedSubjects,
       }).unwrap()
-      console.log(checkedClasses, checkedSections, checkedSubjects, "dataaa")
       refetch()
       setFolderName("") // Use setFolderName to update state
       toast.success("Folder Created")

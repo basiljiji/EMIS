@@ -26,6 +26,7 @@ import AdminDetailsScreen from './screens/AdminDetailsScreen'
 import AdminPeriod from './screens/AdminPeriod'
 import CanvasComponent from './components/CanvasComponent'
 import AdminFolderManagement from './screens/AdminFolderManagement'
+import AdminEditAccessScreen from './screens/AdminEditAccessScreen'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -53,6 +54,7 @@ const router = createBrowserRouter(
         <Route path='/admin/details' element={<AdminDetailsScreen />} />
         <Route path='/admin/period' element={<AdminPeriod />} />
         <Route path='/admin/folder' element={<AdminFolderManagement />} />
+        <Route path='/admin/folder/edit/:id' element={<AdminEditAccessScreen />} />
       </Route>
 
     </Route>
