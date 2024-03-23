@@ -5,7 +5,7 @@ import { authenticateAdmin } from '../utils/authMiddleware.js';
 const router = express();
 
 router.post('/login', loginAdmin);
-router.post('/register', authenticateAdmin, registerAdmin);
+// router.post('/register', authenticateAdmin, registerAdmin);
 router.post('/logout', logoutAdmin);
 
 export default router;

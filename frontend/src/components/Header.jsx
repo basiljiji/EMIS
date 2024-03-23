@@ -36,7 +36,7 @@ const Header = () => {
         const currentTime = Date.now()
         if (currentTime - parseInt(loginTime) >= oneHour) {
           console.log("Logout")
-          localStorage.removeItem("userInfo")
+          localStorage.clear()
           logoutHandler()
         }
       }
