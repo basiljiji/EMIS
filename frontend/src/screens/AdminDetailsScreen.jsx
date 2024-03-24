@@ -230,26 +230,31 @@ const AdminDetailsScreen = () => {
       <div>
         <Container>
           <Row>
-            <Col md={4}>
-              <h4>Add Class</h4>
-              <Form.Label>Class Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Class Name"
-                value={className}
-                onChange={(e) => setClassName(e.target.value)}
-              />
-              <Button className="mt-3" onClick={addClassHandler}>
-                Add Class
-              </Button>
-            </Col>
             <Col>
-              <h4>List Class</h4>
+              <Row className="my-3">
+                <Col md={2}>
+                  <h4>Add Class</h4>
+                </Col>
+                <Col>
+                  <Form.Control
+                    type="text"
+                    placeholder="Class Name"
+                    value={className}
+                    onChange={(e) => setClassName(e.target.value)}
+                  />
+                </Col>
+                <Col>
+                  <Button className="bg-success" onClick={addClassHandler}>
+                    Add Class
+                  </Button>
+                </Col>
+              </Row>
               <Table striped bordered hover>
                 <thead>
                   <tr>
                     <th>#</th>
                     <th>Class Name</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -259,6 +264,7 @@ const AdminDetailsScreen = () => {
                       <td>{classItem.class}</td>
                       <td>
                         <Button
+                          className="me-3"
                           variant="primary"
                           onClick={() =>
                             handleEditClassModal(classItem._id, classItem.class)
@@ -281,22 +287,26 @@ const AdminDetailsScreen = () => {
             </Col>
           </Row>
           <hr />
-          <Row className="my-3">
-            <Col md={4}>
-              <h4>Add Section</h4>
-              <Form.Label>Section Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Section Name"
-                value={sectionName}
-                onChange={(e) => setSectionName(e.target.value)}
-              />
-              <Button className="mt-3" onClick={addSectionHandler}>
-                Add Section
-              </Button>
-            </Col>
+          <Row>
             <Col>
-              <h4>List Section</h4>
+              <Row className="my-3">
+                <Col md={2}>
+                  <h4>Add Section</h4>
+                </Col>
+                <Col>
+                  <Form.Control
+                    type="text"
+                    placeholder="Section Name"
+                    value={sectionName}
+                    onChange={(e) => setSectionName(e.target.value)}
+                  />
+                </Col>
+                <Col>
+                  <Button variant="success" onClick={addSectionHandler}>
+                    Add Section
+                  </Button>
+                </Col>
+              </Row>
               <Table striped bordered hover>
                 <thead>
                   <tr>
@@ -311,6 +321,7 @@ const AdminDetailsScreen = () => {
                       <td>{sectionItem.section}</td>
                       <td>
                         <Button
+                          className="me-3"
                           variant="primary"
                           onClick={() =>
                             handleEditSectionModal(
@@ -337,21 +348,25 @@ const AdminDetailsScreen = () => {
           <hr />
 
           <Row>
-            <Col md={4}>
-              <h4>Add Subject</h4>
-              <Form.Label>Subject Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Subject Name"
-                value={subjectName}
-                onChange={(e) => setSubjectName(e.target.value)}
-              />
-              <Button className="mt-3" onClick={addSubjectHandler}>
-                Add Subject
-              </Button>
-            </Col>
             <Col>
-              <h4>List Subject</h4>
+              <Row className="my-3">
+                <Col md={2}>
+                  <h4>Add Subject</h4>
+                </Col>
+                <Col>
+                  <Form.Control
+                    type="text"
+                    placeholder="Subject Name"
+                    value={subjectName}
+                    onChange={(e) => setSubjectName(e.target.value)}
+                  />
+                </Col>
+                <Col>
+                  <Button variant="success" onClick={addSubjectHandler}>
+                    Add Subject
+                  </Button>
+                </Col>
+              </Row>
               <Table striped bordered hover>
                 <thead>
                   <tr>
@@ -366,6 +381,7 @@ const AdminDetailsScreen = () => {
                       <td>{subjectItem.subject}</td>
                       <td>
                         <Button
+                          className="me-3"
                           variant="primary"
                           onClick={() =>
                             handleEditSubjectModal(

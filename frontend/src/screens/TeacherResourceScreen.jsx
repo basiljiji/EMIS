@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { Row, Col, Card, Button, Container } from "react-bootstrap"
 import { useParams, useNavigate } from "react-router-dom"
 import { useGetResourcesQuery } from "../slices/resourceAdminSlice"
-import { useAddAccessedFilesMutation } from "../slices/periodApiSlice"
+import { LinkContainer } from "react-router-bootstrap"
 import pdfThumbnail from "../assets/pdf-thumbnail.png"
 import videoThumbnail from "../assets/video-thumbnail.png"
 
@@ -50,6 +50,13 @@ const TeacherResourceScreen = () => {
   return (
     <>
       <Container>
+        <Row className="text-end">
+          <Col>
+            <LinkContainer to="/resource/canvas">
+              <Button className="bg-success mt-2">Open Canvas</Button>
+            </LinkContainer>
+          </Col>
+        </Row>
         <Row>
           {isLoading && <p>Loading...</p>}
           {error && <p>Error: {error.message}</p>}

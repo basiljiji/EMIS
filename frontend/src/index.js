@@ -35,7 +35,7 @@ const router = createBrowserRouter(
       <Route path='/login' element={<LoginScreen />} />
       <Route path='/admin/login' element={<AdminLoginScreen />} />
 
-      <Route path='' element={<PrivateRoute />}>
+      <Route path='/' element={<PrivateRoute />}>
         <Route path='/dashboard' element={<TeacherDashboard />} />
         <Route path='/resource/:id' element={<TeacherResourceScreen />} />
         <Route path='/resource/image' element={<ImageCanvas />} />
@@ -45,7 +45,7 @@ const router = createBrowserRouter(
       </Route>
 
 
-      <Route path='' element={<AdminRoute />}>
+      <Route path='/' element={<AdminRoute />}>
         <Route path='/admin/dashboard' element={<AdminDashboard />} />
         <Route path='/admin/teacher' element={<TeacherManagement />} />
         <Route path='/teacher/edit/:id' element={<EditTeacher />} />

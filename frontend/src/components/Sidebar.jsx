@@ -9,6 +9,14 @@ import {
   FaUser,
   FaCog,
   FaBookOpen,
+  FaBars,
+  FaTimes,
+  FaChartLine,
+  FaChalkboardTeacher,
+  FaBook,
+  FaClipboardList,
+  FaSchool,
+  FaLock,
 } from "react-icons/fa" // Import icons
 
 const Sidebar = () => {
@@ -25,12 +33,12 @@ const Sidebar = () => {
       className={`bg-light sidebar ${collapsed ? "collapsed" : ""}`}
     >
       <Button className="toggle-btn text-light" onClick={handleToggle}>
-        {collapsed ? "☰" : "✖"}
+        {collapsed ? <FaBars /> : <FaTimes />}
       </Button>
       <Nav className="flex-column" variant="pills">
         <Nav.Item>
           <Link to="/admin/dashboard" className="nav-link">
-            <FaHome /> {/* Icon */}
+            <FaChartLine /> {/* Icon */}
             <span className={`ps-2 ${collapsed ? "d-none" : ""}`}>
               Dashboard
             </span>
@@ -38,13 +46,13 @@ const Sidebar = () => {
         </Nav.Item>
         <Nav.Item>
           <Link to="/admin/teacher" className="nav-link">
-            <FaUserFriends /> {/* Icon */}
+            <FaChalkboardTeacher /> {/* Icon */}
             <span className={`ps-2 ${collapsed ? "d-none" : ""}`}>Teacher</span>
           </Link>
         </Nav.Item>
         <Nav.Item>
           <Link to="/admin/resource" className="nav-link">
-            <FaBookOpen /> {/* Icon */}
+            <FaBook /> {/* Icon */}
             <span className={`ps-2 ${collapsed ? "d-none" : ""}`}>
               Resources
             </span>
@@ -52,19 +60,19 @@ const Sidebar = () => {
         </Nav.Item>
         <Nav.Item>
           <Link to="/admin/period" className="nav-link">
-            <FaBookOpen /> {/* Icon */}
+            <FaClipboardList /> {/* Icon */}
             <span className={`ps-2 ${collapsed ? "d-none" : ""}`}>Reports</span>
           </Link>
         </Nav.Item>
         <Nav.Item>
           <Link to="/admin/details" className="nav-link">
-            <FaBookOpen /> {/* Icon */}
+            <FaSchool /> {/* Icon */}
             <span className={`ps-2 ${collapsed ? "d-none" : ""}`}>Classes</span>
           </Link>
         </Nav.Item>
         <Nav.Item>
           <Link to="/admin/folder" className="nav-link">
-            <FaBookOpen /> {/* Icon */}
+            <FaLock /> {/* Icon */}
             <span className={`ps-2 ${collapsed ? "d-none" : ""}`}>Access</span>
           </Link>
         </Nav.Item>

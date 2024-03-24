@@ -60,13 +60,7 @@ const TeacherDashboard = () => {
   return (
     <>
       <Container>
-        <Row className="text-end">
-          <Col>
-            <LinkContainer to="/resource/canvas">
-              <Button className="bg-success mt-2">Open Canvas</Button>
-            </LinkContainer>
-          </Col>
-        </Row>
+        
         <Row>
           <Col md={3}>
             <Form>
@@ -116,7 +110,7 @@ const TeacherDashboard = () => {
                       <LinkContainer to={`/resource/${folder.folderName}`}>
                         <Col
                           xs="auto"
-                          className="text-center"
+                          className=""
                           onClick={() => handleAccessData(folder)}
                         >
                           <FaFolder

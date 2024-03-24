@@ -24,7 +24,7 @@ export const addFolder = async (req, res, next) => {
                 accessTo: { classAccess: classdata, sectionAccess: sectiondata, subjectAccess: subjectdata }
             })
             // Check if folder already exists
-            const folderPath = `./public/${folderName}`
+            const folderPath = `./uploads/${folderName}`
             if (!fs.existsSync(folderPath)) {
                 // Create folder
                 fs.mkdirSync(folderPath)
@@ -71,7 +71,7 @@ export const uploadFile = async (req, res, next) => {
 
 
 
-    const filePath = req.file.path.replace(/\\/g, '/').replace('public/', '')
+    const filePath = req.file.path.replace(/\\/g, '/').replace('uploads/', '')
 
     // Save the file path in the Resource model
     const resource = new Resource({
@@ -179,7 +179,7 @@ export const deleteFolder = async (req, res, next) => {
 
         if (deleteFolderDetail) {
             // Construct the folder path
-            const folderPath = `./public/${deleteFolderDetail.folderName}`
+            const folderPath = `./uploads/${deleteFolderDetail.folderName}`
 
             // Remove the folder directory and its contents
             if (fs.existsSync(folderPath)) {

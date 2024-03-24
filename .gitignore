@@ -11,7 +11,7 @@ node_modules
 /coverage
 
 # production
-/build
+/frontend/build
 
 # misc
 .env
@@ -26,4 +26,4 @@ yarn-debug.log*
 yarn-error.log*
 
 #Fileuploads
-public
+uploads

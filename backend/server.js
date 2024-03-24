@@ -33,8 +33,8 @@ app.use(cors())
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-// app.use(express.static(path.join(new URL(import.meta.url).pathname, '../public')))
-const publicPath = path.join(__dirname, '../public') // Assuming your public directory is in the same directory as your server file
+app.use(express.static(path.join(new URL(import.meta.url).pathname, '../uploads')))
+const publicPath = path.join(__dirname, '../uploads') // Assuming your public directory is in the same directory as your server file
 app.use(express.static(publicPath))
 app.use(cookieParser())
 
@@ -55,10 +55,10 @@ app.use('/period', periodRoute)
 
 if (process.env.NODE_ENV === 'production') {
     //set static folder
-    app.use(express.static(path.join(__dirname, '/frontend/build')))
+    app.use(express.static(path.join(__dirname, '../frontend/build')))
 
     //any route that is not api will be redirected to index.html
-    app.get('*', (req, res) => res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html')))
+    app.get('*', (req, res) => res.sendFile(path.resolve(__dirname, '../frontend', 'build', 'index.html')))
 } else {
     app.get('/', (req, res) => {
         res.send('API IS RUNNING..!')

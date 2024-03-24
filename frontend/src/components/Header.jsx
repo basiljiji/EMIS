@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { Navbar, Nav, Container, NavDropdown } from "react-bootstrap"
+import { Navbar, Nav, Container, NavDropdown, Button } from "react-bootstrap"
 import { LinkContainer } from "react-router-bootstrap"
 import { useNavigate } from "react-router-dom"
 import { useSelector, useDispatch } from "react-redux"
@@ -7,6 +7,7 @@ import { FaUser } from "react-icons/fa"
 import { useLogoutMutation } from "../slices/teacherAuthApiSlice"
 import { logout } from "../slices/authSlice"
 import logo from "../assets/logo.png"
+import { useAdminLogoutMutation } from "../slices/adminAuthApiSlice"
 
 const Header = () => {
   const { userInfo } = useSelector((state) => state.auth)
@@ -15,10 +16,21 @@ const Header = () => {
   const navigate = useNavigate()
 
   const [logoutApiCall] = useLogoutMutation()
+  const [adminLogout] = useAdminLogoutMutation()
 
   const logoutHandler = async () => {
     try {
       await logoutApiCall().unwrap()
+      dispatch(logout())
+      navigate("/login")
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const adminLogoutHandler = async () => {
+    try {
+      await adminLogout().unwrap()
       dispatch(logout())
       navigate("/login")
     } catch (err) {
@@ -55,32 +67,40 @@ const Header = () => {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <LinkContainer to="/dashboard">
-                <Nav.Link className="text-light">Home</Nav.Link>
-              </LinkContainer>
-              <LinkContainer to="/dashboard">
-                <Nav.Link className="text-light">Links</Nav.Link>
-              </LinkContainer>
-              <LinkContainer to="/dashboard">
-                <Nav.Link className="text-light">FAQ</Nav.Link>
-              </LinkContainer>
+              {userInfo && userInfo.role === "admin" ? (
+                <LinkContainer to="/admin/dashboard">
+                  <Nav.Link className="text-light">Home</Nav.Link>
+                </LinkContainer>
+              ) : (
+                <LinkContainer to="/dashboard">
+                  <Nav.Link className="text-light">Home</Nav.Link>
+                </LinkContainer>
+              )}
             </Nav>
             <Nav className="ms-auto">
               {userInfo ? (
-                <NavDropdown title={userInfo.name} id="username">
-                  <LinkContainer to="/dashboard">
-                    <NavDropdown.Item>Dashboard</NavDropdown.Item>
-                  </LinkContainer>
-                  <LinkContainer to="/profile">
-                    <NavDropdown.Item>Profile</NavDropdown.Item>
-                  </LinkContainer>
-                  <LinkContainer to="/fixture">
-                    <NavDropdown.Item>Fixtures</NavDropdown.Item>
-                  </LinkContainer>
-                  <NavDropdown.Item onClick={logoutHandler}>
-                    Logout
-                  </NavDropdown.Item>
-                </NavDropdown>
+                userInfo.role === "admin" ? (
+                  <Nav.Item>
+                    <Button
+                      onClick={adminLogoutHandler}
+                      className="text-light btn btn-danger"
+                    >
+                      Logout
+                    </Button>
+                  </Nav.Item>
+                ) : (
+                  <NavDropdown title={userInfo.name} id="username">
+                    <LinkContainer to="/dashboard">
+                      <NavDropdown.Item>Dashboard</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/profile">
+                      <NavDropdown.Item>Profile</NavDropdown.Item>
+                    </LinkContainer>
+                    <NavDropdown.Item onClick={logoutHandler}>
+                      Logout
+                    </NavDropdown.Item>
+                  </NavDropdown>
+                )
               ) : (
                 <LinkContainer to="/login">
                   <Nav.Link className="text-light">
