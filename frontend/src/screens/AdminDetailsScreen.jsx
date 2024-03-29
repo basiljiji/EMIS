@@ -28,6 +28,8 @@ import {
   useGetClassesQuery,
 } from "../slices/classApiSlice"
 import AdminLayout from "../components/AdminLayout"
+import Loader from "../components/Loader"
+import Message from "../components/Message"
 
 const AdminDetailsScreen = () => {
   const [className, setClassName] = useState("")
@@ -50,9 +52,26 @@ const AdminDetailsScreen = () => {
   const [selectedSubjectId, setSelectedSubjectId] = useState(null)
   const [selectedSubjectName, setSelectedSubjectName] = useState("")
 
-  const { data: sections, refetch: refetchSections } = useGetSectionsQuery()
-  const { data: subjects, refetch: refetchSubjects } = useGetSubjectsQuery()
-  const { data: classes, refetch: refetchClasses } = useGetClassesQuery()
+  const {
+    data: sections,
+    refetch: refetchSections,
+    isLoading: sectionsLoading,
+    error: sectionsError,
+  } = useGetSectionsQuery()
+
+  const {
+    data: subjects,
+    refetch: refetchSubjects,
+    isLoading: subjectsLoading,
+    error: subjectsError,
+  } = useGetSubjectsQuery()
+
+  const {
+    data: classes,
+    refetch: refetchClasses,
+    isLoading: classesLoading,
+    error: classesError,
+  } = useGetClassesQuery()
 
   const [addClass] = useAddClassMutation()
   const [editClass] = useEditClassMutation()
@@ -249,41 +268,52 @@ const AdminDetailsScreen = () => {
                   </Button>
                 </Col>
               </Row>
-              <Table striped bordered hover>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Class Name</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {classData.map((classItem, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td>{classItem.class}</td>
-                      <td>
-                        <Button
-                          className="me-3"
-                          variant="primary"
-                          onClick={() =>
-                            handleEditClassModal(classItem._id, classItem.class)
-                          }
-                        >
-                          Edit
-                        </Button>
-
-                        <Button
-                          variant="danger"
-                          onClick={() => deleteClassHandler(classItem._id)}
-                        >
-                          Delete
-                        </Button>
-                      </td>
+              {classesLoading ? (
+                <Loader />
+              ) : classesError ? (
+                <Message variant="danger">
+                  {classesError?.data?.message || classesError.error}
+                </Message>
+              ) : (
+                <Table striped bordered hover>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Class Name</th>
+                      <th>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
+                  </thead>
+                  <tbody>
+                    {classData.map((classItem, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{classItem.class}</td>
+                        <td>
+                          <Button
+                            className="me-3"
+                            variant="primary"
+                            onClick={() =>
+                              handleEditClassModal(
+                                classItem._id,
+                                classItem.class
+                              )
+                            }
+                          >
+                            Edit
+                          </Button>
+
+                          <Button
+                            variant="danger"
+                            onClick={() => deleteClassHandler(classItem._id)}
+                          >
+                            Delete
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              )}
             </Col>
           </Row>
           <hr />
@@ -307,42 +337,52 @@ const AdminDetailsScreen = () => {
                   </Button>
                 </Col>
               </Row>
-              <Table striped bordered hover>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Section Name</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sectionData.map((sectionItem, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td>{sectionItem.section}</td>
-                      <td>
-                        <Button
-                          className="me-3"
-                          variant="primary"
-                          onClick={() =>
-                            handleEditSectionModal(
-                              sectionItem._id,
-                              sectionItem.section
-                            )
-                          }
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="danger"
-                          onClick={() => deleteSectionHandler(sectionItem._id)}
-                        >
-                          Delete
-                        </Button>
-                      </td>
+              {sectionsLoading ? (
+                <Loader />
+              ) : sectionsError ? (
+                <Message variant="danger">
+                  {sectionsError?.data?.message || sectionsError.error}
+                </Message>
+              ) : (
+                <Table striped bordered hover>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Section Name</th>
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
+                  </thead>
+                  <tbody>
+                    {sectionData.map((sectionItem, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{sectionItem.section}</td>
+                        <td>
+                          <Button
+                            className="me-3"
+                            variant="primary"
+                            onClick={() =>
+                              handleEditSectionModal(
+                                sectionItem._id,
+                                sectionItem.section
+                              )
+                            }
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="danger"
+                            onClick={() =>
+                              deleteSectionHandler(sectionItem._id)
+                            }
+                          >
+                            Delete
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              )}
             </Col>
           </Row>
           <hr />
@@ -367,42 +407,52 @@ const AdminDetailsScreen = () => {
                   </Button>
                 </Col>
               </Row>
-              <Table striped bordered hover>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Subject Name</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {subjectData.map((subjectItem, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td>{subjectItem.subject}</td>
-                      <td>
-                        <Button
-                          className="me-3"
-                          variant="primary"
-                          onClick={() =>
-                            handleEditSubjectModal(
-                              subjectItem._id,
-                              subjectItem.subject
-                            )
-                          }
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="danger"
-                          onClick={() => deleteSubjectHandler(subjectItem._id)}
-                        >
-                          Delete
-                        </Button>
-                      </td>
+              {subjectsLoading ? (
+                <Loader />
+              ) : subjectsError ? (
+                <Message variant="danger">
+                  {subjectsError?.data?.message || subjectsError.error}
+                </Message>
+              ) : (
+                <Table striped bordered hover>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Subject Name</th>
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
+                  </thead>
+                  <tbody>
+                    {subjectData.map((subjectItem, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{subjectItem.subject}</td>
+                        <td>
+                          <Button
+                            className="me-3"
+                            variant="primary"
+                            onClick={() =>
+                              handleEditSubjectModal(
+                                subjectItem._id,
+                                subjectItem.subject
+                              )
+                            }
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="danger"
+                            onClick={() =>
+                              deleteSubjectHandler(subjectItem._id)
+                            }
+                          >
+                            Delete
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              )}
             </Col>
           </Row>
         </Container>

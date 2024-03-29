@@ -33,10 +33,8 @@ const AdminPeriod = () => {
     return formattedTime
   }
 
-  // Function to handle filter change
   const handleFilterChange = () => {
-    // Implement filtering logic based on selected filters
-    // For example:
+
     if (!periods) return []
 
     const filteredPeriods = periods.filter((period) => {

@@ -1,5 +1,5 @@
 import express from 'express'
-import { addFolder, deleteFolder, editAccessFolder, getAllFolders, getResourceByFolder, getSingleFolderData, renameFolder, uploadFile } from '../controller/adminResourceController.js'
+import { addFolder, deleteFolder, deleteResource, editAccessFolder, getAllFolders, getResourceByFolder, getSingleFolderData, renameFolder, uploadFile } from '../controller/adminResourceController.js'
 import upload from '../utils/multer.js'
 import { authenticateAdmin } from '../utils/authMiddleware.js'
 
@@ -14,5 +14,6 @@ router.patch('/folder/rename/:id', authenticateAdmin, renameFolder)
 router.patch('/folder/delete/:id', authenticateAdmin, deleteFolder)
 router.get('/folder/edit/:id', authenticateAdmin, getSingleFolderData)
 router.put('/folder/access/:id', authenticateAdmin, editAccessFolder)
+router.patch('/filename/:id', authenticateAdmin, deleteResource)
 
 export default router

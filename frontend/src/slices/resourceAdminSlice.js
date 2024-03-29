@@ -54,7 +54,14 @@ export const resourceAdminSlice = apiSlice.injectEndpoints({
             query: (folderId) => ({
                 url: `${RESOURCE_URL}/folder/edit/${folderId}`
             })
-        })
+        }),
+        deleteResource: builder.mutation({
+            query: (data) => ({
+                url: `${RESOURCE_URL}/filename/${data.resourceId}`,
+                method: 'PATCH',
+                body: data
+            })
+        }),
     })
 })
 
@@ -66,5 +73,6 @@ export const {
     useRenameFolderMutation,
     useEditFolderAccessMutation,
     useDeleteFolderMutation,
-    useGetSingleFolderDataQuery
+    useGetSingleFolderDataQuery,
+    useDeleteResourceMutation
 } = resourceAdminSlice

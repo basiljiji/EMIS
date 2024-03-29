@@ -8,6 +8,7 @@ import {
   useDeleteTeacherMutation,
   useGetTeachersQuery,
 } from "../slices/teacherApiSlice"
+import Loader from "../components/Loader"
 
 const TeacherManagement = () => {
   const [firstName, setFirstName] = useState("")
@@ -163,9 +164,9 @@ const TeacherManagement = () => {
         </Row>
         <Row className="mt-5">
           {isLoading ? (
-            <p>Loading...</p>
+            <Loader />
           ) : error ? (
-            <p>Error: {error}</p>
+            <Message>{error?.data?.message || error.error}</Message>
           ) : (
             <Table striped bordered hover>
               <thead>

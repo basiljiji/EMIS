@@ -83,6 +83,7 @@ const AdminFolderManagement = () => {
           <tr>
             <th>SI No</th>
             <th>Folder Name</th>
+            <th>Manage</th>
             <th>Rename</th>
             <th>Access</th>
             <th>Delete</th>
@@ -94,6 +95,11 @@ const AdminFolderManagement = () => {
               <tr key={folder.id}>
                 <td>{index + 1}</td>
                 <td>{folder.folderName}</td>
+                <td>
+                  <LinkContainer to={`/admin/folder/${folder.folderName}`}>
+                    <Button className="bg-success border-0">Manage</Button>
+                  </LinkContainer>
+                </td>
                 <td>
                   <Button
                     className="border-0"

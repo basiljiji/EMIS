@@ -26,7 +26,7 @@ export const fetchFolders = async (req, res, next) => {
             }
         }
 
-        const folders = await Folder.find(filter)
+        const folders = await Folder.find({ filter, 'isDeleted.status': false })
 
         res.json(folders)
     } catch (err) {
@@ -38,7 +38,7 @@ export const fetchFolders = async (req, res, next) => {
 export const fetchResources = async (req, res, next) => {
     try {
         const { folderName } = req.params.folderName
-        const folders = await Folder.findOne({ folderName })
+        const folders = await Folder.findOne({ folderName, 'isDeleted.status': false })
 
 
         if (!folders) {
@@ -52,4 +52,5 @@ export const fetchResources = async (req, res, next) => {
         return next(error)
     }
 }
+
 

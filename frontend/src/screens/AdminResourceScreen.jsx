@@ -11,6 +11,8 @@ import {
 import { useGetSectionsQuery } from "../slices/sectionApiSlice"
 import { useGetSubjectsQuery } from "../slices/subjectApiSlice"
 import { useGetClassesQuery } from "../slices/classApiSlice"
+import Message from "../components/Message"
+import Loader from "../components/Loader"
 
 const AdminResourceScreen = () => {
   const [showModal, setShowModal] = useState(false)
@@ -100,14 +102,19 @@ const AdminResourceScreen = () => {
         <Row>
           <h3>List Folders</h3>
           {isLoading ? (
-            <p>Loading...</p>
+            <p>
+              <Loader />
+            </p>
           ) : error ? (
-            <p>Error: {error.message}</p>
+            <p>
+              <Message variant="danger">
+                {error?.data?.message || error.error}
+              </Message>
+            </p>
           ) : (
             <Row xs={3} md={6} lg={8} className="g-4">
               {allFolders.map((folder) => (
                 <Col key={folder.id}>
-                  {/* Folder Icon */}
                   <LinkContainer to={`/admin/resource/${folder.folderName}`}>
                     <Col xs="auto" className="text-center">
                       <FaFolder
@@ -149,9 +156,6 @@ const AdminResourceScreen = () => {
           />
           <Row>
             <Col md={4}>
-              <h4 className="mt-3">Access To</h4>
-            </Col>
-            <Col md={{ span: 4, offset: 4 }}>
               <h4 className="mt-3">Access To</h4>
             </Col>
           </Row>

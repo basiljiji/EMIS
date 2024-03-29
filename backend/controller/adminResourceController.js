@@ -100,10 +100,10 @@ export const getResourceByFolder = async (req, res, next) => {
     try {
         const folderName = req.params.folderName
 
-        const folderData = await Folder.findOne({ folderName })
+        const folderData = await Folder.findOne({ folderName, 'isDeleted.status': false })
 
         if (folderData) {
-            const resources = await Resource.find({ folder: folderData._id }).populate('folder')
+            const resources = await Resource.find({ folder: folderData._id, 'isDeleted.status': false }).populate('folder')
             res.status(200).json(resources)
         } else {
             res.json({ message: "Resources Not Found" })
@@ -202,7 +202,43 @@ export const deleteFolder = async (req, res, next) => {
         const error = new HttpError('Something Went Wrong', 500)
         return next(error)
     }
-};
+}
+
+
+export const deleteResource = async (req, res, next) => {
+    try {
+        const resourceId = req.params.id
+
+        console.log(resourceId, "1221")
+
+        const resource = await Resource.findById(resourceId)
+
+        if (!resource) {
+            const error = new HttpError('Resource not found', 404)
+            throw error
+        }
+
+        console.log(resource)
+
+        const filePath = `./uploads/${resource.filePath}`
+
+
+        await fs.promises.unlink(filePath)
+
+        resource.isDeleted.status = true
+        resource.isDeleted.deletedBy = req.admin
+        resource.isDeleted.deletedTime = Date.now()
+
+        await resource.save()
+
+        res.status(200).json({ message: 'Resource deleted successfully' })
+    } catch (err) {
+        const error = new HttpError('Something Went Wrong', 500)
+        return next(error)
+    }
+}
+
+
 
 export const getSingleFolderData = async (req, res, next) => {
     try {

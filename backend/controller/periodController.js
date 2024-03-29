@@ -55,8 +55,6 @@ export const addClassData = async (req, res, next) => {
         const teacher = req.teacher
         const { classId, sectionId, subjectId, folderId } = req.body
 
-        console.log(req.body, "123")
-
         // Validate incoming data
         if (!classId || !sectionId || !subjectId || !folderId) {
             return res.status(400).json({ message: "Missing required fields" })
