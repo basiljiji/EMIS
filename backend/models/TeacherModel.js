@@ -49,6 +49,7 @@ teacherSchema.pre('save', async function (next) {
     this.password = await bcrypt.hash(this.password, salt);
 });
 
+
 const Teacher = mongoose.model('Teacher', teacherSchema);
 
 export default Teacher;
