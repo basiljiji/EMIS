@@ -29,16 +29,19 @@ export const loginAdmin = async (req, res, next) => {
 
 export const registerAdmin = async (req, res, next) => {
     try {
-        const { username, email, password, role } = req.body
+        
+        const username = process.env.ADMIN_USERNAME
+        const email = process.env.ADMIN_EMAIL
+        const password = process.env.ADMIN_PASSWORD
+        const role = process.env.ADMIN_ROLE
+        // const adminId = req.admin
 
-        const adminId = req.admin
+        // const superAdmin = await Admin.findOne({ _id: adminId, role: "SUPERADMIN" })
 
-        const superAdmin = await Admin.findOne({ _id: adminId, role: "SUPERADMIN" })
-
-        if (!superAdmin) {
-            const error = new HttpError("Could Not Add User", 400)
-            return next(error)
-        } else {
+        // if (!superAdmin) {
+        //     const error = new HttpError("Could Not Add User", 400)
+        //     return next(error)
+        // } else {
             const adminExists = await Admin.findOne({ email })
 
             if (adminExists) {
@@ -63,7 +66,7 @@ export const registerAdmin = async (req, res, next) => {
                 const error = new HttpError("Invalid user data", 400)
                 return next(error)
             }
-        }
+        // }
     } catch (err) {
         const error = new HttpError("Something went wrong", 500)
         return next(error)
