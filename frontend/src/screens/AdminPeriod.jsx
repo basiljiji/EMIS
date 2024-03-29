@@ -5,6 +5,8 @@ import { Table, Form, Button, Row, Col, Container } from "react-bootstrap"
 import jsPDF from "jspdf"
 import { useGetTeachersQuery } from "../slices/teacherApiSlice"
 import autoTable from "jspdf-autotable"
+import Loader from "../components/Loader"
+import Message from "../components/Message"
 
 const AdminPeriod = () => {
   const { data: periods, isLoading, refetch, error } = useGetAllPeriodsQuery()
@@ -34,7 +36,6 @@ const AdminPeriod = () => {
   }
 
   const handleFilterChange = () => {
-
     if (!periods) return []
 
     const filteredPeriods = periods.filter((period) => {
@@ -79,13 +80,28 @@ const AdminPeriod = () => {
 
     const filteredPeriods = handleFilterChange()
 
-    const columns = ["Name", "Date", "LoggedIn", "LoggedOut"]
-    const rows = filteredPeriods.map((period) => [
-      `${period.teacher.firstName} ${period.teacher.lastName}`,
-      formatDate(period.day),
-      period.loggedIn,
-      period.loggedOut,
-    ])
+    const columns = [
+      "Name",
+      "Date",
+      "LoggedIn",
+      "LoggedOut",
+      "Filename",
+      "Duration (min)",
+      "From Time - To Time",
+    ]
+    const rows = filteredPeriods.flatMap((period) => {
+      return period.accessedFiles.map((file, fileIndex) => {
+        return [
+          `${period.teacher.firstName} ${period.teacher.lastName}`,
+          formatDate(period.day),
+          formatTime(period.loggedIn),
+          formatTime(period.loggedOut),
+          getFileNameFromUrl(file.fileUrl),
+          (file.duration / 60000).toFixed(2),
+          `${formatTime(file.fromTime)} - ${formatTime(file.toTime)}`,
+        ]
+      })
+    })
 
     doc.setFontSize(16)
     doc.text("Teacher Report", 10, 20)
@@ -170,10 +186,15 @@ const AdminPeriod = () => {
           </Row>
         </Form>
       </Container>
-      {isLoading && <p>Loading...</p>}
-      {error && <p>Error: {error.message}</p>}
+      <Row md={2} className="my-3 text-end">
+        <Button onClick={pdfHandler} className="mb-5">
+          Generate Report
+        </Button>
+      </Row>
+      {isLoading && <Loader />}
+      {error && <Message>{error?.data?.message || error.error}</Message>}
       {periods && periods.length > 0 && (
-        <Table striped bordered hover className="my-4">
+        <Table striped bordered hover className="my-2">
           <thead>
             <tr>
               <th>
@@ -188,6 +209,7 @@ const AdminPeriod = () => {
                   {sortField === "date" && sortOrder === "asc" ? "▲" : "▼"}
                 </Button>
               </th>
+              <th>Class</th>
               <th>LoggedIn</th>
               <th>LoggedOut</th>
               <th>File Name</th>
@@ -200,6 +222,16 @@ const AdminPeriod = () => {
               <tr key={index}>
                 <td>{`${period.teacher.firstName} ${period.teacher.lastName}`}</td>
                 <td>{formatDate(period.day)}</td>
+                <td>
+                  {period.classData.map((classData, classDataIndex) => (
+                    <div key={classDataIndex}>
+                      <div>{classData.class.class}</div>
+                      <div>{classData.section.section}</div>
+                      <div>{classData.subject.subject}</div>
+                      {/* <div>{classData.folder.folderName}</div> */}
+                    </div>
+                  ))}
+                </td>
                 <td>{formatTime(period.loggedIn)}</td>
                 <td>{formatTime(period.loggedOut)}</td>
                 <td>
@@ -210,11 +242,14 @@ const AdminPeriod = () => {
                   ))}
                 </td>
                 <td>
-                  {period.accessedFiles.map((access, accessIndex) => (
-                    <div key={accessIndex}>
-                      {(access.duration / 60000).toFixed(2)} min
-                    </div>
-                  ))}
+                  {period.accessedFiles.map(
+                    (access, accessIndex) =>
+                      access.duration > 0 && (
+                        <div key={accessIndex}>
+                          {(access.duration / 60000).toFixed(2)} min
+                        </div>
+                      )
+                  )}
                 </td>
                 <td>
                   {period.accessedFiles.map((fromtime, fromtimeIndex) => (
@@ -230,10 +265,6 @@ const AdminPeriod = () => {
         </Table>
       )}
       {periods && periods.length === 0 && <p>No periods found.</p>}
-
-      <Button onClick={pdfHandler} className="mb-5">
-        Generate Report
-      </Button>
     </AdminLayout>
   )
 }

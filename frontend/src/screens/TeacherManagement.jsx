@@ -9,6 +9,7 @@ import {
   useGetTeachersQuery,
 } from "../slices/teacherApiSlice"
 import Loader from "../components/Loader"
+import Message from "../components/Message"
 
 const TeacherManagement = () => {
   const [firstName, setFirstName] = useState("")

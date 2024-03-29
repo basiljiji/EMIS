@@ -21,6 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "chart.js": "^4.4.2",
     "concurrently": "^8.2.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -32,9 +33,11 @@
     "mongoose": "^8.1.2",
     "multer": "^1.4.5-lts.1",
     "nodemon": "^3.0.3",
-    "pdfkit": "^0.14.0"
+    "pdfkit": "^0.14.0",
+    "react-chartjs-2": "^5.2.0"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.6"
   }

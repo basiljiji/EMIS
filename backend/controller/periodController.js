@@ -36,7 +36,7 @@ export const addAccessData = async (req, res, next) => {
 
 export const getAllPeriods = async (req, res, next) => {
     try {
-        const periods = await Period.find({}).populate('teacher')
+        const periods = await Period.find({}).populate('teacher').populate('classData.class').populate('classData.section').populate('classData.subject').populate('classData.folder')
 
         const filteredPeriods = periods.map(period => {
             const filteredAccessedFiles = period.accessedFiles.filter(access => access.duration !== 0)

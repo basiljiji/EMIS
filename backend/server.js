@@ -40,18 +40,18 @@ app.use(cookieParser())
 
 
 
-app.use('/teacher', teacherRoute)
-app.use('/admin', adminAuthRoute)
-app.use('/admin/class', classDetailshRoute)
-app.use('/admin/section', sectionRoute)
-app.use('/admin/hour', hourRoute)
-app.use('/admin/subject', subjectRoute)
-app.use('/admin/resource', adminResourceRoute)
+app.use('/api/teacher', teacherRoute)
+app.use('/api/admin', adminAuthRoute)
+app.use('/api/admin/class', classDetailshRoute)
+app.use('/api/admin/section', sectionRoute)
+app.use('/api/admin/hour', hourRoute)
+app.use('/api/admin/subject', subjectRoute)
+app.use('/api/admin/resource', adminResourceRoute)
 
 
-app.use('/', teacherAuthRoute)
-app.use('/resource', teacherResourceRoute)
-app.use('/period', periodRoute)
+app.use('/api/', teacherAuthRoute)
+app.use('/api/resource', teacherResourceRoute)
+app.use('/api/period', periodRoute)
 
 if (process.env.NODE_ENV === 'production') {
     //set static folder

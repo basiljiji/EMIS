@@ -102,9 +102,7 @@ const AdminResourceScreen = () => {
         <Row>
           <h3>List Folders</h3>
           {isLoading ? (
-            <p>
               <Loader />
-            </p>
           ) : error ? (
             <p>
               <Message variant="danger">
