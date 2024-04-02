@@ -13,7 +13,7 @@ export const addFolder = async (req, res, next) => {
             return next(error)
         }
 
-        const folderData = await Folder.findOne({ folderName })
+        const folderData = await Folder.findOne({ folderName, 'isDeleted.status': false })
 
         if (folderData) {
             const error = new HttpError('Folder already exists', 400)

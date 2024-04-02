@@ -82,7 +82,7 @@ const ResourceScreen = () => {
                 {resource.fileType.startsWith("image") ? (
                   <Card.Img
                     variant="top"
-                    src={`http://localhost:5000/${resource.filePath}`}
+                    src={`http://192.168.0.128:5000/${resource.filePath}`}
                     alt={resource.fileName}
                     onClick={() => handleImageClick(resource.filePath)}
                   />
@@ -123,7 +123,7 @@ const ResourceScreen = () => {
         <Modal.Body>
           {selectedImage && (
             <Image
-              src={`http://localhost:5000/${selectedImage}`}
+              src={`http://192.168.0.128:5000/${selectedImage}`}
               alt="Selected"
               style={{ width: "100%" }}
             />

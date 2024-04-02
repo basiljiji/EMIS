@@ -70,7 +70,7 @@ const TeacherResourceScreen = () => {
                     resource.filePath.endsWith(".png")) && (
                     <Card.Img
                       variant="top"
-                      src={`http://localhost:5000/${resource.filePath}`}
+                      src={`http://192.168.0.128:5000/${resource.filePath}`}
                       alt={resource.fileName}
                       onClick={() => handleFileClick(resource.filePath)}
                       style={{
@@ -129,7 +129,7 @@ const TeacherResourceScreen = () => {
                       variant="secondary"
                       onClick={() =>
                         handleEditButtonClick(
-                          `http://localhost:5000/${resource.filePath}`
+                          `http://192.168.0.128:5000/${resource.filePath}`
                         )
                       }
                     >
