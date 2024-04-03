@@ -28,6 +28,9 @@ import CanvasComponent from './components/CanvasComponent'
 import AdminFolderManagement from './screens/AdminFolderManagement'
 import AdminEditAccessScreen from './screens/AdminEditAccessScreen'
 import AdminResourceManagement from './screens/AdminResourceManagement'
+import AdminSubfoldersScreen from './screens/AdminSubfoldersScreen'
+import TeacherSubfolderScreen from './screens/TeacherSubfolderScreen'
+import AdminResourceViewerScreen from './screens/AdminResourceViewerScreen'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -43,6 +46,8 @@ const router = createBrowserRouter(
         <Route path='/resource/pdf' element={<PdfCanvas />} />
         <Route path='/resource/media' element={<MediaCanvas />} />
         <Route path='/resource/canvas' element={<CanvasComponent />} />
+        <Route path='/resource/:id/:sid' element={<TeacherSubfolderScreen />} />
+
       </Route>
 
 
@@ -57,6 +62,8 @@ const router = createBrowserRouter(
         <Route path='/admin/folder' element={<AdminFolderManagement />} />
         <Route path='/admin/folder/edit/:id' element={<AdminEditAccessScreen />} />
         <Route path='/admin/folder/:id' element={<AdminResourceManagement />} />
+        <Route path='/admin/resource/:id/:sid' element={<AdminSubfoldersScreen />} />
+        <Route path='/admin/viewer' element={<AdminResourceViewerScreen />} />
       </Route>
 
     </Route>

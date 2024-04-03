@@ -109,7 +109,7 @@ const AdminFolderManagement = () => {
                   </Button>
                 </td>
                 <td>
-                  <LinkContainer to={`/admin/folder/edit/${folder._id}`}>
+                  <LinkContainer to={`/admin/folder/edit/${folder.folderName}`}>
                     <Button className="bg-warning border-0">Access</Button>
                   </LinkContainer>
                 </td>

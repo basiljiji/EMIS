@@ -1,29 +1,80 @@
 import React, { useState } from "react"
-import { Card, Button, Modal, Row, Image, Col, Form } from "react-bootstrap"
-import { useParams } from "react-router-dom"
+import {
+  Card,
+  Button,
+  Modal,
+  Row,
+  Image,
+  Col,
+  Form,
+  ProgressBar,
+} from "react-bootstrap"
+import { useParams, useNavigate } from "react-router-dom"
+import { LinkContainer } from "react-router-bootstrap"
 import { toast } from "react-toastify"
 import AdminLayout from "../components/AdminLayout"
 import {
-  useGetResourcesQuery,
+  useAddSubfolderMutation,
+  useGetAllFoldersQuery,
+  useGetSingleFolderDataQuery,
+  useGetSubFoldersQuery,
   useUploadReourcesMutation,
 } from "../slices/resourceAdminSlice"
 import commonImage from "../assets/pdf-thumbnail.png" // Import the common image
+import { FaFolder } from "react-icons/fa"
+import pdfThumbnail from "../assets/pdf-thumbnail.png"
+import videoThumbnail from "../assets/video-thumbnail.png"
 
 const ResourceScreen = () => {
-  const [selectedFile, setSelectedFile] = useState("")
-
+  const [selectedFiles, setSelectedFiles] = useState([]) // Initialize as an array
   const { id: folderName } = useParams()
 
   const {
-    data: resources,
+    data: folderResources,
     isLoading,
     refetch,
     error,
-  } = useGetResourcesQuery(folderName)
+  } = useGetSingleFolderDataQuery(folderName)
+
+  const [addSubfolder] = useAddSubfolderMutation()
+
+  const { data: subfolders, refetch: subfolderRefetch } =
+    useGetSubFoldersQuery(folderName)
 
   const [uploadResources] = useUploadReourcesMutation()
-
   const [selectedImage, setSelectedImage] = useState(null)
+  const [uploadProgress, setUploadProgress] = useState([])
+
+  const [showModal, setShowModal] = useState(false)
+  const [subfolderName, setSubfolderName] = useState("")
+
+  const [selectedFile, setSelectedFile] = useState(null)
+
+  const navigate = useNavigate()
+
+  const handleEditButtonClick = (fileUrl) => {
+    if (fileUrl.endsWith(".pdf")) {
+      navigate(`/admin/viewer`, {
+        state: { fileUrl },
+      })
+    } else if (
+      fileUrl.endsWith(".mp4") ||
+      fileUrl.endsWith(".mov") ||
+      fileUrl.endsWith(".avi")
+    ) {
+      navigate(`/admin/viewer`, {
+        state: { fileUrl },
+      })
+    } else {
+      navigate(`/admin/viewer`, {
+        state: { fileUrl },
+      })
+    }
+  }
+
+  const handleFileClick = (file) => {
+    setSelectedFile(file)
+  }
 
   const handleImageClick = (image) => {
     setSelectedImage(image)
@@ -34,68 +85,180 @@ const ResourceScreen = () => {
   }
 
   const handleFileChange = (event) => {
-    setSelectedFile(event.target.files[0])
+    setSelectedFiles([...event.target.files]) // Store all selected files
   }
 
   const handleUpload = async (e) => {
     e.preventDefault()
     try {
-      if (!selectedFile) {
-        throw new Error("No file selected")
+      if (!selectedFiles || selectedFiles.length === 0) {
+        throw new Error("No files selected")
       }
 
-      const formData = new FormData()
-      formData.append("file", selectedFile)
+      const formDataArray = selectedFiles.map((file) => {
+        const formData = new FormData()
+        formData.append("files", file)
+        return formData
+      })
 
-      const res = await uploadResources({ folderName, formData })
+      const uploadPromises = formDataArray.map(async (formData, index) => {
+        const config = {
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            )
+            setUploadProgress((prev) => {
+              const newProgress = [...prev]
+              newProgress[index] = percentCompleted
+              return newProgress
+            })
+          },
+        }
+
+        const { data } = await uploadResources({ folderName, formData }, config)
+        setUploadProgress((prev) => {
+          const newProgress = [...prev]
+          newProgress[index] = 100
+          return newProgress
+        })
+        return data
+      })
+
+      await Promise.all(uploadPromises)
       refetch()
+      setSelectedFiles([])
     } catch (err) {
       console.error(err)
+      toast.error(err?.data?.message || err.message)
+    }
+  }
+
+  const subfolderHandler = async (e) => {
+    e.preventDefault()
+    try {
+      const res = await addSubfolder({
+        folderName,
+        subfolderName,
+      }).unwrap()
+      subfolderRefetch()
+      setSubfolderName("")
+      toast.success("Folder Created")
+      setShowModal(false)
+    } catch (err) {
       toast.error(err?.data?.message || err.error)
     }
   }
 
   return (
     <AdminLayout>
-      <Row className="mb-3">
+      <Row xs="auto"></Row>
+      <Row>
         <Form>
           <Form.Group controlId="upload" className="my-2">
-            <Form.Label>Resources</Form.Label>
             <Form.Control
               name="file"
               type="file"
               label="Choose file"
               onChange={handleFileChange}
+              multiple
             />
           </Form.Group>
           <Button onClick={handleUpload}>Upload Resources</Button>
         </Form>
+
+        <Button onClick={() => setShowModal(true)}>New Folder</Button>
+      </Row>
+      {selectedFiles.length > 0 && (
+        <Row>
+          {selectedFiles.map((file, index) => (
+            <Col className="col-md-3" key={index}>
+              <ProgressBar
+                animated
+                now={uploadProgress[index] || 0}
+                label={`${uploadProgress[index] || 0}%`}
+              />
+              <Card>
+                <Card.Body>
+                  <Card.Title>{file.name}</Card.Title>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      )}
+      <Row xs={3} md={6} lg={8} className="g-4">
+        {subfolders?.map((subfolder) => (
+          <Col key={subfolder.id}>
+            <LinkContainer
+              to={`/admin/resource/${subfolder.parentFolder.folderName}/${subfolder.subfolderName}`}
+            >
+              <Col xs="auto" className="text-center">
+                <FaFolder
+                  style={{
+                    width: "80px",
+                    height: "80px",
+                    color: "gold",
+                  }}
+                />
+                <p>{subfolder.subfolderName}</p>
+              </Col>
+            </LinkContainer>
+          </Col>
+        ))}
       </Row>
       <Row>
-        {isLoading && <p>Loading...</p>}
-        {error && <p>Error: {error.message}</p>}
-        {resources &&
-          resources.map((resource) => (
-            <Col className="col-md-3" key={resource._id}>
+        {Array.isArray(folderResources?.resources) &&
+          folderResources.resources.map((resource, index) => (
+            <Col className="col-md-3 mt-4" key={resource._id}>
               <Card>
-                {/* Conditionally render image or common image based on file type */}
-                {resource.fileType.startsWith("image") ? (
+                {(resource.filePath.endsWith(".jpg") ||
+                  resource.filePath.endsWith(".JPG") ||
+                  resource.filePath.endsWith(".jpeg") ||
+                  resource.filePath.endsWith(".png")) && (
                   <Card.Img
                     variant="top"
-                    src={`http://192.168.0.128:5000/${resource.filePath}`}
+                    src={`http://127.0.0.1:5000/${resource.filePath}`}
                     alt={resource.fileName}
-                    onClick={() => handleImageClick(resource.filePath)}
+                    onClick={() => handleFileClick(resource.filePath)}
+                    style={{
+                      fontSize: "15px",
+                    }}
                   />
-                ) : (
+                )}
+                {resource.filePath.endsWith(".pdf") && (
                   <Card.Img
                     variant="top"
-                    src={commonImage} // Use the imported common image
-                    alt="Common Image"
-                    style={{ width: "80px", height: "80px" }}
+                    src={pdfThumbnail}
+                    alt="PDF Thumbnail"
+                    onClick={() => handleFileClick(resource.filePath)}
+                    style={{
+                      fontSize: "15px",
+                      width: "150px",
+                      height: "150px",
+                    }}
+                  />
+                )}
+                {(resource.filePath.endsWith(".mp4") ||
+                  resource.filePath.endsWith(".mov") ||
+                  resource.filePath.endsWith(".avi")) && (
+                  <Card.Img
+                    variant="top"
+                    src={videoThumbnail}
+                    alt="Video Thumbnail"
+                    onClick={() => handleFileClick(resource.filePath)}
+                    style={{
+                      fontSize: "12px",
+                      width: "150px",
+                      height: "150px",
+                    }}
                   />
                 )}
                 <Card.Body>
-                  <Card.Title style={{ fontSize: "15px" }}>
+                  <Card.Title
+                    style={{
+                      fontSize: "18px",
+                    }}
+                  >
                     {resource.fileName}
                   </Card.Title>
                   <Card.Text
@@ -109,29 +272,47 @@ const ResourceScreen = () => {
                       ? (resource.fileSize / (1024 * 1024)).toFixed(2) + " MB"
                       : "Unknown"}
                   </Card.Text>
+                  <Button
+                    variant="secondary"
+                    onClick={() =>
+                      handleEditButtonClick(
+                        `http://127.0.0.1:5000/${resource.filePath}`
+                      )
+                    }
+                  >
+                    View
+                  </Button>
                 </Card.Body>
               </Card>
             </Col>
           ))}
       </Row>
-
-      {/* Modal to display the selected image */}
-      <Modal show={selectedImage !== null} onHide={handleCloseModal}>
+      <Modal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        backdrop="static"
+        keyboard={false}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
         <Modal.Header closeButton>
-          <Modal.Title>View Image</Modal.Title>
+          <Modal.Title>New Folder</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {selectedImage && (
-            <Image
-              src={`http://192.168.0.128:5000/${selectedImage}`}
-              alt="Selected"
-              style={{ width: "100%" }}
-            />
-          )}
+          <Form.Control
+            type="text"
+            value={subfolderName}
+            onChange={(e) => setSubfolderName(e.target.value)}
+            autoFocus
+          />
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
             Close
+          </Button>
+          <Button variant="primary" onClick={subfolderHandler}>
+            Save Folder
           </Button>
         </Modal.Footer>
       </Modal>

@@ -1,26 +1,12 @@
 import mongoose from 'mongoose'
 
-const folderSchema = new mongoose.Schema({
-    folderName: {
+const subfolderSchema = new mongoose.Schema({
+    subfolderName: {
         type: String,
     },
-    accessTo: {
-        classAccess: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Class'
-        }],
-        sectionAccess: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Section'
-        }],
-        subjectAccess: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Subject'
-        }]
-    },
-    createdBy: {
+    parentFolder: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Admin'
+        ref: 'Folder'
     },
     resources: [{
         portionTitle: {
@@ -39,6 +25,10 @@ const folderSchema = new mongoose.Schema({
             type: Number
         },
     }],
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Admin'
+    },
     isDeleted: {
         status: {
             type: Boolean,
@@ -58,6 +48,6 @@ const folderSchema = new mongoose.Schema({
 })
 
 
-const Folder = mongoose.model('Folder', folderSchema)
+const Subfolder = mongoose.model('Subfolder', subfolderSchema)
 
-export default Folder
+export default Subfolder

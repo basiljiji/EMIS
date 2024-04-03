@@ -27,6 +27,8 @@ const AdminEditAccessScreen = () => {
     error,
   } = useGetSingleFolderDataQuery(folderId)
 
+  console.log(folder, "foldd")
+
   const [accessTo, setAccessTo] = useState({
     classAccess: [],
     sectionAccess: [],

@@ -1,19 +1,29 @@
 import express from 'express'
-import { addFolder, deleteFolder, deleteResource, editAccessFolder, getAllFolders, getResourceByFolder, getSingleFolderData, renameFolder, uploadFile } from '../controller/adminResourceController.js'
+import { addFolder, addSubfolder, deleteFolder, deleteResource, deleteSubfolder, editAccessFolder, getAllFolders, getSingleFolderData, getSingleSubfolderData, getSubfolders, renameFolder, renameSubfolder, uploadFile, uploadFilesSubfolder } from '../controller/adminResourceController.js'
 import upload from '../utils/multer.js'
 import { authenticateAdmin } from '../utils/authMiddleware.js'
 
 const router = express()
 
-//Resource
+//Folders
 router.get('/', authenticateAdmin, getAllFolders)
-router.get('/:folderName', authenticateAdmin, getResourceByFolder)
 router.post('/', authenticateAdmin, addFolder)
-router.post('/upload/:folderName', authenticateAdmin, upload.single('file'), uploadFile)
+router.post('/upload/:folderName', authenticateAdmin, upload.array('files', 100), uploadFile)
 router.patch('/folder/rename/:id', authenticateAdmin, renameFolder)
 router.patch('/folder/delete/:id', authenticateAdmin, deleteFolder)
-router.get('/folder/edit/:id', authenticateAdmin, getSingleFolderData)
+router.get('/folder/:folderName', authenticateAdmin, getSingleFolderData)
 router.put('/folder/access/:id', authenticateAdmin, editAccessFolder)
 router.patch('/filename/:id', authenticateAdmin, deleteResource)
+
+
+//Subfolders
+router.get('/:folderName', authenticateAdmin, getSubfolders)
+router.post('/:folderName', authenticateAdmin, addSubfolder)
+router.get('/folder/:folderName/:subfolderName', authenticateAdmin, getSingleSubfolderData)
+router.post('/upload/:folderName/:subfolderName', authenticateAdmin, upload.array('files', 100), uploadFilesSubfolder)
+router.patch('/subfolder/rename/:id', authenticateAdmin, renameSubfolder)
+router.patch('/subfolder/delete/:id', authenticateAdmin, deleteSubfolder)
+
+
 
 export default router

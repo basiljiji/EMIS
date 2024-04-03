@@ -16,7 +16,7 @@ export const resourceAdminSlice = apiSlice.injectEndpoints({
                 url: `${RESOURCE_URL}/`
             })
         }),
-        getResources: builder.query({
+        getResourceByFolder: builder.query({
             query: (folderName) => ({
                 url: `${RESOURCE_URL}/${folderName}`
             })
@@ -52,7 +52,8 @@ export const resourceAdminSlice = apiSlice.injectEndpoints({
         }),
         getSingleFolderData: builder.query({
             query: (folderId) => ({
-                url: `${RESOURCE_URL}/folder/edit/${folderId}`
+                url: `${RESOURCE_URL}/folder/${folderId}`,
+                method: 'GET',
             })
         }),
         deleteResource: builder.mutation({
@@ -62,17 +63,65 @@ export const resourceAdminSlice = apiSlice.injectEndpoints({
                 body: data
             })
         }),
+        getSubFolders: builder.query({
+            query: (folderName) => ({
+                url: `${RESOURCE_URL}/${folderName}`,
+                method: 'GET'
+            })
+        }),
+        addSubfolder: builder.mutation({
+            query: (data) => ({
+                url: `${RESOURCE_URL}/${data.folderName}`,
+                method: 'POST',
+                body: data
+            })
+        }),
+        uploadFilesSubfolder: builder.mutation({
+            query: ({ folderName, subfolderName, formData }) => ({
+                url: `${RESOURCE_URL}/upload/${folderName}/${subfolderName}`,
+                method: 'POST',
+                body: formData
+            }),
+            keepUnusedDataFor: 5,
+        }),
+        renameSubfolder: builder.mutation({
+            query: (data) => ({
+                url: `${RESOURCE_URL}/subfolder/rename/${data.folderId}`,
+                method: 'PATCH',
+                body: data
+            })
+        }),
+        deleteSubfolder: builder.mutation({
+            query: (data) => ({
+                url: `${RESOURCE_URL}/subfolder/delete/${data.subfolderId}`,
+                method: 'PATCH',
+                body: data
+            })
+        }),
+        getSingleSubfolderData: builder.query({
+            query: ({folderName, subfolderName}) => ({
+                url: `${RESOURCE_URL}/folder/${folderName}/${subfolderName}`,
+                method: 'GET',
+            })
+        }),
+
     })
 })
 
 export const {
     useAddFolderMutation,
     useGetAllFoldersQuery,
-    useGetResourcesQuery,
     useUploadReourcesMutation,
     useRenameFolderMutation,
     useEditFolderAccessMutation,
     useDeleteFolderMutation,
     useGetSingleFolderDataQuery,
-    useDeleteResourceMutation
+    useDeleteResourceMutation,
+    useAddSubfolderMutation,
+    useGetSubFoldersQuery,
+    useRenameSubfolderMutation,
+    useDeleteSubfolderMutation,
+    useUploadFilesSubfolderMutation,
+    useGetSingleSubfolderDataQuery,
+    useGetResourceByFolderQuery
 } = resourceAdminSlice

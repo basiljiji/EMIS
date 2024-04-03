@@ -1,16 +1,22 @@
 import multer from 'multer'
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, `./uploads/${req.params.folderName}`)
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname)
+const storage = function (req, file, cb) {
+    let destination
+    if (req.params.subfolderName) {
+        destination = `./uploads/${req.params.folderName}/${req.params.subfolderName}`
+    } else {
+        destination = `./uploads/${req.params.folderName}`
     }
-})
+    cb(null, destination)
+}
 
 const upload = multer({
-    storage: storage
-})
+    storage: multer.diskStorage({
+        destination: storage,
+        filename: function (req, file, cb) {
+            cb(null, file.originalname)
+        }
+    })
+});
 
 export default upload

@@ -4,7 +4,7 @@ import { toast } from "react-toastify"
 import { LinkContainer } from "react-router-bootstrap"
 import {
   useDeleteResourceMutation,
-  useGetResourcesQuery,
+  useGetAllFoldersQuery,
 } from "../slices/resourceAdminSlice"
 import { Table, Button, Breadcrumb, Container } from "react-bootstrap"
 import Loader from "../components/Loader"
@@ -12,12 +12,13 @@ import Message from "../components/Message"
 
 const AdminResourceManagement = () => {
   const { id: folderName } = useParams()
+
   const {
     data: resources,
     isLoading,
     refetch,
     error,
-  } = useGetResourcesQuery(folderName)
+  } = useGetAllFoldersQuery(folderName)
 
   const [deleteResource] = useDeleteResourceMutation()
 
