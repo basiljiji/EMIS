@@ -4,7 +4,9 @@ import { toast } from "react-toastify"
 import { LinkContainer } from "react-router-bootstrap"
 import {
   useDeleteResourceMutation,
-  useGetAllFoldersQuery,
+  useGetResourceByFolderQuery,
+  useGetSingleFolderDataQuery,
+  useGetSubFoldersQuery,
 } from "../slices/resourceAdminSlice"
 import { Table, Button, Breadcrumb, Container } from "react-bootstrap"
 import Loader from "../components/Loader"
@@ -14,11 +16,15 @@ const AdminResourceManagement = () => {
   const { id: folderName } = useParams()
 
   const {
-    data: resources,
+    data: folderResources,
     isLoading,
     refetch,
     error,
-  } = useGetAllFoldersQuery(folderName)
+  } = useGetSingleFolderDataQuery(folderName)
+
+  const { data: subfolders } = useGetSubFoldersQuery(folderName)
+
+  console.log(subfolders, "SS")
 
   const [deleteResource] = useDeleteResourceMutation()
 
@@ -51,7 +57,7 @@ const AdminResourceManagement = () => {
         </Breadcrumb>
         {isLoading && <Loader />}
         {error && <Message></Message>}
-        {resources && (
+        {folderResources && (
           <Table striped bordered hover>
             <thead>
               <tr>
@@ -62,21 +68,38 @@ const AdminResourceManagement = () => {
               </tr>
             </thead>
             <tbody>
-              {resources.map((resource) => (
-                <tr key={resource._id}>
-                  <td>{resource.fileName}</td>
-                  <td>{resource.fileType}</td>
-                  <td>{bytesToMB(resource.fileSize)}</td>
-                  <td>
-                    <Button
-                      variant="danger"
-                      onClick={() => deleteResourceHandler(resource._id)}
-                    >
-                      Delete
-                    </Button>
-                  </td>
-                </tr>
-              ))}
+              {/* Render subfolders if they exist */}
+              {subfolders &&
+                subfolders.length > 0 &&
+                subfolders.map((subfolder) => (
+                  <tr key={subfolder._id}>
+                    <td>{subfolder.subfolderName}</td>
+                    <td>Subfolder</td>
+                    <td></td> {/* No size for folders */}
+                    <td>
+                      <Button variant="success" className="me-2">Manage</Button>
+                      <Button variant="danger">Delete</Button>
+                    </td>
+                  </tr>
+                ))}
+              {/* Render resources if they exist */}
+              {folderResources.resources &&
+                folderResources.resources.length > 0 &&
+                folderResources.resources.map((resource) => (
+                  <tr key={resource._id}>
+                    <td>{resource.fileName}</td>
+                    <td>{resource.fileType}</td>
+                    <td>{bytesToMB(resource.fileSize)}</td>
+                    <td>
+                      <Button
+                        variant="danger"
+                        onClick={() => deleteResourceHandler(resource._id)}
+                      >
+                        Delete
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </Table>
         )}

@@ -63,7 +63,7 @@ export const uploadFile = async (req, res, next) => {
         }
 
         const folderName = req.params.folderName
-        const folderData = await Folder.findOne({ folderName })
+        const folderData = await Folder.findOne({ folderName, 'isDeleted.status': false })
 
         if (!folderData) {
             throw new HttpError('No Folder Found', 404)
@@ -104,26 +104,34 @@ export const renameFolder = async (req, res, next) => {
         const folderId = req.params.id
         const { folderName } = req.body
 
-        const folder = await Folder.findOneAndUpdate({ _id: folderId }, { folderName })
+        // Assuming the folder ID is associated with the folder name
+        const folder = await Folder.findOneAndUpdate({ _id: folderId }, { folderName }, { new: true })
 
-        // Construct the new path
-        const __filename = new URL(import.meta.url).pathname
-        const __dirname = path.dirname(__filename)
-        // Construct the paths using path.resolve()
-        const rootDir = path.resolve(__dirname, '..', '..', 'uploads') // Navigate to the uploads directory
-        const currentPath = path.resolve(rootDir, folder.folderName)
-        const newPath = path.resolve(rootDir, folderName)
+        // Check if the folder exists
+        if (!folder) {
+            const error = new HttpError('Folder not found', 404)
+            return next(error)
+        }
 
-        console.log('Current Path:', currentPath)
-        console.log('New Path:', newPath)
+        // Get the current folder path
+        const currentFolderPath = `./uploads/${folder.folderName}`
+
+        // Construct the new folder path with the updated name
+        const newFolderPath = `./uploads/${folderName}`
 
         // Rename the folder
-        fs.renameSync(currentPath, newPath)
-
-        res.status(200).json({ message: "Folder Renamed" })
+        fs.rename(currentFolderPath, newFolderPath, (err) => {
+            if (err) {
+                console.error('Error renaming folder:', err)
+                const error = new HttpError('Error renaming folder', 500)
+                return next(error)
+            }
+            console.log('Folder renamed successfully')
+            res.status(200).json({ message: "Folder Renamed" })
+        })
     } catch (err) {
         console.error('Error renaming folder:', err)
-        const error = new HttpError('Something Went Wrong', 500)
+        const error = new HttpError('Something went wrong', 500)
         return next(error)
     }
 }
@@ -242,7 +250,7 @@ export const getSingleFolderData = async (req, res, next) => {
     try {
         const folderName = req.params.folderName
 
-        const folder = await Folder.findOne({ folderName })
+        const folder = await Folder.findOne({ folderName, 'isDeleted.status': false })
         res.status(200).json(folder)
     } catch (err) {
         const error = new HttpError('Something Went Wrong', 500)
@@ -295,7 +303,7 @@ export const getSubfolders = async (req, res, next) => {
     try {
         const folderName = req.params.folderName
 
-        const folderData = await Folder.findOne({ folderName })
+        const folderData = await Folder.findOne({ folderName, 'isDeleted.status': false })
 
         if (folderData) {
             const subfolders = await Subfolder.find({ parentFolder: folderData._id, 'isDeleted.status': false }).populate('parentFolder')
@@ -318,9 +326,8 @@ export const getSingleSubfolderData = async (req, res, next) => {
         const folderName = req.params.folderName
         const subfolderName = req.params.subfolderName
 
-        console.log(folderName, subfolderName, "1212")
 
-        const folderData = await Folder.findOne({ folderName })
+        const folderData = await Folder.findOne({ folderName, 'isDeleted.status': false })
 
         if (folderData) {
             const subfolder = await Subfolder.findOne({ subfolderName, parentFolder: folderData._id, 'isDeleted.status': false }).populate('parentFolder')
@@ -364,11 +371,11 @@ export const uploadFilesSubfolder = async (req, res, next) => {
         const folderName = req.params.folderName
         const subfolderName = req.params.subfolderName
 
-        const folder = await Folder.findOne({ folderName })
+        const folder = await Folder.findOne({ folderName, 'isDeleted.status': false })
 
         if (folder) {
 
-            const subfolderData = await Subfolder.findOne({ subfolderName, parentFolder: folder._id }).populate('parentFolder')
+            const subfolderData = await Subfolder.findOne({ subfolderName, parentFolder: folder._id, 'isDeleted.status': false }).populate('parentFolder')
 
             if (!subfolderData) {
                 throw new HttpError('No Folder Found', 404)

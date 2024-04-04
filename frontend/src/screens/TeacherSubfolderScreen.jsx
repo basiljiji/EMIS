@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Card, Col, Row, Container, Button } from "react-bootstrap"
+import { Card, Col, Row, Container, Button, Breadcrumb } from "react-bootstrap"
 import { LinkContainer } from "react-router-bootstrap"
 import { useParams, useNavigate } from "react-router-dom"
 import { useGetSingleSubfolderDataQuery } from "../slices/resourceAdminSlice"
@@ -50,6 +50,17 @@ const TeacherSubfolderScreen = () => {
 
   return (
     <Container>
+      <Row>
+        <Breadcrumb>
+          <LinkContainer to="/dashboard">
+            <Breadcrumb.Item>Home</Breadcrumb.Item>
+          </LinkContainer>
+          <LinkContainer to={`/resource/${folderName}`}>
+            <Breadcrumb.Item>{folderName}</Breadcrumb.Item>
+          </LinkContainer>
+          <Breadcrumb.Item active>{subfolderName}</Breadcrumb.Item>
+        </Breadcrumb>
+      </Row>
       <Row>
         {Array.isArray(subfolderResources?.resources) &&
           subfolderResources.resources.map((resource, index) => (

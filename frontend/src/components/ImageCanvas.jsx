@@ -1,4 +1,6 @@
 import React, { useRef, useState, useEffect } from "react"
+import { Breadcrumb, Row } from "react-bootstrap"
+import { LinkContainer } from "react-router-bootstrap"
 import { ReactSketchCanvas } from "react-sketch-canvas"
 import { useParams, useLocation } from "react-router-dom"
 import { FiPenTool, FiRotateCcw, FiRotateCw, FiTrash2 } from "react-icons/fi"
@@ -93,8 +95,31 @@ const ImageCanvas = () => {
     setStrokeColor(color)
   }
 
+  const parts = fileUrl.replace("http://", "").split("/")
+
+  let extractedPath = ""
+
+  if (parts.length === 5) {
+    // Case: http://localhost:3000/resource/X/CC/filename
+    extractedPath = `/${parts[3]}/${parts[4]}`
+  } else if (parts.length === 4 && !parts[3].includes(".")) {
+    // Case: http://localhost:3000/resource/X/filename
+    extractedPath = `/${parts[3]}`
+  } else {
+    // Handle other cases or throw an error for unexpected URLs
+    extractedPath = "" // Or whatever default value you want to set
+  }
+  console.log(extractedPath) // Output: /X/CC
+
   return (
     <div className="d-flex flex-column gap-2 p-2">
+      <Row>
+        <Breadcrumb>
+          <LinkContainer to={`/resource${extractedPath}`}>
+            <Breadcrumb.Item active>Back</Breadcrumb.Item>
+          </LinkContainer>
+        </Breadcrumb>
+      </Row>
       <div className="d-flex gap-2 align-items-center ">
         <button
           type="button"

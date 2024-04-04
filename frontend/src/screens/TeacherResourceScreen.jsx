@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Row, Col, Card, Button, Container } from "react-bootstrap"
+import { Row, Col, Card, Button, Container, Breadcrumb } from "react-bootstrap"
 import { useParams, useNavigate } from "react-router-dom"
 import {
   useGetResourceByFolderQuery,
@@ -24,7 +24,6 @@ const TeacherResourceScreen = () => {
   } = useGetResourceByFolderQuery(folderName)
 
   const { data: subfolders } = useGetSubFoldersQuery(folderName)
-
 
   const handleFileClick = (file) => {
     setSelectedFile(file)
@@ -57,6 +56,14 @@ const TeacherResourceScreen = () => {
   return (
     <>
       <Container>
+        <Row>
+          <Breadcrumb>
+            <LinkContainer to="/dashboard">
+              <Breadcrumb.Item>Home</Breadcrumb.Item>
+            </LinkContainer>
+            <Breadcrumb.Item active>{folderName}</Breadcrumb.Item>
+          </Breadcrumb>
+        </Row>
         <Row className="text-end">
           <Col>
             <LinkContainer to="/resource/canvas">
