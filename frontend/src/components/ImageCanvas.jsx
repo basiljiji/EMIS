@@ -115,7 +115,7 @@ const ImageCanvas = () => {
     <div className="d-flex flex-column gap-2 p-2">
       <Row>
         <Breadcrumb>
-          <LinkContainer to={`/resource${extractedPath}`}>
+          <LinkContainer to={`/dashboard`}>
             <Breadcrumb.Item active>Back</Breadcrumb.Item>
           </LinkContainer>
         </Breadcrumb>

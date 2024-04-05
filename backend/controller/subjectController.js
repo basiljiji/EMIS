@@ -15,7 +15,7 @@ export const addSubject = async (req, res, next) => {
     try {
         const { subject } = req.body
 
-        const subjectData = await Subject.findOne({ subject })
+        const subjectData = await Subject.findOne({ subject, 'isDeleted.status': false })
 
         if (subjectData) {
             const error = new HttpError("Same Subject Already Exists", 500)

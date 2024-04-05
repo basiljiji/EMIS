@@ -15,7 +15,7 @@ export const addSection = async (req, res, next) => {
     try {
         const { section } = req.body
 
-        const sectionData = await Section.findOne({ section })
+        const sectionData = await Section.findOne({ section, 'isDeleted.status': false })
 
         if (sectionData) {
             const error = new HttpError("Same Section Already Exists", 500)

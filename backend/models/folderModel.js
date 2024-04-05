@@ -16,6 +16,10 @@ const folderSchema = new mongoose.Schema({
         subjectAccess: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Subject'
+        }],
+        teacherAccess: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Teacher'
         }]
     },
     createdBy: {

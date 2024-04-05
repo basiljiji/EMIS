@@ -36,6 +36,10 @@ const TeacherSubfolderScreen = () => {
     } else if (
       fileUrl.endsWith(".mp4") ||
       fileUrl.endsWith(".mov") ||
+      fileUrl.endsWith(".webm") ||
+      fileUrl.endsWith(".mp3") ||
+      fileUrl.endsWith(".mkv") ||
+      fileUrl.endsWith(".mpeg") ||
       fileUrl.endsWith(".avi")
     ) {
       navigate(`/resource/media`, {
@@ -72,7 +76,7 @@ const TeacherSubfolderScreen = () => {
                   resource.filePath.endsWith(".png")) && (
                   <Card.Img
                     variant="top"
-                    src={`http://127.0.0.1:5000/${resource.filePath}`}
+                    src={`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/${resource.filePath}`}
                     alt={resource.fileName}
                     onClick={() => handleFileClick(resource.filePath)}
                     style={{
@@ -95,6 +99,10 @@ const TeacherSubfolderScreen = () => {
                 )}
                 {(resource.filePath.endsWith(".mp4") ||
                   resource.filePath.endsWith(".mov") ||
+                  resource.filePath.endsWith(".webm") ||
+                  resource.filePath.endsWith(".mp3") ||
+                  resource.filePath.endsWith(".mpeg") ||
+                  resource.filePath.endsWith(".mp3") ||
                   resource.filePath.endsWith(".avi")) && (
                   <Card.Img
                     variant="top"
@@ -131,7 +139,7 @@ const TeacherSubfolderScreen = () => {
                     variant="secondary"
                     onClick={() =>
                       handleEditButtonClick(
-                        `http://127.0.0.1:5000/${resource.filePath}`
+                        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/${resource.filePath}`
                       )
                     }
                   >

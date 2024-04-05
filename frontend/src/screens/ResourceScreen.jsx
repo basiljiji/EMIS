@@ -41,6 +41,8 @@ const ResourceScreen = () => {
   const { data: subfolders, refetch: subfolderRefetch } =
     useGetSubFoldersQuery(folderName)
 
+    console.log(subfolders,"sub")
+
   const [uploadResources] = useUploadReourcesMutation()
   const [selectedImage, setSelectedImage] = useState(null)
   const [uploadProgress, setUploadProgress] = useState([])
@@ -59,7 +61,11 @@ const ResourceScreen = () => {
       })
     } else if (
       fileUrl.endsWith(".mp4") ||
+      fileUrl.endsWith(".mp3") ||
       fileUrl.endsWith(".mov") ||
+      fileUrl.endsWith(".webm") ||
+      fileUrl.endsWith(".mpeg") ||
+      fileUrl.endsWith(".mkv") ||
       fileUrl.endsWith(".avi")
     ) {
       navigate(`/admin/viewer`, {
@@ -217,7 +223,7 @@ const ResourceScreen = () => {
                   resource.filePath.endsWith(".png")) && (
                   <Card.Img
                     variant="top"
-                    src={`http://127.0.0.1:5000/${resource.filePath}`}
+                    src={`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/${resource.filePath}`}
                     alt={resource.fileName}
                     onClick={() => handleFileClick(resource.filePath)}
                     style={{
@@ -225,7 +231,7 @@ const ResourceScreen = () => {
                     }}
                   />
                 )}
-                {resource.filePath.endsWith(".pdf") && (
+                {resource.filePath.endsWith(".pptx") && (
                   <Card.Img
                     variant="top"
                     src={pdfThumbnail}
@@ -240,6 +246,10 @@ const ResourceScreen = () => {
                 )}
                 {(resource.filePath.endsWith(".mp4") ||
                   resource.filePath.endsWith(".mov") ||
+                  resource.filePath.endsWith(".mkv") ||
+                  resource.filePath.endsWith(".webm") ||
+                  resource.filePath.endsWith(".mp3") ||
+                  resource.filePath.endsWith(".mpeg") ||
                   resource.filePath.endsWith(".avi")) && (
                   <Card.Img
                     variant="top"
@@ -276,7 +286,7 @@ const ResourceScreen = () => {
                     variant="secondary"
                     onClick={() =>
                       handleEditButtonClick(
-                        `http://127.0.0.1:5000/${resource.filePath}`
+                        `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/${resource.filePath}`
                       )
                     }
                   >

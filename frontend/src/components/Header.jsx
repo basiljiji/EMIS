@@ -64,7 +64,10 @@ const Header = () => {
               <img src={logo} alt="SMPS" width="30px" height="30px" />
             </Navbar.Brand>
           </LinkContainer>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Toggle
+            aria-controls="basic-navbar-nav"
+            className="bg-light"
+          />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
               {userInfo && userInfo.role === "admin" ? (

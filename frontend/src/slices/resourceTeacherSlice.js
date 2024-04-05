@@ -11,7 +11,13 @@ export const resourceTeacherSlice = apiSlice.injectEndpoints({
             }),
             keepUnusedDataFor: 5,
         }),
+        fetchResources: builder.query({
+            query: (folderName) => ({
+                url: `${TEACHER_RESOURCE_URL}/${folderName}`,
+                method: 'GET'
+            }),
+        }),
     })
 })
 
-export const { useFetchFoldersMutation } = resourceTeacherSlice
+export const { useFetchFoldersMutation, useFetchResourcesQuery } = resourceTeacherSlice

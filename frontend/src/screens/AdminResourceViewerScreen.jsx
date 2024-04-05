@@ -14,6 +14,10 @@ const AdminResourceViewerScreen = () => {
     content = <PdfCanvas fileUrl={fileUrl} />
   } else if (
     fileUrl.endsWith(".mp4") ||
+    fileUrl.endsWith(".mpeg") ||
+    fileUrl.endsWith(".webm") ||
+    fileUrl.endsWith(".mp3") ||
+    fileUrl.endsWith(".mkv") ||
     fileUrl.endsWith(".mov") ||
     fileUrl.endsWith(".avi")
   ) {

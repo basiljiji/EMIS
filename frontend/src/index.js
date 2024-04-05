@@ -31,6 +31,7 @@ import AdminResourceManagement from './screens/AdminResourceManagement'
 import AdminSubfoldersScreen from './screens/AdminSubfoldersScreen'
 import TeacherSubfolderScreen from './screens/TeacherSubfolderScreen'
 import AdminResourceViewerScreen from './screens/AdminResourceViewerScreen'
+import DocCanvas from './components/DocCanvas'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -46,6 +47,7 @@ const router = createBrowserRouter(
         <Route path='/resource/pdf' element={<PdfCanvas />} />
         <Route path='/resource/media' element={<MediaCanvas />} />
         <Route path='/resource/canvas' element={<CanvasComponent />} />
+        <Route path='/resource/doc' element={<DocCanvas />} />
         <Route path='/resource/:id/:sid' element={<TeacherSubfolderScreen />} />
 
       </Route>

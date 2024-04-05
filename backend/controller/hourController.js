@@ -15,7 +15,7 @@ export const addHour = async (req, res, next) => {
     try {
         const { hour } = req.body
 
-        const hourData = await Hour.findOne({ hour })
+        const hourData = await Hour.findOne({ hour, 'isDeleted.status': false })
 
         if (hourData) {
             const error = new HttpError("Same Hour Already Exists", 500)

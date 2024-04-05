@@ -267,43 +267,47 @@ export const addSubfolder = async (req, res, next) => {
 
         const { subfolderName } = req.body
 
-        const folder = await Folder.findOne({ folderName })
+        const folder = await Folder.findOne({ folderName, "isDeleted.status": false })
 
         if (folder) {
-            const subfolderData = await Subfolder.findOne({ subfolderName, parentFolder: folder._id })
-            if (subfolderData) {
-                const error = new HttpError('Folder Already Exists', 500)
-                return next(error)
-            } else {
-                await Subfolder.create({
-                    parentFolder: folder._id,
-                    subfolderName
-                })
+            const subfolderData = await Subfolder.findOne({
+                subfolderName, parentFolder: folder._id, "isDeleted.status":false })
+            if(subfolderData) {
+                    const error = new HttpError('Folder Already Exists', 500)
+                    return next(error)
+                } else {
+                    await Subfolder.create({
+                        parentFolder: folder._id,
+                        subfolderName
+                    })
                 // Check if folder already exists
                 const folderPath = `./uploads/${folderName}/${subfolderName}`
-                if (!fs.existsSync(folderPath)) {
+                if(!fs.existsSync(folderPath)) {
                     // Create folder
                     fs.mkdirSync(folderPath)
-                    res.status(200).json(`Folder ${subfolderName} Created`)
-                } else {
-                    const error = new HttpError('Folder already exists', 400)
-                    return next(error)
-                }
-            }
+            res.status(200).json(`Folder ${subfolderName} Created`)
+        } else {
+            const error = new HttpError('Folder already exists', 400)
+            return next(error)
+        }
+    }
         }
 
-        res.status(200).json(folder)
+res.status(200).json(folder)
     } catch (err) {
-        const error = new HttpError('Folder Not Created', 500)
-        return next(error)
-    }
+    const error = new HttpError('Folder Not Created', 500)
+    return next(error)
+}
 }
 
 export const getSubfolders = async (req, res, next) => {
     try {
         const folderName = req.params.folderName
 
+        console.log(folderName, "Fold")
+
         const folderData = await Folder.findOne({ folderName, 'isDeleted.status': false })
+        console.log(folderData._id, "Subb")
 
         if (folderData) {
             const subfolders = await Subfolder.find({ parentFolder: folderData._id, 'isDeleted.status': false }).populate('parentFolder')

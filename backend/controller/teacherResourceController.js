@@ -37,8 +37,10 @@ export const fetchFolders = async (req, res, next) => {
 
 export const fetchResources = async (req, res, next) => {
     try {
-        const { folderName } = req.params.folderName
-        const folders = await Folder.findOne({ folderName, 'isDeleted.status': false })
+        const folderName = req.params.folderName
+
+        console.log(folderName)
+        const folders = await Folder.findOne({ folderName, "isDeleted.status":false })
 
 
         if (!folders) {

@@ -46,11 +46,14 @@ const MediaCanvas = () => {
           alignItems: "center",
           height: "80vh",
         }}
+        className="my-2"
       >
         <ReactPlayer
           url={fileUrl}
           controls={true}
           onProgress={handleProgress}
+          width="100%"
+          height="100%"
         />
       </div>
     </>
