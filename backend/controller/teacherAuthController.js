@@ -34,6 +34,7 @@ export const loginTeacher = async (req, res, next) => {
             res.status(200).json({
                 name: teacher.firstName,
                 email: teacher.email,
+                id: teacher._id
             })
         } else {
             const error = new HttpError("Invalid Username or Password", 404)
@@ -43,11 +44,11 @@ export const loginTeacher = async (req, res, next) => {
         const error = new HttpError("Something Went Wrong", 500)
         return next(error)
     }
-};
+}
 
 export const logoutTeacher = async (req, res, next) => {
 
-    if(req.teacher){
+    if (req.teacher) {
         const period = await Period.findOneAndUpdate(
             {
                 teacher: req.teacher._id,
@@ -65,7 +66,7 @@ export const logoutTeacher = async (req, res, next) => {
             }
         )
     }
-  
+
 
     res.cookie('jwt', '', {
         httpOnly: true,

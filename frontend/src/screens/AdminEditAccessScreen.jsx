@@ -10,6 +10,7 @@ import {
   useEditFolderAccessMutation,
   useGetSingleFolderDataQuery,
 } from "../slices/resourceAdminSlice"
+import { useGetTeachersQuery } from "../slices/teacherApiSlice"
 
 const AdminEditAccessScreen = () => {
   const { id: folderId } = useParams()
@@ -17,6 +18,7 @@ const AdminEditAccessScreen = () => {
   const { data: sections } = useGetSectionsQuery()
   const { data: subjects } = useGetSubjectsQuery()
   const { data: classes } = useGetClassesQuery()
+  const { data: teachers } = useGetTeachersQuery()
 
   const [editFolderAccess] = useEditFolderAccessMutation()
 
@@ -27,12 +29,12 @@ const AdminEditAccessScreen = () => {
     error,
   } = useGetSingleFolderDataQuery(folderId)
 
-  console.log(folder, "foldd")
 
   const [accessTo, setAccessTo] = useState({
     classAccess: [],
     sectionAccess: [],
     subjectAccess: [],
+    teacherAccess: [],
   })
 
   useEffect(() => {
@@ -45,6 +47,7 @@ const AdminEditAccessScreen = () => {
     classes: {},
     sections: {},
     subjects: {},
+    teachers: {},
   })
 
   useEffect(() => {
@@ -52,6 +55,7 @@ const AdminEditAccessScreen = () => {
       classes: {},
       sections: {},
       subjects: {},
+      teachers: {},
     }
 
     if (classes) {
@@ -78,8 +82,16 @@ const AdminEditAccessScreen = () => {
       })
     }
 
+    if (teachers) {
+      teachers.forEach((teacher) => {
+        newCheckedItems.teachers[teacher._id] = accessTo.teacherAccess.includes(
+          teacher._id
+        )
+      })
+    }
+
     setCheckedItems(newCheckedItems)
-  }, [classes, sections, subjects, accessTo])
+  }, [classes, sections, subjects, teachers, accessTo])
 
   const handleCheckboxChange = (type, id) => {
     setCheckedItems((prevState) => ({
@@ -103,6 +115,9 @@ const AdminEditAccessScreen = () => {
       const checkedSubjectIds = Object.keys(checkedItems.subjects).filter(
         (id) => checkedItems.subjects[id]
       )
+      const checkedTeacherIds = Object.keys(checkedItems.teachers).filter(
+        (id) => checkedItems.teachers[id]
+      )
 
       // Prepare data object to be sent to the editFolderAccess mutation
       const data = {
@@ -111,6 +126,7 @@ const AdminEditAccessScreen = () => {
           classdata: checkedClassIds,
           sectiondata: checkedSectionIds,
           subjectdata: checkedSubjectIds,
+          teacherdata: checkedTeacherIds,
         },
       }
 
@@ -177,6 +193,21 @@ const AdminEditAccessScreen = () => {
                     checked={checkedItems.subjects[subject._id]}
                     onChange={() =>
                       handleCheckboxChange("subjects", subject._id)
+                    }
+                  />
+                ))}
+            </Col>
+            <Col>
+              <h5>Teachers:</h5>
+              {teachers &&
+                teachers.map((teacher) => (
+                  <Form.Check
+                    key={teacher._id}
+                    type="checkbox"
+                    label={teacher.firstName + " " + teacher.lastName}
+                    checked={checkedItems.teachers[teacher._id]}
+                    onChange={() =>
+                      handleCheckboxChange("teachers", teacher._id)
                     }
                   />
                 ))}

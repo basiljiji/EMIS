@@ -104,6 +104,7 @@ export const resourceAdminSlice = apiSlice.injectEndpoints({
                 method: 'GET',
             })
         }),
+        
 
     })
 })

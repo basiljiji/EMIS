@@ -6,7 +6,7 @@ import path from 'path'
 
 export const addFolder = async (req, res, next) => {
     try {
-        const { folderName, classdata, sectiondata, subjectdata } = req.body
+        const { folderName, classdata, sectiondata, subjectdata, teacherdata } = req.body
 
 
         if (!folderName) {
@@ -23,7 +23,7 @@ export const addFolder = async (req, res, next) => {
             await Folder.create({
                 folderName,
                 folderPath: folderName,
-                accessTo: { classAccess: classdata, sectionAccess: sectiondata, subjectAccess: subjectdata }
+                accessTo: { classAccess: classdata, sectionAccess: sectiondata, subjectAccess: subjectdata, teacherAccess: teacherdata }
             })
             // Check if folder already exists
             const folderPath = `./uploads/${folderName}`
@@ -105,7 +105,7 @@ export const renameFolder = async (req, res, next) => {
         const { folderName } = req.body
 
         // Assuming the folder ID is associated with the folder name
-        const folder = await Folder.findOneAndUpdate({ _id: folderId }, { folderName }, { new: true })
+        const folder = await Folder.findById(folderId)
 
         // Check if the folder exists
         if (!folder) {
@@ -126,9 +126,14 @@ export const renameFolder = async (req, res, next) => {
                 const error = new HttpError('Error renaming folder', 500)
                 return next(error)
             }
-            console.log('Folder renamed successfully')
             res.status(200).json({ message: "Folder Renamed" })
         })
+
+        // Update the folder name in the database
+        folder.folderName = folderName
+        await folder.save()
+
+
     } catch (err) {
         console.error('Error renaming folder:', err)
         const error = new HttpError('Something went wrong', 500)
@@ -139,13 +144,7 @@ export const renameFolder = async (req, res, next) => {
 export const editAccessFolder = async (req, res, next) => {
     try {
         const folderId = req.params.id
-        const { classdata, sectiondata, subjectdata } = req.body.accessTo
-
-        // Ensure req.body contains required data
-        if (!classdata && !sectiondata && !subjectdata) {
-            const error = new HttpError('Missing data in request body', 400)
-            return next(error)
-        }
+        const { classdata, sectiondata, subjectdata, teacherdata } = req.body.accessTo
 
         const folder = await Folder.findById(folderId)
 
@@ -154,15 +153,12 @@ export const editAccessFolder = async (req, res, next) => {
             return next(error)
         }
 
-        // Update folder access
-        if (classdata && classdata.length > 0) {
-            folder.accessTo.classAccess.push(...classdata)
-        }
-        if (sectiondata && sectiondata.length > 0) {
-            folder.accessTo.sectionAccess.push(...sectiondata)
-        }
-        if (subjectdata && subjectdata.length > 0) {
-            folder.accessTo.subjectAccess.push(...subjectdata)
+        // Completely replace existing data with the data from the request body
+        folder.accessTo = {
+            classAccess: classdata || [],
+            sectionAccess: sectiondata || [],
+            subjectAccess: subjectdata || [],
+            teacherAccess: teacherdata || []
         }
 
         // Save the updated folder
@@ -171,7 +167,6 @@ export const editAccessFolder = async (req, res, next) => {
         // Return updated folder in the response
         res.json({ folder, message: "Folder Access Updated" })
     } catch (err) {
-        // Handle specific errors if needed
         console.error(err)
         const error = new HttpError('Something Went Wrong', 500)
         return next(error)
@@ -224,8 +219,6 @@ export const deleteResource = async (req, res, next) => {
             throw error
         }
 
-        console.log(resource)
-
         const filePath = `./uploads/${resource.filePath}`
 
 
@@ -271,43 +264,41 @@ export const addSubfolder = async (req, res, next) => {
 
         if (folder) {
             const subfolderData = await Subfolder.findOne({
-                subfolderName, parentFolder: folder._id, "isDeleted.status":false })
-            if(subfolderData) {
-                    const error = new HttpError('Folder Already Exists', 500)
-                    return next(error)
-                } else {
-                    await Subfolder.create({
-                        parentFolder: folder._id,
-                        subfolderName
-                    })
+                subfolderName, parentFolder: folder._id, "isDeleted.status": false
+            })
+            if (subfolderData) {
+                const error = new HttpError('Folder Already Exists', 500)
+                return next(error)
+            } else {
+                await Subfolder.create({
+                    parentFolder: folder._id,
+                    subfolderName
+                })
                 // Check if folder already exists
                 const folderPath = `./uploads/${folderName}/${subfolderName}`
-                if(!fs.existsSync(folderPath)) {
+                if (!fs.existsSync(folderPath)) {
                     // Create folder
                     fs.mkdirSync(folderPath)
-            res.status(200).json(`Folder ${subfolderName} Created`)
-        } else {
-            const error = new HttpError('Folder already exists', 400)
-            return next(error)
-        }
-    }
+                    res.status(200).json(`Folder ${subfolderName} Created`)
+                } else {
+                    const error = new HttpError('Folder already exists', 400)
+                    return next(error)
+                }
+            }
         }
 
-res.status(200).json(folder)
+        res.status(200).json(folder)
     } catch (err) {
-    const error = new HttpError('Folder Not Created', 500)
-    return next(error)
-}
+        const error = new HttpError('Folder Not Created', 500)
+        return next(error)
+    }
 }
 
 export const getSubfolders = async (req, res, next) => {
     try {
         const folderName = req.params.folderName
 
-        console.log(folderName, "Fold")
-
         const folderData = await Folder.findOne({ folderName, 'isDeleted.status': false })
-        console.log(folderData._id, "Subb")
 
         if (folderData) {
             const subfolders = await Subfolder.find({ parentFolder: folderData._id, 'isDeleted.status': false }).populate('parentFolder')
@@ -389,7 +380,6 @@ export const uploadFilesSubfolder = async (req, res, next) => {
             req.files.forEach(async (file) => {
                 const filePath = `/${subfolderData.parentFolder.folderName}/${subfolderName}/${file.originalname}`
                 // Create an object with file details
-                console.log(filePath, "Here")
                 const newResources = {
                     portionTitle: req.body.portionTitle || null,
                     filePath: filePath,

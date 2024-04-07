@@ -44,7 +44,7 @@ const Header = () => {
       const userInfo = JSON.parse(userInfoString)
       const { loginTime } = userInfo
       if (loginTime) {
-        const oneHour = 60 * 60 * 1000
+        const oneHour = 30 * 24 * 60 * 60 * 1000
         const currentTime = Date.now()
         if (currentTime - parseInt(loginTime) >= oneHour) {
           console.log("Logout")

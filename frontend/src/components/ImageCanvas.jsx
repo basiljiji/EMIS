@@ -109,7 +109,6 @@ const ImageCanvas = () => {
     // Handle other cases or throw an error for unexpected URLs
     extractedPath = "" // Or whatever default value you want to set
   }
-  console.log(extractedPath) // Output: /X/CC
 
   return (
     <div className="d-flex flex-column gap-2 p-2">

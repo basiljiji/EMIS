@@ -24,8 +24,6 @@ const AdminResourceManagement = () => {
 
   const { data: subfolders } = useGetSubFoldersQuery(folderName)
 
-  console.log(subfolders, "SS")
-
   const [deleteResource] = useDeleteResourceMutation()
 
   const bytesToMB = (bytes) => {

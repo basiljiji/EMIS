@@ -41,8 +41,6 @@ const ResourceScreen = () => {
   const { data: subfolders, refetch: subfolderRefetch } =
     useGetSubFoldersQuery(folderName)
 
-    console.log(subfolders,"sub")
-
   const [uploadResources] = useUploadReourcesMutation()
   const [selectedImage, setSelectedImage] = useState(null)
   const [uploadProgress, setUploadProgress] = useState([])
@@ -231,7 +229,7 @@ const ResourceScreen = () => {
                     }}
                   />
                 )}
-                {resource.filePath.endsWith(".pptx") && (
+                {resource.filePath.endsWith(".pdf") && (
                   <Card.Img
                     variant="top"
                     src={pdfThumbnail}

@@ -26,7 +26,15 @@ const TeacherDashboard = () => {
 
   const navigate = useNavigate()
 
-  // Filter folders based on selected class, section, and subject
+  const userInfoString = localStorage.getItem("userInfo") // Retrieve the userInfo string from localStorage
+
+  let teacherId = null // Initialize teacherId to null
+
+  if (userInfoString) {
+    const userInfo = JSON.parse(userInfoString) // Parse the userInfo string to convert it to an object
+    teacherId = userInfo.id // Extract the id from the userInfo object
+  }
+
   const filteredFolders =
     allFolders &&
     allFolders.filter((folder) => {
@@ -39,7 +47,10 @@ const TeacherDashboard = () => {
       const subjectMatch = subject
         ? folder.accessTo.subjectAccess.includes(subject)
         : true // If no subject selected, always return true for subject match
-      return classMatch && sectionMatch && subjectMatch
+      const teacherMatch = teacherId
+        ? folder.accessTo.teacherAccess.includes(teacherId)
+        : true // If no teacherId available, always return true for teacher match
+      return classMatch && sectionMatch && subjectMatch && teacherMatch
     })
 
   const handleAccessData = async (folder) => {
@@ -60,7 +71,6 @@ const TeacherDashboard = () => {
   return (
     <>
       <Container>
-        
         <Row>
           <Col md={3}>
             <Form>
@@ -110,7 +120,7 @@ const TeacherDashboard = () => {
                       <LinkContainer to={`/resource/${folder.folderName}`}>
                         <Col
                           xs="auto"
-                          className=""
+                          className="text-center"
                           onClick={() => handleAccessData(folder)}
                         >
                           <FaFolder

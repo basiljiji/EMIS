@@ -70,7 +70,7 @@ const PdfCanvas = () => {
   }
 
   const handlePenDrawClick = () => {
-    console.log("Pen Draw feature clicked")
+    console.log("Pen Draw clicked")
   }
 
   return (

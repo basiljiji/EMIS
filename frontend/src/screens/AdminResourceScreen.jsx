@@ -13,6 +13,7 @@ import { useGetSubjectsQuery } from "../slices/subjectApiSlice"
 import { useGetClassesQuery } from "../slices/classApiSlice"
 import Message from "../components/Message"
 import Loader from "../components/Loader"
+import { useGetTeachersQuery } from "../slices/teacherApiSlice"
 
 const AdminResourceScreen = () => {
   const [showModal, setShowModal] = useState(false)
@@ -20,10 +21,12 @@ const AdminResourceScreen = () => {
   const [selectedSections, setSelectedSections] = useState([])
   const [selectedSubjects, setSelectedSubjects] = useState([])
   const [selectedClasses, setSelectedClasses] = useState([])
+  const [selectedTeachers, setSelectedTeachers] = useState([])
 
   const { data: sections } = useGetSectionsQuery()
   const { data: subjects } = useGetSubjectsQuery()
   const { data: classes } = useGetClassesQuery()
+  const { data: teachers } = useGetTeachersQuery()
 
   const [addFolder] = useAddFolderMutation()
   const {
@@ -56,10 +59,18 @@ const AdminResourceScreen = () => {
         : [...prevSelected, subjectId]
     )
   }
+  const handleTeacherToggle = (teacherId) => {
+    setSelectedTeachers((prevSelected) =>
+      prevSelected.includes(teacherId)
+        ? prevSelected.filter((id) => id !== teacherId)
+        : [...prevSelected, teacherId]
+    )
+  }
 
   const isSectionChecked = (sectionId) => selectedSections.includes(sectionId)
   const isSubjectChecked = (subjectId) => selectedSubjects.includes(subjectId)
   const isClassChecked = (classId) => selectedClasses.includes(classId)
+  const isTeacherChecked = (teacherId) => selectedTeachers.includes(teacherId)
 
   const folderHandler = async () => {
     try {
@@ -72,15 +83,19 @@ const AdminResourceScreen = () => {
       const checkedSubjects = selectedSubjects.filter((subjectId) =>
         isSubjectChecked(subjectId)
       )
+      const checkedTeachers = selectedTeachers.filter((teacherId) =>
+        isTeacherChecked(teacherId)
+      )
 
       const res = await addFolder({
         folderName,
         classdata: checkedClasses,
         sectiondata: checkedSections,
         subjectdata: checkedSubjects,
+        teacherdata: checkedTeachers,
       }).unwrap()
       refetch()
-      setFolderName("") // Use setFolderName to update state
+      setFolderName("")
       toast.success("Folder Created")
       setShowModal(false)
     } catch (err) {
@@ -102,7 +117,7 @@ const AdminResourceScreen = () => {
         <Row>
           <h3>List Folders</h3>
           {isLoading ? (
-              <Loader />
+            <Loader />
           ) : error ? (
             <p>
               <Message variant="danger">
@@ -206,6 +221,24 @@ const AdminResourceScreen = () => {
                     onChange={() => handleSubjectToggle(subject._id)}
                     style={{
                       color: isSubjectChecked(subject._id)
+                        ? "green"
+                        : "inherit",
+                    }}
+                  />
+                ))}
+            </Col>
+            <Col>
+              <h5>Teachers:</h5>
+              {teachers &&
+                teachers.map((teacher) => (
+                  <Form.Check
+                    key={teacher._id}
+                    type="checkbox"
+                    label={teacher.firstName + " " + teacher.lastName}
+                    checked={isTeacherChecked(teacher._id)}
+                    onChange={() => handleTeacherToggle(teacher._id)}
+                    style={{
+                      color: isTeacherChecked(teacher._id)
                         ? "green"
                         : "inherit",
                     }}

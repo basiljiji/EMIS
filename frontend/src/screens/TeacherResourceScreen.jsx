@@ -24,8 +24,6 @@ const TeacherResourceScreen = () => {
     error,
   } = useFetchResourcesQuery(folderName)
 
-  console.log(folderResources, "CC")
-
   const { data: subfolders } = useGetSubFoldersQuery(folderName)
 
   const handleFileClick = (file) => {
@@ -59,8 +57,6 @@ const TeacherResourceScreen = () => {
       })
     }
   }
-
-  console.log(process.env.REACT_APP_HOST, "XXS")
 
   return (
     <>
