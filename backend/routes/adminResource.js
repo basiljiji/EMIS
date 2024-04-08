@@ -13,7 +13,7 @@ router.patch('/folder/rename/:id', authenticateAdmin, renameFolder)
 router.patch('/folder/delete/:id', authenticateAdmin, deleteFolder)
 router.get('/folder/:folderName', authenticateAdmin, getSingleFolderData)
 router.put('/folder/access/:id', authenticateAdmin, editAccessFolder)
-router.patch('/filename/:id', authenticateAdmin, deleteResource)
+router.patch('/filename/:folderId/:resourceId', authenticateAdmin, deleteResource)
 
 
 //Subfolders

@@ -208,33 +208,55 @@ export const deleteFolder = async (req, res, next) => {
 }
 
 
+// Donot Remove the resource from DB let it be there for references like period if necessary
+// Add Class, Section, Subject as String instead of ref ID they maybe removed in future so
+
 export const deleteResource = async (req, res, next) => {
-    try {
-        const resourceId = req.params.id
+    // try {
+    const folderId = req.params.folderId // Assuming you're passing folderId in the request parameters
+    const resourceId = req.params.resourceId // Assuming you're passing resourceId in the request parameters
 
-        const resource = await Resource.findById(resourceId)
+    // Find the folder by its ID
+    const folder = await Folder.findById(folderId)
 
-        if (!resource) {
-            const error = new HttpError('Resource not found', 404)
-            throw error
-        }
-
-        const filePath = `./uploads/${resource.filePath}`
-
-
-        await fs.promises.unlink(filePath)
-
-        resource.isDeleted.status = true
-        resource.isDeleted.deletedBy = req.admin
-        resource.isDeleted.deletedTime = Date.now()
-
-        await resource.save()
-
-        res.status(200).json({ message: 'Resource deleted successfully' })
-    } catch (err) {
-        const error = new HttpError('Something Went Wrong', 500)
-        return next(error)
+    if (!folder) {
+        // If the folder doesn't exist, return an error
+        return res.status(404).json({ message: 'Folder not found' })
     }
+
+    // Find the resource index in the folder's resources array
+    const resourceIndex = folder.resources.findIndex(resource => resource._id.equals(resourceId))
+
+    if (resourceIndex === -1) {
+        // If the resource doesn't exist in the folder, return an error
+        return res.status(404).json({ message: 'Resource not found' })
+    }
+
+    // Remove the resource from the folder's resources array
+    const deletedResource = folder.resources.splice(resourceIndex, 1)[0]
+
+    // Save the updated folder to the database
+    await folder.save()
+
+    const filePath = `./uploads/${deletedResource.filePath}`
+
+    const normalizedPath = path.normalize(filePath);
+
+    console.log(normalizedPath,"pp")
+
+    // Delete the file from the file system
+    await fs.unlink(normalizedPath, (err) => {
+        if (err) {
+            console.error('Error deleting file:', err)
+        }
+    });
+
+    // Return a success message
+    res.status(200).json({ message: 'Resource deleted successfully' })
+    // } catch (err) {
+    //     const error = new HttpError('Something Went Wrong', 500)
+    //     return next(error)
+    // }
 }
 
 
