@@ -267,7 +267,7 @@ const ResourceScreen = () => {
                       fontSize: "18px",
                     }}
                   >
-                    {resource.fileName}
+                    {resource.portionTitle}
                   </Card.Title>
                   <Card.Text
                     style={{

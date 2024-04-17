@@ -12,7 +12,6 @@ import teacherRoute from './routes/teacherRoutes.js'
 import adminAuthRoute from './routes/adminAuthRoutes.js'
 import classDetailshRoute from './routes/classDetailsRoutes.js'
 import sectionRoute from './routes/sectionRoutes.js'
-import hourRoute from './routes/hourRoutes.js'
 import subjectRoute from './routes/subjectRoutes.js'
 import teacherAuthRoute from './routes/teacherAuthRoutes.js'
 import adminResourceRoute from './routes/adminResource.js'
@@ -44,7 +43,6 @@ app.use('/api/teacher', teacherRoute)
 app.use('/api/admin', adminAuthRoute)
 app.use('/api/admin/class', classDetailshRoute)
 app.use('/api/admin/section', sectionRoute)
-app.use('/api/admin/hour', hourRoute)
 app.use('/api/admin/subject', subjectRoute)
 app.use('/api/admin/resource', adminResourceRoute)
 

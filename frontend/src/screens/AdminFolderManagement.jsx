@@ -94,7 +94,7 @@ const AdminFolderManagement = () => {
             allFolders.map((folder, index) => (
               <tr key={folder.id}>
                 <td>{index + 1}</td>
-                <td>{folder.folderName}</td>
+                <td>{folder.folderTitle}</td>
                 <td>
                   <LinkContainer to={`/admin/folder/${folder.folderName}`}>
                     <Button className="bg-success border-0">Manage</Button>
@@ -103,7 +103,7 @@ const AdminFolderManagement = () => {
                 <td>
                   <Button
                     className="border-0"
-                    onClick={() => handleRename(folder._id, folder.folderName)}
+                    onClick={() => handleRename(folder._id, folder.folderTitle)}
                   >
                     Rename
                   </Button>

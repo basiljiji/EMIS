@@ -57,7 +57,7 @@ const Header = () => {
 
   return (
     <header>
-      <Navbar expand="lg" collapseOnSelect className="py-3">
+      <Navbar expand="lg" collapseOnSelect className="py-3 navbar">
         <Container>
           <LinkContainer to="/dashboard">
             <Navbar.Brand>
@@ -92,6 +92,7 @@ const Header = () => {
                     </Button>
                   </Nav.Item>
                 ) : (
+                  <>
                   <NavDropdown title={userInfo.name} id="username">
                     <LinkContainer to="/dashboard">
                       <NavDropdown.Item>Profile</NavDropdown.Item>
@@ -100,6 +101,10 @@ const Header = () => {
                       Logout
                     </NavDropdown.Item>
                   </NavDropdown>
+                   <Button className="bg-danger" onClick={logoutHandler}>
+                      Logout
+                    </Button>
+                  </>
                 )
               ) : (
                 <LinkContainer to="/login">

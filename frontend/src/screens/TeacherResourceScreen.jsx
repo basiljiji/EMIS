@@ -51,6 +51,10 @@ const TeacherResourceScreen = () => {
       navigate(`/resource/media`, {
         state: { fileUrl },
       })
+    } else if (fileUrl.endsWith(".ppt") || fileUrl.endsWith(".pptx")) {
+      navigate(`/resource/doc`, {
+        state: { fileUrl },
+      })
     } else {
       navigate(`/resource/image`, {
         state: { fileUrl },

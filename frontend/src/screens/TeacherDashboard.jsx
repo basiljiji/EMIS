@@ -117,7 +117,7 @@ const TeacherDashboard = () => {
                 ) : filteredFolders && filteredFolders.length > 0 ? (
                   filteredFolders.map((folder) => (
                     <Col key={folder._id} className="align-items-center">
-                      <LinkContainer to={`/resource/${folder.folderName}`}>
+                      <LinkContainer to={`/resource/${folder.folderTitle}`}>
                         <Col
                           xs="auto"
                           className="text-center"

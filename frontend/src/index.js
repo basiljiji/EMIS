@@ -32,6 +32,7 @@ import AdminSubfoldersScreen from './screens/AdminSubfoldersScreen'
 import TeacherSubfolderScreen from './screens/TeacherSubfolderScreen'
 import AdminResourceViewerScreen from './screens/AdminResourceViewerScreen'
 import DocCanvas from './components/DocCanvas'
+import AdminSubfolderResourcesScreen from './screens/AdminSubfolderResourcesScreen'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -65,6 +66,7 @@ const router = createBrowserRouter(
         <Route path='/admin/folder/edit/:id' element={<AdminEditAccessScreen />} />
         <Route path='/admin/folder/:id' element={<AdminResourceManagement />} />
         <Route path='/admin/resource/:id/:sid' element={<AdminSubfoldersScreen />} />
+        <Route path='/admin/resource/:id/:sid/resources' element={<AdminSubfolderResourcesScreen />} />
         <Route path='/admin/viewer' element={<AdminResourceViewerScreen />} />
       </Route>
 

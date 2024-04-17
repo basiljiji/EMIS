@@ -5,11 +5,12 @@ import { LinkContainer } from "react-router-bootstrap"
 import {
   useDeleteResourceMutation,
   useDeleteSubfolderMutation,
+  useDeleteSubfolderResourceMutation,
   useGetSingleFolderDataQuery,
+  useGetSingleSubfolderDataQuery,
   useGetSubFoldersQuery,
-  useRenameFolderMutation,
-  useRenameFolderResourcesMutation,
   useRenameSubfolderMutation,
+  useRenameSubfolderResourcesMutation,
 } from "../slices/resourceAdminSlice"
 import {
   Table,
@@ -22,16 +23,20 @@ import {
 import Loader from "../components/Loader"
 import Message from "../components/Message"
 
-const AdminResourceManagement = () => {
+const AdminSubfolderResourcesScreen = () => {
   const { id: folderName } = useParams()
+  const { sid: subfolderName } = useParams()
 
   const [showModal, setShowModal] = useState(false)
   const [showRenameModal, setShowRenameModal] = useState(false)
-  const [showRenameResourceModal, setshowRenameResourceModal] = useState(false)
   const [renameFolderName, setRenameFolderName] = useState("")
   const [selectedFolderId, setSelectedFolderId] = useState("")
   const [renameResource, setRenameResource] = useState("")
   const [selectedResourceId, setSelectedResourceId] = useState("")
+
+  const [showRenameResourceModal, setshowRenameResourceModal] = useState(false)
+  const [renameSubfolderResource] = useRenameSubfolderResourcesMutation()
+
 
   const handleClose = () => {
     setShowModal(false)
@@ -50,19 +55,14 @@ const AdminResourceManagement = () => {
   }
 
   const {
-    data: folderResources,
+    data: subfolderResources,
     isLoading,
     refetch,
     error,
-  } = useGetSingleFolderDataQuery(folderName)
+  } = useGetSingleSubfolderDataQuery({ folderName, subfolderName })
 
-  const { data: subfolders, refetch: subfoldersRefetch } =
-    useGetSubFoldersQuery(folderName)
 
-  const [deleteResource] = useDeleteResourceMutation()
-  const [renameFolderResource] = useRenameFolderResourcesMutation()
-  const [deleteSubfolder] = useDeleteSubfolderMutation()
-  const [renameSubfolder] = useRenameSubfolderMutation()
+  const [deleteSubfolderResource] = useDeleteSubfolderResourceMutation()
 
   const bytesToMB = (bytes) => {
     if (bytes === 0) return "0 MB"
@@ -72,9 +72,10 @@ const AdminResourceManagement = () => {
 
   const deleteResourceHandler = async (resourceId) => {
     try {
-      const result = await deleteResource({
+      const result = await deleteSubfolderResource({
         resourceId: resourceId,
         folderName,
+        subfolderName,
       })
       refetch()
       toast.success("Resource Deleted")
@@ -83,45 +84,24 @@ const AdminResourceManagement = () => {
     }
   }
 
-  const deleteSubfolderHandler = async (subfolderId) => {
-    try {
-      const result = await deleteSubfolder({
-        subfolderId: subfolderId,
-      })
-      subfoldersRefetch()
-      toast.success("Folder Deleted")
-    } catch (err) {
-      toast.error(err?.data?.message || err.error)
-    }
-  }
 
-  const handleRenameFolder = async () => {
-    try {
-      const result = await renameSubfolder({
-        subfolderId: selectedFolderId,
-        subfolderName: renameFolderName,
-      })
-      setshowRenameResourceModal(false)
-      subfoldersRefetch()
-    } catch (err) {
-      toast.error(err?.data?.message || err.error)
-    }
-  }
 
   const handleRenameResource = async () => {
     try {
-      const result = await renameFolderResource({
+      console.log(selectedResourceId, "ress")
+      const result = await renameSubfolderResource({
         folderName: folderName,
+        subfolderName: subfolderName,
         resourceId: selectedResourceId,
         portionTitle: renameResource,
       })
-      console.log(result,"ress")
       setShowRenameModal(false)
       refetch()
     } catch (err) {
       toast.error(err?.data?.message || err.error)
     }
   }
+
 
   return (
     <>
@@ -134,7 +114,7 @@ const AdminResourceManagement = () => {
         </Breadcrumb>
         {isLoading && <Loader />}
         {error && <Message></Message>}
-        {folderResources && (
+        {subfolderResources && (
           <Table striped bordered hover>
             <thead>
               <tr>
@@ -145,44 +125,10 @@ const AdminResourceManagement = () => {
               </tr>
             </thead>
             <tbody>
-              {/* Render subfolders if they exist */}
-              {subfolders &&
-                subfolders.length > 0 &&
-                subfolders.map((subfolder) => (
-                  <tr key={subfolder._id}>
-                    <td>{subfolder.folderTitle}</td>
-                    <td>Subfolder</td>
-                    <td>-</td> {/* No size for folders */}
-                    <td>
-                      <LinkContainer
-                        to={`/admin/resource/${folderName}/${subfolder.subfolderName}/resources`}
-                      >
-                        <Button variant="success" className="me-2">
-                          Manage
-                        </Button>
-                      </LinkContainer>
-                      <Button
-                        variant="primary"
-                        className="me-2"
-                        onClick={() =>
-                          handleRename(subfolder._id, subfolder.folderTitle)
-                        }
-                      >
-                        Rename
-                      </Button>
-                      <Button
-                        variant="danger"
-                        onClick={() => deleteSubfolderHandler(subfolder._id)}
-                      >
-                        Delete
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
               {/* Render resources if they exist */}
-              {folderResources.resources &&
-                folderResources.resources.length > 0 &&
-                folderResources.resources.map((resource) => (
+              {subfolderResources.resources &&
+                subfolderResources.resources.length > 0 &&
+                subfolderResources.resources.map((resource) => (
                   <tr key={resource._id}>
                     <td>{resource.portionTitle}</td>
                     <td>{resource.fileType}</td>
@@ -231,7 +177,7 @@ const AdminResourceManagement = () => {
       {/* Rename Folder Modal */}
       <Modal show={showRenameModal} onHide={() => setShowRenameModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Rename Folder</Modal.Title>
+          <Modal.Title>Rename</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form.Control
@@ -244,7 +190,7 @@ const AdminResourceManagement = () => {
           <Button variant="secondary" onClick={() => setShowRenameModal(false)}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleRenameFolder}>
+          <Button variant="primary" onClick={handleRenameResource}>
             Rename
           </Button>
         </Modal.Footer>
@@ -253,4 +199,4 @@ const AdminResourceManagement = () => {
   )
 }
 
-export default AdminResourceManagement
+export default AdminSubfolderResourcesScreen

@@ -4,6 +4,9 @@ const subfolderSchema = new mongoose.Schema({
     subfolderName: {
         type: String,
     },
+    folderTitle: {
+        type: String,
+    },
     parentFolder: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Folder'

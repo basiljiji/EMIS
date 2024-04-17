@@ -36,6 +36,13 @@ export const resourceAdminSlice = apiSlice.injectEndpoints({
                 body: data
             })
         }),
+        renameFolderResources: builder.mutation({
+            query: (data) => ({
+                url: `${RESOURCE_URL}/folder/resrename/${data.folderName}/${data.resourceId}`,
+                method: 'PATCH',
+                body: data
+            })
+        }),
         editFolderAccess: builder.mutation({
             query: (data) => ({
                 url: `${RESOURCE_URL}/folder/access/${data.folderId}`,
@@ -58,7 +65,7 @@ export const resourceAdminSlice = apiSlice.injectEndpoints({
         }),
         deleteResource: builder.mutation({
             query: (data) => ({
-                url: `${RESOURCE_URL}/filename/${data.resourceId}`,
+                url: `${RESOURCE_URL}/filename/${data.folderName}/${data.resourceId}`,
                 method: 'PATCH',
                 body: data
             })
@@ -86,7 +93,14 @@ export const resourceAdminSlice = apiSlice.injectEndpoints({
         }),
         renameSubfolder: builder.mutation({
             query: (data) => ({
-                url: `${RESOURCE_URL}/subfolder/rename/${data.folderId}`,
+                url: `${RESOURCE_URL}/subfolder/rename/${data.subfolderId}`,
+                method: 'PATCH',
+                body: data
+            })
+        }),
+        renameSubfolderResources: builder.mutation({
+            query: (data) => ({
+                url: `${RESOURCE_URL}/subfolder/resrename/${data.folderName}/${data.subfolderName}/${data.resourceId}`,
                 method: 'PATCH',
                 body: data
             })
@@ -104,8 +118,13 @@ export const resourceAdminSlice = apiSlice.injectEndpoints({
                 method: 'GET',
             })
         }),
-        
-
+        deleteSubfolderResource: builder.mutation({
+            query: (data) => ({
+                url: `${RESOURCE_URL}/subfilename/${data.folderName}/${data.subfolderName}/${data.resourceId}`,
+                method: 'PATCH',
+                body: data
+            })
+        }),
     })
 })
 
@@ -124,5 +143,8 @@ export const {
     useDeleteSubfolderMutation,
     useUploadFilesSubfolderMutation,
     useGetSingleSubfolderDataQuery,
-    useGetResourceByFolderQuery
+    useGetResourceByFolderQuery,
+    useRenameFolderResourcesMutation,
+    useRenameSubfolderResourcesMutation,
+    useDeleteSubfolderResourceMutation
 } = resourceAdminSlice

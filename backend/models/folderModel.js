@@ -4,6 +4,9 @@ const folderSchema = new mongoose.Schema({
     folderName: {
         type: String,
     },
+    folderTitle: {
+        type: String,
+    },
     accessTo: {
         classAccess: [{
             type: mongoose.Schema.Types.ObjectId,

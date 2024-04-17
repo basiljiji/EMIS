@@ -48,7 +48,13 @@ p {
 }
 
 header {
-  background-color: #2F456D;
+  /* background-color: #2F456D; */
+  background: url(./assets/header-bg.jpg);
+  background-size: auto;
+  width: auto;
+  height :76px;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 footer {

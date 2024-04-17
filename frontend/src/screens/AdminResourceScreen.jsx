@@ -137,7 +137,7 @@ const AdminResourceScreen = () => {
                           color: "gold",
                         }}
                       />
-                      <p>{folder.folderName}</p>
+                      <p>{folder.folderTitle}</p>
                     </Col>
                   </LinkContainer>
                 </Col>
