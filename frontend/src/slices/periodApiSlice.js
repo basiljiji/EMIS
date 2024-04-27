@@ -23,8 +23,20 @@ export const periodSlice = apiSlice.injectEndpoints({
                 method: 'POST',
                 body: data
             })
+        }),
+        getPeriodsByTeacher:builder.query({
+            query: (data) => ({
+                url: `${PERIOD_URL}/teacher/${data.teacherId}`,
+                method: 'GET'
+            })
+        }),
+        getPeriodsReportAll: builder.query({
+            query: () => ({
+                url: `${PERIOD_URL}/report`,
+                method: 'GET'
+            })
         })
     })
 })
 
-export const { useAddAccessedFilesMutation, useGetAllPeriodsQuery, useAddTeacherClassDataMutation } = periodSlice
+export const { useAddAccessedFilesMutation, useGetAllPeriodsQuery, useAddTeacherClassDataMutation, useGetPeriodsByTeacherQuery, useGetPeriodsReportAllQuery } = periodSlice

@@ -107,10 +107,10 @@ const AdminResourceScreen = () => {
     <AdminLayout>
       <Container className="py-3 justify-content-between ">
         <Row className="justify-content-between">
-          <Col xs="auto">
+          <Col md={6}>
             <h5>Admin Resource Screen</h5>
           </Col>
-          <Col xs="auto">
+          <Col className="text-end">
             <Button onClick={() => setShowModal(true)}>New Folder</Button>
           </Col>
         </Row>
@@ -134,10 +134,12 @@ const AdminResourceScreen = () => {
                         style={{
                           width: "80px",
                           height: "80px",
-                          color: "gold",
+                          // color: "gold",
+                          color: "white",
+
                         }}
                       />
-                      <p>{folder.folderTitle}</p>
+                      <p className="fw-bold">{folder.folderTitle}</p>
                     </Col>
                   </LinkContainer>
                 </Col>

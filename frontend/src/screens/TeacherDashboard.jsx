@@ -127,10 +127,11 @@ const TeacherDashboard = () => {
                             style={{
                               width: "80px",
                               height: "80px",
-                              color: "gold",
+                              // color: "gold",
+                              color: "white",
                             }}
                           />
-                          <p>{folder.folderName}</p>
+                          <p className="fw-bold">{folder.folderName}</p>
                         </Col>
                       </LinkContainer>
                     </Col>

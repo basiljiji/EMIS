@@ -9,14 +9,7 @@ const DocCanvas = () => {
 
   return (
     <div style={{ width: "100%", height: "600px" }}>
-      <iframe
-        src={`../assets/ViewerJS/viewer.html?file=${encodeURIComponent(
-          fileUrl
-        )}`}
-        title="PPTX Viewer"
-        style={{ width: "100%", height: "100%" }}
-        frameBorder="0"
-      />
+      <h1>File Not Supported</h1>
     </div>
   )
 }

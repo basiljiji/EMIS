@@ -66,7 +66,7 @@ const Header = () => {
           </LinkContainer>
           <Navbar.Toggle
             aria-controls="basic-navbar-nav"
-            className="bg-light"
+            className="bg-danger"
           />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">

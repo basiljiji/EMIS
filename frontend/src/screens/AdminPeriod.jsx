@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { useGetAllPeriodsQuery } from "../slices/periodApiSlice"
+import { useGetPeriodsByTeacherQuery } from "../slices/periodApiSlice"
 import AdminLayout from "../components/AdminLayout"
 import { Table, Form, Button, Row, Col, Container } from "react-bootstrap"
 import jsPDF from "jspdf"
@@ -9,7 +9,8 @@ import Loader from "../components/Loader"
 import Message from "../components/Message"
 
 const AdminPeriod = () => {
-  const { data: periods, isLoading, refetch, error } = useGetAllPeriodsQuery()
+  
+  const [teacherId, setTeacherId] = useState("")
   const [teacherName, setTeacherName] = useState("")
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
@@ -17,6 +18,10 @@ const AdminPeriod = () => {
   const [sortField, setSortField] = useState("name")
 
   const { data: teachers } = useGetTeachersQuery()
+
+  //USE PARAMS IS THE WAY TO IMPLEMENT DATE RANGE FILTER
+  const { data: periods, isLoading, refetch, error } = useGetPeriodsByTeacherQuery({ teacherId: '660a29e510474c44318374a6' })
+
 
   // Function to format date as dd-mm-yyyy
   const formatDate = (dateString) => {
@@ -41,7 +46,7 @@ const AdminPeriod = () => {
     const filteredPeriods = periods.filter((period) => {
       const teacherMatch = teacherName
         ? `${period.teacher.firstName} ${period.teacher.lastName}` ===
-          teacherName
+        teacherName
         : true
       const dateRangeMatch =
         startDate && endDate
@@ -133,6 +138,11 @@ const AdminPeriod = () => {
     }
   }
 
+
+  const handleFetch = () => {
+    // Get selected teacher date range and call the API
+  }
+
   return (
     <AdminLayout>
       <h4 className="mt-3">Periods</h4>
@@ -182,6 +192,9 @@ const AdminPeriod = () => {
                   </Col>
                 </Row>
               </Form.Group>
+            </Col>
+            <Col xs="auto">
+              <Button onClick={handleFetch}>Fetch</Button>
             </Col>
           </Row>
         </Form>

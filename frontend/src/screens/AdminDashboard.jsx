@@ -1,11 +1,16 @@
 import React, { useEffect, useRef, useState } from "react"
 import AdminLayout from "../components/AdminLayout"
-import { useGetAllPeriodsQuery } from "../slices/periodApiSlice"
+import { useGetAllPeriodsQuery, useGetPeriodsReportAllQuery } from "../slices/periodApiSlice"
 import Chart from "chart.js/auto"
-import { Form, Container } from "react-bootstrap"
+import { Form, Container, Table, Row, Col, Button } from "react-bootstrap"
+import jsPDF from "jspdf"
+import autoTable from "jspdf-autotable"
+import Loader from "../components/Loader"
+
+
 
 const AdminDashboard = () => {
-  const { data: periods, isLoading, error } = useGetAllPeriodsQuery()
+
   const chartRef = useRef(null)
   const [filter, setFilter] = useState("monthly") // Default filter option
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
@@ -13,6 +18,12 @@ const AdminDashboard = () => {
   const [selectedTeacher, setSelectedTeacher] = useState("")
   const [selectedWeekday, setSelectedWeekday] = useState("")
   const [chartInstance, setChartInstance] = useState(null)
+
+
+  const { data: periods, isLoading, error } = useGetAllPeriodsQuery()
+  const { data: periodsData, isLoading: reportLoading, error: reportError } = useGetPeriodsReportAllQuery()
+
+  console.log(periodsData, "1221")
 
   // Array of colors for teachers
   const teacherColors = [
@@ -216,45 +227,142 @@ const AdminDashboard = () => {
     ))
   }
 
+
+  // Function to handle printing the table as PDF
+  const pdfHandler = () => {
+    const doc = new jsPDF()
+
+    const columns = [
+      "Sl No.",
+      "Name",
+      "Total Duration(hr)",
+      "Total Logged-in Time(hr)",
+      "Total Resource Time(hr)",
+      "From Date",
+      "To Date",
+    ]
+
+    const rows = Object.keys(periodsData).map((personName, index) => [
+      index + 1,
+      personName,
+      periodsData[personName].totalDuration,
+      periodsData[personName].totalLoggedInTime,
+      periodsData[personName].totalResourceTime,
+      new Date(periodsData[personName].fromDate).toLocaleString(),
+      new Date(periodsData[personName].toDate).toLocaleString(),
+    ])
+
+    doc.text("St.Mary's Public School", 10, 10)
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: 20,
+      headStyles: { fillColor: [100, 100, 255] },
+    })
+
+    // doc.save("periods_report.pdf")
+    const pdfBlob = doc.output("blob")
+    const pdfUrl = URL.createObjectURL(pdfBlob)
+
+    // Open the PDF in a new tab
+    window.open(pdfUrl, "_blank")
+  }
+
   return (
     <AdminLayout>
       <Container>
         <Form>
-          <Form.Group>
-            <Form.Select
-              value={selectedMonth}
-              onChange={(e) => handleMonthChange(e.target.value)}
-            >
-              <option value="">Select Month</option>
-              {monthsOptions}
-            </Form.Select>
-          </Form.Group>
-          <Form.Group>
-            <Form.Select
-              value={selectedYear}
-              onChange={(e) => handleYearChange(e.target.value)}
-            >
-              <option value="">Select Year</option>
-              {nextTenYearsOptions}
-            </Form.Select>
-          </Form.Group>
-          <Form.Group>
-            <Form.Select
-              value={selectedTeacher}
-              onChange={(e) => handleTeacherChange(e.target.value)}
-            >
-              <option value="">Select Teacher</option>
-              {teachersOptions}
-            </Form.Select>
-          </Form.Group>
+          <Row className="d-flex my-2">
+            <Col md={4}>
+              <Form.Group>
+                <Form.Select
+                  value={selectedMonth}
+                  onChange={(e) => handleMonthChange(e.target.value)}
+                >
+                  <option value="">Select Month</option>
+                  {monthsOptions}
+                </Form.Select>
+              </Form.Group>
+            </Col>
+            <Col md={4}>
+              <Form.Group>
+                <Form.Select
+                  value={selectedYear}
+                  onChange={(e) => handleYearChange(e.target.value)}
+                >
+                  <option value="">Select Year</option>
+                  {nextTenYearsOptions}
+                </Form.Select>
+              </Form.Group>
+            </Col>
+            <Col md={4}>
+              <Form.Group>
+                <Form.Select
+                  value={selectedTeacher}
+                  onChange={(e) => handleTeacherChange(e.target.value)}
+                >
+                  <option value="">Select Teacher</option>
+                  {teachersOptions}
+                </Form.Select>
+              </Form.Group>
+            </Col>
+          </Row>
         </Form>
 
-        {isLoading && <p>Loading...</p>}
+        {isLoading && <Loader />}
         {error && <p>Error: {error?.data?.message || error.error}</p>}
         <canvas
           ref={chartRef}
           style={{ maxWidth: "600px", maxHeight: "400px" }}
         />
+
+        <div>
+          <Row>
+            <Col>
+              <h1>Periods Report</h1>
+
+            </Col>
+            <Col className="text-end">
+              <Button variant="primary" onClick={pdfHandler}>
+                Print Report
+              </Button>
+            </Col>
+          </Row>
+          {reportLoading ? (
+            <div><Loader /></div>
+          ) : reportError ? (
+            <div>Error: {reportError.message}</div>
+          ) : !periodsData || Object.keys(periodsData).length === 0 ? (
+            <div>No periods data available</div>
+          ) : (
+            <Table striped bordered hover>
+              <thead className="bg-success">
+                <tr >
+                  <th>Sl No.</th>
+                  <th>Name</th>
+                  <th>Total Duration(hr)</th>
+                  <th>Total Logged-in Time(hr)</th>
+                  <th>Total Resource Time(hr)</th>
+                  <th>From Date</th>
+                  <th>To Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.keys(periodsData).map((personName, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{personName}</td>
+                    <td>{periodsData[personName].totalDuration}</td>
+                    <td>{periodsData[personName].totalLoggedInTime}</td>
+                    <td>{periodsData[personName].totalResourceTime}</td>
+                    <td>{new Date(periodsData[personName].fromDate).toLocaleString()}</td>
+                    <td>{new Date(periodsData[personName].toDate).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          )}
+        </div>
       </Container>
     </AdminLayout>
   )

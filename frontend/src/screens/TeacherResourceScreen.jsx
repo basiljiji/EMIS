@@ -6,8 +6,8 @@ import {
   useGetSubFoldersQuery,
 } from "../slices/resourceAdminSlice"
 import { LinkContainer } from "react-router-bootstrap"
-import pdfThumbnail from "../assets/pdf-thumbnail.png"
-import videoThumbnail from "../assets/video-thumbnail.png"
+import pdfThumbnail from "../assets/pdf.gif"
+import videoThumbnail from "../assets/video.gif"
 import { FaFolder } from "react-icons/fa"
 import { useFetchResourcesQuery } from "../slices/resourceTeacherSlice"
 
@@ -62,6 +62,12 @@ const TeacherResourceScreen = () => {
     }
   }
 
+  const thumbnailStyle = {
+    height: "150px", 
+    fontSize: "15px",
+    textAlign:"center"
+  };
+
   return (
     <>
       <Container>
@@ -76,7 +82,7 @@ const TeacherResourceScreen = () => {
         <Row className="text-end">
           <Col>
             <LinkContainer to="/resource/canvas">
-              <Button className="bg-success mt-2">Open Canvas</Button>
+              <Button className="bg-success mt-2 fw-bold btn-lg">Open Canvas</Button>
             </LinkContainer>
           </Col>
         </Row>
@@ -91,10 +97,11 @@ const TeacherResourceScreen = () => {
                     style={{
                       width: "80px",
                       height: "80px",
-                      color: "gold",
+                      // color: "gold",
+                      color: "white",
                     }}
                   />
-                  <p>{subfolder.subfolderName}</p>
+                  <p className="fw-bold">{subfolder.subfolderName}</p>
                 </Col>
               </LinkContainer>
             </Col>
@@ -106,32 +113,26 @@ const TeacherResourceScreen = () => {
           {folderResources &&
             folderResources.resources.map((resource) => (
               <Col className="col-md-3 mt-4" key={resource._id}>
-                <Card>
+                <Card className="my-3 p-3 rounded zoom">
                   {(resource.filePath.endsWith(".jpg") ||
                     resource.filePath.endsWith(".JPG") ||
                     resource.filePath.endsWith(".jpeg") ||
                     resource.filePath.endsWith(".png")) && (
-                    <Card.Img
-                      variant="top"
-                      src={`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/${resource.filePath}`}
-                      alt={resource.fileName}
-                      onClick={() => handleFileClick(resource.filePath)}
-                      style={{
-                        fontSize: "15px",
-                      }}
-                    />
-                  )}
+                      <Card.Img
+                        variant="top"
+                        src={`http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/${resource.filePath}`}
+                      alt={resource.portionTitle}
+                        onClick={() => handleFileClick(resource.filePath)}
+                        style={{ ...thumbnailStyle }}
+                      />
+                    )}
                   {resource.filePath.endsWith(".pdf") && (
                     <Card.Img
                       variant="top"
                       src={pdfThumbnail}
                       alt="PDF Thumbnail"
                       onClick={() => handleFileClick(resource.filePath)}
-                      style={{
-                        fontSize: "15px",
-                        width: "150px",
-                        height: "150px",
-                      }}
+                      style={{ ...thumbnailStyle }}
                     />
                   )}
                   {(resource.filePath.endsWith(".mp4") ||
@@ -141,27 +142,27 @@ const TeacherResourceScreen = () => {
                     resource.filePath.endsWith(".mpeg") ||
                     resource.filePath.endsWith(".mkv") ||
                     resource.filePath.endsWith(".avi")) && (
-                    <Card.Img
-                      variant="top"
-                      src={videoThumbnail}
-                      alt="Video Thumbnail"
-                      onClick={() => handleFileClick(resource.filePath)}
-                      style={{
-                        fontSize: "12px",
-                        width: "150px",
-                        height: "150px",
-                      }}
-                    />
-                  )}
+                      <Card.Img
+                        variant="top"
+                        src={videoThumbnail}
+                        alt="Video Thumbnail"
+                        onClick={() => handleFileClick(resource.filePath)}
+                        style={{ ...thumbnailStyle }}
+                      />
+                    )}
                   <Card.Body>
-                    <Card.Title
+
+                    <Card.Title as="div"
                       style={{
                         fontSize: "18px",
                       }}
+                      className="resource-title"
                     >
-                      {resource.fileName}
+                      <span class="d-inline-block" tabindex="0" data-toggle="tooltip" title={resource.portionTitle}>
+                        <strong>{resource.portionTitle}</strong>
+                      </span>
                     </Card.Title>
-                    <Card.Text
+                    <Card.Text as="h3"
                       style={{
                         fontSize: "14px",
                         fontFamily: "Arial",
@@ -173,7 +174,8 @@ const TeacherResourceScreen = () => {
                         : "Unknown"}
                     </Card.Text>
                     <Button
-                      variant="secondary"
+                      variant="warning"
+                      className="text-dark fw-bold col-12"
                       onClick={() =>
                         handleEditButtonClick(
                           `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/${resource.filePath}`

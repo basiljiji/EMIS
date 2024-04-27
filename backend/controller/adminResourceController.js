@@ -200,7 +200,7 @@ export const deleteResource = async (req, res, next) => {
         const resourceId = req.params.resourceId // Assuming you're passing resourceId in the request parameters
 
         // Find the folder by its ID
-        const folder = await Folder.findOne({ folderName })
+        const folder = await Folder.findOne({ folderName, 'isDeleted.status': false })
 
         if (!folder) {
             // If the folder doesn't exist, return an error
@@ -457,12 +457,12 @@ export const deleteSubfolderResource = async (req, res, next) => {
         const subfolderName = req.params.subfolderName
         const resourceId = req.params.resourceId
 
-        const folder = await Folder.findOne({ folderName })
+        const folder = await Folder.findOne({ folderName, 'isDeleted.status': false })
 
         if (!folder) {
             return res.status(404).json({ message: 'Folder not found' })
         } else {
-            const subfolder = await Subfolder.findOne({ parentFolder: folder._id, subfolderName })
+            const subfolder = await Subfolder.findOne({ parentFolder: folder._id, subfolderName, 'isDeleted.status': false })
 
             const resourceIndex = subfolder.resources.findIndex(resource => resource._id.equals(resourceId))
 
@@ -535,7 +535,7 @@ export const renameSubfolderResource = async (req, res, next) => {
 
         const folder = await Folder.findOne({ folderName: folderName, 'isDeleted.status': false })
 
-        if(folder){
+        if (folder) {
             const subfolder = await Subfolder.findOneAndUpdate(
                 {
                     subfolderName: subfolderName,
