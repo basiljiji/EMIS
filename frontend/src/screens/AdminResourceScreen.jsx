@@ -107,9 +107,6 @@ const AdminResourceScreen = () => {
     <AdminLayout>
       <Container className="py-3 justify-content-between ">
         <Row className="justify-content-between">
-          <Col md={6}>
-            <h5>Admin Resource Screen</h5>
-          </Col>
           <Col className="text-end">
             <Button onClick={() => setShowModal(true)}>New Folder</Button>
           </Col>

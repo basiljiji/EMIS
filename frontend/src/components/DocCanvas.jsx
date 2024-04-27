@@ -4,6 +4,8 @@ import { useLocation } from "react-router-dom"
 const DocCanvas = () => {
   const location = useLocation()
   const fileUrl = location.state?.fileUrl || ""
+  const portionTitle = location.state?.portionTitle || ""
+
 
   console.log(fileUrl)
 

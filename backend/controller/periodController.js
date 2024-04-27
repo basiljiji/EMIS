@@ -3,7 +3,7 @@ import HttpError from "../utils/httpErrorMiddleware.js"
 
 export const addAccessData = async (req, res, next) => {
     try {
-        const { fileUrl, fromTime, toTime, duration } = req.body
+        const { fileUrl, fromTime, toTime, duration, portionTitle } = req.body
         const teacherId = req.teacher
 
         const calculatedDuration = duration ? duration : toTime - fromTime
@@ -14,6 +14,7 @@ export const addAccessData = async (req, res, next) => {
         }, {
             $push: {
                 accessedFiles: {
+                    portionTitle: portionTitle,
                     fileUrl: fileUrl,
                     fromTime: fromTime,
                     toTime: toTime,
@@ -36,20 +37,31 @@ export const addAccessData = async (req, res, next) => {
 
 export const getAllPeriods = async (req, res, next) => {
     try {
-        const periods = await Period.find({}).populate('teacher').populate('classData.class').populate('classData.section').populate('classData.subject').populate('classData.folder')
+        const pageSize = 10 
+        const page = Number(req.query.pageNumber) || 1 
+
+        const count = await Period.countDocuments()
+
+        const periods = await Period.find({})
+            .populate('teacher')
+            .populate('classData.class')
+            .populate('classData.section')
+            .populate('classData.subject')
+            .populate('classData.folder')
+            .limit(pageSize)
+            .skip(pageSize * (page - 1)) // Retrieve periods for the requested page
 
         const filteredPeriods = periods.map(period => {
             const filteredAccessedFiles = period.accessedFiles.filter(access => access.duration !== 0)
             return { ...period.toObject(), accessedFiles: filteredAccessedFiles }
         })
 
-        res.json(filteredPeriods)
+        res.json({ periods: filteredPeriods, page, pages: Math.ceil(count / pageSize) })
     } catch (err) {
         const error = new HttpError("Something Went Wrong", 500)
         return next(error)
     }
-}
-
+};
 
 export const getAllPeriodsReport = async (req, res, next) => {
     try {

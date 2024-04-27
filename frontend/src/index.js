@@ -62,6 +62,7 @@ const router = createBrowserRouter(
         <Route path='/admin/resource/:id' element={<ResourceScreen />} />
         <Route path='/admin/details' element={<AdminDetailsScreen />} />
         <Route path='/admin/period' element={<AdminPeriod />} />
+        <Route path='/admin/period/:pageNumber' element={<AdminPeriod />} />
         <Route path='/admin/folder' element={<AdminFolderManagement />} />
         <Route path='/admin/folder/edit/:id' element={<AdminEditAccessScreen />} />
         <Route path='/admin/folder/:id' element={<AdminResourceManagement />} />

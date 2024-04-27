@@ -15,6 +15,8 @@ PDFJS.GlobalWorkerOptions.workerSrc = PDFJSWorker
 const PdfCanvas = () => {
   const location = useLocation()
   const fileUrl = location.state?.fileUrl || ""
+  const portionTitle = location.state?.portionTitle || ""
+
   const [file, setFile] = useState(fileUrl)
 
   const [addAccessedFiles] = useAddAccessedFilesMutation()
@@ -25,6 +27,7 @@ const PdfCanvas = () => {
       try {
         const result = await addAccessedFiles({
           fileUrl,
+          portionTitle,
           fromTime,
           toTime: Date.now(),
         })
@@ -37,7 +40,7 @@ const PdfCanvas = () => {
     return () => {
       handleSubmit()
     }
-  }, [fileUrl, addAccessedFiles])
+  }, [fileUrl, portionTitle, addAccessedFiles])
 
   useEffect(() => {
     setFile(fileUrl)

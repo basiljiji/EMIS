@@ -44,6 +44,9 @@ const periodSchema = new mongoose.Schema({
         type: String
     },
     accessedFiles: [{
+        portionTitle: {
+            type: String
+        },
         fileUrl: {
             type: String
         },

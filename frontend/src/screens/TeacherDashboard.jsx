@@ -131,7 +131,7 @@ const TeacherDashboard = () => {
                               color: "white",
                             }}
                           />
-                          <p className="fw-bold">{folder.folderName}</p>
+                          <p className="fw-bold ">{folder.folderName}</p>
                         </Col>
                       </LinkContainer>
                     </Col>

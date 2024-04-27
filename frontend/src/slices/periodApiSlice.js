@@ -12,8 +12,11 @@ export const periodSlice = apiSlice.injectEndpoints({
             keepUnusedDataFor: 5,
         }),
         getAllPeriods: builder.query({
-            query: () => ({
-                url: `${PERIOD_URL}/all`
+            query: ({ pageNumber }) => ({
+                url: `${PERIOD_URL}/all`,
+                params: {
+                    pageNumber
+                }
             }),
             keepUnusedDataFor: 5,
         }),

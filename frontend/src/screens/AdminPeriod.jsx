@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { useGetPeriodsByTeacherQuery } from "../slices/periodApiSlice"
+import { useGetAllPeriodsQuery } from "../slices/periodApiSlice"
 import AdminLayout from "../components/AdminLayout"
 import { Table, Form, Button, Row, Col, Container } from "react-bootstrap"
 import jsPDF from "jspdf"
@@ -7,21 +7,21 @@ import { useGetTeachersQuery } from "../slices/teacherApiSlice"
 import autoTable from "jspdf-autotable"
 import Loader from "../components/Loader"
 import Message from "../components/Message"
+import { useParams } from 'react-router-dom'
+import Paginate from "../components/Paginate"
 
 const AdminPeriod = () => {
-  
-  const [teacherId, setTeacherId] = useState("")
+  const { pageNumber } = useParams()
   const [teacherName, setTeacherName] = useState("")
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
   const [sortOrder, setSortOrder] = useState("asc")
   const [sortField, setSortField] = useState("name")
-
+  
   const { data: teachers } = useGetTeachersQuery()
+  const { data, isLoading, refetch, error } = useGetAllPeriodsQuery({ pageNumber })
 
-  //USE PARAMS IS THE WAY TO IMPLEMENT DATE RANGE FILTER
-  const { data: periods, isLoading, refetch, error } = useGetPeriodsByTeacherQuery({ teacherId: '660a29e510474c44318374a6' })
-
+  const periods = data?.periods || [];
 
   // Function to format date as dd-mm-yyyy
   const formatDate = (dateString) => {
@@ -101,7 +101,7 @@ const AdminPeriod = () => {
           formatDate(period.day),
           formatTime(period.loggedIn),
           formatTime(period.loggedOut),
-          getFileNameFromUrl(file.fileUrl),
+          file.portionTitle,
           (file.duration / 60000).toFixed(2),
           `${formatTime(file.fromTime)} - ${formatTime(file.toTime)}`,
         ]
@@ -125,23 +125,20 @@ const AdminPeriod = () => {
     window.open(pdfUrl, "_blank")
   }
 
-  const getFileNameFromUrl = (url) => {
-    if (!url) return "" // Check if url is undefined or null
+  //Take fileName from URL
+  // const getFileNameFromUrl = (url) => {
+  //   if (!url) return ""
 
-    const regex = /\/([^/]+)$/ // Match the last part of the URL after the last '/'
-    const match = url.match(regex)
+  //   const regex = /\/([^/]+)$/
+  //   const match = url.match(regex)
 
-    if (match && match[1]) {
-      return match[1]
-    } else {
-      return url // If no match found, return the original URL
-    }
-  }
+  //   if (match && match[1]) {
+  //     return match[1]
+  //   } else {
+  //     return url 
+  //   }
+  // }
 
-
-  const handleFetch = () => {
-    // Get selected teacher date range and call the API
-  }
 
   return (
     <AdminLayout>
@@ -193,13 +190,10 @@ const AdminPeriod = () => {
                 </Row>
               </Form.Group>
             </Col>
-            <Col xs="auto">
-              <Button onClick={handleFetch}>Fetch</Button>
-            </Col>
           </Row>
         </Form>
       </Container>
-      <Row md={2} className="my-3 text-end">
+      <Row className="my-3 text-end">
         <Button onClick={pdfHandler} className="mb-5">
           Generate Report
         </Button>
@@ -250,7 +244,7 @@ const AdminPeriod = () => {
                 <td>
                   {period.accessedFiles.map((file, fileIndex) => (
                     <div key={fileIndex}>
-                      {getFileNameFromUrl(file.fileUrl)}
+                      {file.portionTitle}
                     </div>
                   ))}
                 </td>
@@ -277,6 +271,7 @@ const AdminPeriod = () => {
           </tbody>
         </Table>
       )}
+      <Paginate pages={data?.pages} page={data?.page} />
       {periods && periods.length === 0 && <p>No periods found.</p>}
     </AdminLayout>
   )

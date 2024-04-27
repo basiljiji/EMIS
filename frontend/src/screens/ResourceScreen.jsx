@@ -218,7 +218,7 @@ const ResourceScreen = () => {
 
                     }}
                   />
-                  <p className="fw-bold">{subfolder.subfolderName}</p>
+                  <p className="fw-bold ">{subfolder.subfolderName}</p>
                 </Col>
               </LinkContainer>
             </Col>

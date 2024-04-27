@@ -16,6 +16,7 @@ const CanvasComponent = () => {
       try {
         const result = await addAccessedFiles({
           fileUrl: "Canvas",
+          portionTitle: "Canvas",
           fromTime,
           toTime: Date.now(), // Get current time
         })

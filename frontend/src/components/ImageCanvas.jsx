@@ -23,6 +23,7 @@ const somePreserveAspectRatio = [
 const ImageCanvas = () => {
   const location = useLocation()
   const fileUrl = location.state?.fileUrl || ""
+  const portionTitle = location.state?.portionTitle || ""
   const [backgroundImage, setBackgroundImage] = useState(fileUrl)
   const [strokeColor, setStrokeColor] = useState("#000000") // Default color
 
@@ -34,6 +35,7 @@ const ImageCanvas = () => {
       try {
         const result = await addAccessedFiles({
           fileUrl,
+          portionTitle,
           fromTime,
           toTime: Date.now(), // Get current time
         })
@@ -46,7 +48,7 @@ const ImageCanvas = () => {
     return () => {
       handleSubmit()
     }
-  }, [fileUrl, addAccessedFiles])
+  }, [fileUrl, portionTitle, addAccessedFiles])
 
   useEffect(() => {
     setBackgroundImage(fileUrl)

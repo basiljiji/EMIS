@@ -34,10 +34,10 @@ const TeacherResourceScreen = () => {
     setSelectedFile(fileUrl)
   }
 
-  const handleEditButtonClick = (fileUrl) => {
+  const handleEditButtonClick = (fileUrl, portionTitle) => {
     if (fileUrl.endsWith(".pdf")) {
       navigate(`/resource/pdf`, {
-        state: { fileUrl },
+        state: { fileUrl, portionTitle },
       })
     } else if (
       fileUrl.endsWith(".mp4") ||
@@ -49,15 +49,15 @@ const TeacherResourceScreen = () => {
       fileUrl.endsWith(".avi")
     ) {
       navigate(`/resource/media`, {
-        state: { fileUrl },
+        state: { fileUrl, portionTitle },
       })
     } else if (fileUrl.endsWith(".ppt") || fileUrl.endsWith(".pptx")) {
       navigate(`/resource/doc`, {
-        state: { fileUrl },
+        state: { fileUrl, portionTitle },
       })
     } else {
       navigate(`/resource/image`, {
-        state: { fileUrl },
+        state: { fileUrl, portionTitle },
       })
     }
   }
@@ -178,7 +178,7 @@ const TeacherResourceScreen = () => {
                       className="text-dark fw-bold col-12"
                       onClick={() =>
                         handleEditButtonClick(
-                          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/${resource.filePath}`
+                          `http://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}/${resource.filePath}`, resource.portionTitle
                         )
                       }
                     >

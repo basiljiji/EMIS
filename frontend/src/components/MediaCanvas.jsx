@@ -6,6 +6,8 @@ import { useAddAccessedFilesMutation } from "../slices/periodApiSlice"
 const MediaCanvas = () => {
   const location = useLocation()
   const fileUrl = location.state?.fileUrl || ""
+  const portionTitle = location.state?.portionTitle || ""
+
   const [totalPlayTime, setTotalPlayTime] = useState(0) // State to store total play time
 
   const [addAccessedFiles] = useAddAccessedFilesMutation()
@@ -22,6 +24,7 @@ const MediaCanvas = () => {
       try {
         const result = await addAccessedFiles({
           fileUrl,
+          portionTitle,
           fromTime,
           toTime: Date.now(),
           duration: totalPlayTime,
@@ -35,7 +38,7 @@ const MediaCanvas = () => {
     return () => {
       handleSubmit()
     }
-  }, [fileUrl, totalPlayTime, addAccessedFiles])
+  }, [fileUrl, portionTitle, totalPlayTime, addAccessedFiles])
 
   return (
     <>
