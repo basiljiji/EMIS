@@ -20,6 +20,11 @@ export const periodSlice = apiSlice.injectEndpoints({
             }),
             keepUnusedDataFor: 5,
         }),
+        getAllPeriodsChart: builder.query({
+            query: () => ({
+                url: `${PERIOD_URL}/chart`,
+            }),
+        }),
         addTeacherClassData: builder.mutation({
             query: (data) => ({
                 url: `${PERIOD_URL}/classdata`,
@@ -42,4 +47,4 @@ export const periodSlice = apiSlice.injectEndpoints({
     })
 })
 
-export const { useAddAccessedFilesMutation, useGetAllPeriodsQuery, useAddTeacherClassDataMutation, useGetPeriodsByTeacherQuery, useGetPeriodsReportAllQuery } = periodSlice
+export const { useAddAccessedFilesMutation, useGetAllPeriodsQuery, useAddTeacherClassDataMutation, useGetPeriodsByTeacherQuery, useGetPeriodsReportAllQuery, useGetAllPeriodsChartQuery } = periodSlice

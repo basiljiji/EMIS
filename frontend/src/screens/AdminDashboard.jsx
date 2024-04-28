@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react"
 import AdminLayout from "../components/AdminLayout"
-import { useGetAllPeriodsQuery, useGetPeriodsReportAllQuery } from "../slices/periodApiSlice"
+import {  useGetAllPeriodsChartQuery, useGetAllPeriodsQuery, useGetPeriodsReportAllQuery } from "../slices/periodApiSlice"
 import Chart from "chart.js/auto"
 import { Form, Container, Table, Row, Col, Button } from "react-bootstrap"
 import jsPDF from "jspdf"
@@ -20,10 +20,8 @@ const AdminDashboard = () => {
   const [chartInstance, setChartInstance] = useState(null)
 
 
-  const { data: periods, isLoading, error } = useGetAllPeriodsQuery()
+  const { data: periods, isLoading, error } = useGetAllPeriodsChartQuery()
   const { data: periodsData, isLoading: reportLoading, error: reportError } = useGetPeriodsReportAllQuery()
-
-  console.log(periodsData, "1221")
 
   // Array of colors for teachers
   const teacherColors = [

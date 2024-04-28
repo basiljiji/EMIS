@@ -17,7 +17,7 @@ import {
   FaClipboardList,
   FaSchool,
   FaLock,
-} from "react-icons/fa" // Import icons
+} from "react-icons/fa" 
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false)
