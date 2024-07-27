@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useGetAllPeriodsQuery } from "../slices/periodApiSlice"
 import AdminLayout from "../components/AdminLayout"
 import { Table, Form, Button, Row, Col, Container } from "react-bootstrap"
@@ -9,44 +9,54 @@ import Loader from "../components/Loader"
 import Message from "../components/Message"
 import { useParams } from 'react-router-dom'
 import Paginate from "../components/Paginate"
+import "../index.css" // Make sure to import your CSS
 
 const AdminPeriod = () => {
   const { pageNumber } = useParams()
   const [teacherName, setTeacherName] = useState("")
+  const [teacherId, setTeacherId] = useState("")
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
-  const [sortOrder, setSortOrder] = useState("asc")
-  const [sortField, setSortField] = useState("name")
-  
+  const [fetchData, setFetchData] = useState(false)
+
   const { data: teachers } = useGetTeachersQuery()
-  const { data, isLoading, refetch, error } = useGetAllPeriodsQuery({ pageNumber })
+  const { data, isLoading, refetch, error } = useGetAllPeriodsQuery(
+    { pageNumber, startDate, endDate, teacherId },
+    { skip: !fetchData }
+  )
 
-  const periods = data?.periods || [];
+  const periods = data?.periods || []
 
-  // Function to format date as dd-mm-yyyy
+  useEffect(() => {
+    if (fetchData) {
+      refetch()
+    }
+  }, [fetchData, refetch])
+
   const formatDate = (dateString) => {
     const date = new Date(dateString)
-    const formattedDate = date.toLocaleDateString("en-GB")
-    return formattedDate
+    return date.toLocaleDateString("en-GB")
   }
 
-  // Function to format time as HH:MM AM/PM
   const formatTime = (timeString) => {
     const time = new Date(timeString)
-    const formattedTime = time.toLocaleTimeString("en-US", {
+    return time.toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
     })
-    return formattedTime
+  }
+
+  const calculateDuration = (fromTime, toTime) => {
+    if (!fromTime || !toTime) return "N/A"
+    const from = new Date(fromTime)
+    const to = new Date(toTime)
+    return ((to - from) / 60000).toFixed(2)
   }
 
   const handleFilterChange = () => {
-    if (!periods) return []
-
     const filteredPeriods = periods.filter((period) => {
       const teacherMatch = teacherName
-        ? `${period.teacher.firstName} ${period.teacher.lastName}` ===
-        teacherName
+        ? `${period.teacher.firstName} ${period.teacher.lastName}` === teacherName
         : true
       const dateRangeMatch =
         startDate && endDate
@@ -57,88 +67,123 @@ const AdminPeriod = () => {
     return filteredPeriods
   }
 
-  const handleSort = (field) => {
-    if (field === sortField) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc")
-    } else {
-      setSortOrder("asc")
-    }
-    setSortField(field)
-  }
-
-  const sortedPeriods = handleFilterChange().sort((a, b) => {
-    if (sortField === "name") {
-      const nameA = `${a.teacher.firstName} ${a.teacher.lastName}`
-      const nameB = `${b.teacher.firstName} ${b.teacher.lastName}`
-      return sortOrder === "asc"
-        ? nameA.localeCompare(nameB)
-        : nameB.localeCompare(nameA)
-    } else if (sortField === "date") {
-      return sortOrder === "asc"
-        ? new Date(a.day) - new Date(b.day)
-        : new Date(b.day) - new Date(a.day)
-    }
-  })
-
   const pdfHandler = () => {
     const doc = new jsPDF()
 
     const filteredPeriods = handleFilterChange()
 
-    const columns = [
-      "Name",
-      "Date",
-      "LoggedIn",
-      "LoggedOut",
-      "Filename",
-      "Duration (min)",
-      "From Time - To Time",
-    ]
-    const rows = filteredPeriods.flatMap((period) => {
-      return period.accessedFiles.map((file, fileIndex) => {
-        return [
-          `${period.teacher.firstName} ${period.teacher.lastName}`,
-          formatDate(period.day),
-          formatTime(period.loggedIn),
-          formatTime(period.loggedOut),
-          file.portionTitle,
-          (file.duration / 60000).toFixed(2),
-          `${formatTime(file.fromTime)} - ${formatTime(file.toTime)}`,
-        ]
+    // Calculate totals
+    let totalLoginTimeSum = 0
+    let totalDurationSum = 0
+    let totalResourceTimeSum = 0
+
+    filteredPeriods.forEach(period => {
+      const loggedOutTime = period.loggedOut || period.updatedAt
+      const loginTime = period.loggedIn ? new Date(period.loggedIn) : new Date()
+      const logoutTime = new Date(loggedOutTime)
+      totalLoginTimeSum += (logoutTime - loginTime) / 60000
+
+      period.accessedFiles.forEach(file => {
+        const fileDuration = file.duration / 60000
+        totalDurationSum += fileDuration
+
+        if (file.fromTime && file.toTime) {
+          const fromTime = new Date(file.fromTime)
+          const toTime = new Date(file.toTime)
+          totalResourceTimeSum += (toTime - fromTime) / 60000
+        }
       })
     })
 
+    const columns = [
+      { header: "Date", dataKey: "date" },
+      { header: "LogIn", dataKey: "loggedIn" },
+      { header: "LogOut", dataKey: "loggedOut" },
+      { header: "Filename", dataKey: "filename" },
+      { header: "Duration (min)", dataKey: "duration" },
+      { header: "Resource", dataKey: "resource" },
+    ]
+
+    const rows = filteredPeriods.flatMap((period) => {
+      return period.accessedFiles.map((file) => {
+        return {
+          date: formatDate(period.day),
+          loggedIn: formatTime(period.loggedIn),
+          loggedOut: formatTime(period.loggedOut),
+          filename: file.portionTitle || "N/A",
+          duration: (file.duration / 60000).toFixed(2) || "N/A",
+          resource: calculateDuration(file.fromTime, file.toTime),
+        }
+      })
+    })
+
+    const selectedTeacher = teachers?.find(
+      (teacher) => teacher._id === teacherId
+    )
+
+    const teacherFullName = selectedTeacher
+      ? `${selectedTeacher.firstName} ${selectedTeacher.lastName}`
+      : "All Teachers"
+
     doc.setFontSize(16)
-    doc.text("Teacher Report", 10, 20)
+
+    // Center "St Marys School"
+    const pageWidth = doc.internal.pageSize.getWidth()
+    const textWidth = doc.getTextWidth("ST MARYS SCHOOL")
+    doc.text("ST MARYS SCHOOL", (pageWidth - textWidth) / 2, 20)
+
+    doc.setFontSize(12)
+
+    // Teacher and Date Range on Same Line
+    const headerMargin = 30
+    const teacherText = `Teacher: ${teacherFullName}`
+    const dateRangeText = `Date Range: ${startDate} to ${endDate}`
+
+    const teacherTextWidth = doc.getTextWidth(teacherText)
+    const dateRangeTextWidth = doc.getTextWidth(dateRangeText)
+
+    // Position teacher and date range on the same line
+    doc.text(dateRangeText, pageWidth - teacherTextWidth - 15, headerMargin)
+    doc.text( teacherText, 15, headerMargin)
+
+    // Total Sums
+    const totalText = `Total Login Time: ${totalLoginTimeSum.toFixed(2)} min  |  Total Duration: ${totalDurationSum.toFixed(2)} min  |  Total Resource Time: ${totalResourceTimeSum.toFixed(2)} min`
+    const totalTextWidth = doc.getTextWidth(totalText)
+    doc.text(totalText, (pageWidth - totalTextWidth) / 2, headerMargin + 20)
 
     doc.autoTable({
-      head: [columns],
+      columns: columns,
       body: rows,
-      startY: 30,
+      startY: headerMargin + 40,
       headStyles: { fillColor: [100, 100, 255] },
+      styles: {
+        overflow: 'linebreak',
+        cellWidth: 'auto',
+        valign: 'top',
+        fontSize: 10
+      },
+      columnStyles: {
+        filename: { cellWidth: 50 },
+        duration: { cellWidth: 30 },
+        resource: { cellWidth: 40 },
+      },
+      margin: { top: headerMargin + 50 },
     })
 
     const pdfBlob = doc.output("blob")
     const pdfUrl = URL.createObjectURL(pdfBlob)
 
-    // Open the PDF in a new tab
     window.open(pdfUrl, "_blank")
   }
 
-  //Take fileName from URL
-  // const getFileNameFromUrl = (url) => {
-  //   if (!url) return ""
 
-  //   const regex = /\/([^/]+)$/
-  //   const match = url.match(regex)
-
-  //   if (match && match[1]) {
-  //     return match[1]
-  //   } else {
-  //     return url 
-  //   }
-  // }
-
+  const handleFetch = () => {
+    const selectedTeacher = teachers?.find(
+      (teacher) => `${teacher.firstName} ${teacher.lastName}` === teacherName
+    )
+    setTeacherId(selectedTeacher?._id || "")
+    setFetchData(true)
+  }
 
   return (
     <AdminLayout>
@@ -155,7 +200,6 @@ const AdminPeriod = () => {
                   onChange={(e) => setTeacherName(e.target.value)}
                 >
                   <option value="">All</option>
-                  {/* Populate dropdown with teacher names */}
                   {teachers &&
                     teachers.map((teacher, index) => (
                       <option
@@ -194,40 +238,34 @@ const AdminPeriod = () => {
         </Form>
       </Container>
       <Row className="my-3 text-end">
+        <Button onClick={handleFetch} className="mb-5">
+          Fetch Periods
+        </Button>
         <Button onClick={pdfHandler} className="mb-5">
           Generate Report
         </Button>
       </Row>
+      {teacherName && (
+        <h5 className="mb-3">Teacher: {teacherName}</h5>
+      )}
       {isLoading && <Loader />}
       {error && <Message>{error?.data?.message || error.error}</Message>}
       {periods && periods.length > 0 && (
         <Table striped bordered hover className="my-2">
           <thead>
             <tr>
-              <th>
-                Name
-                <Button variant="link" onClick={() => handleSort("name")}>
-                  {sortField === "name" && sortOrder === "asc" ? "▲" : "▼"}
-                </Button>
-              </th>
-              <th>
-                Date
-                <Button variant="link" onClick={() => handleSort("date")}>
-                  {sortField === "date" && sortOrder === "asc" ? "▲" : "▼"}
-                </Button>
-              </th>
+              <th>Date</th>
               <th>Class</th>
               <th>LoggedIn</th>
               <th>LoggedOut</th>
               <th>File Name</th>
               <th>Duration(in Mins)</th>
-              <th>From Time to To Time</th>
+              <th>Resource</th>
             </tr>
           </thead>
           <tbody>
-            {sortedPeriods.map((period, index) => (
+            {handleFilterChange().map((period, index) => (
               <tr key={index}>
-                <td>{`${period.teacher.firstName} ${period.teacher.lastName}`}</td>
                 <td>{formatDate(period.day)}</td>
                 <td>
                   {period.classData.map((classData, classDataIndex) => (
@@ -235,36 +273,46 @@ const AdminPeriod = () => {
                       <div>{classData.class.class}</div>
                       <div>{classData.section.section}</div>
                       <div>{classData.subject.subject}</div>
-                      {/* <div>{classData.folder.folderName}</div> */}
                     </div>
                   ))}
                 </td>
                 <td>{formatTime(period.loggedIn)}</td>
                 <td>{formatTime(period.loggedOut)}</td>
-                <td>
-                  {period.accessedFiles.map((file, fileIndex) => (
-                    <div key={fileIndex}>
-                      {file.portionTitle}
-                    </div>
-                  ))}
-                </td>
-                <td>
-                  {period.accessedFiles.map(
-                    (access, accessIndex) =>
-                      access.duration > 0 && (
-                        <div key={accessIndex}>
-                          {(access.duration / 60000).toFixed(2)} min
-                        </div>
-                      )
+                <td className="word-wrap">
+                  {period.accessedFiles.length > 0 ? (
+                    period.accessedFiles.map((file, fileIndex) => (
+                      <div key={fileIndex}>
+                        {file.portionTitle || "N/A"}
+                      </div>
+                    ))
+                  ) : (
+                    "N/A"
                   )}
                 </td>
                 <td>
-                  {period.accessedFiles.map((fromtime, fromtimeIndex) => (
-                    <div key={fromtimeIndex}>
-                      {formatTime(fromtime.fromTime)} to{" "}
-                      {formatTime(fromtime.toTime)}
-                    </div>
-                  ))}
+                  {period.accessedFiles.length > 0 ? (
+                    period.accessedFiles.map(
+                      (access, accessIndex) =>
+                        access.duration > 0 && (
+                          <div key={accessIndex}>
+                            {(access.duration / 60000).toFixed(2)} min
+                          </div>
+                        )
+                    )
+                  ) : (
+                    "N/A"
+                  )}
+                </td>
+                <td>
+                  {period.accessedFiles.length > 0 ? (
+                    period.accessedFiles.map((file, fileIndex) => (
+                      <div key={fileIndex}>
+                        {calculateDuration(file.fromTime, file.toTime)} min
+                      </div>
+                    ))
+                  ) : (
+                    "N/A"
+                  )}
                 </td>
               </tr>
             ))}

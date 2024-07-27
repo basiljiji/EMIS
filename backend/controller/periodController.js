@@ -51,31 +51,84 @@ export const getAllPeriodsChart = async (req, res, next) => {
 
 export const getAllPeriods = async (req, res, next) => {
     try {
-        const pageSize = 10 
-        const page = Number(req.query.pageNumber) || 1 
+        const { pageNumber = 1, startDate, endDate, teacherId } = req.query
+        const pageSize = 10
+        const query = {}
 
-        const count = await Period.countDocuments()
+        if (startDate && endDate) {
+            query.day = { $gte: new Date(startDate), $lte: new Date(endDate) }
+        }
 
-        const periods = await Period.find({})
+        if (teacherId) {
+            query.teacher = teacherId
+        }
+
+        const count = await Period.countDocuments(query)
+        let periods = await Period.find(query)
             .populate('teacher')
             .populate('classData.class')
             .populate('classData.section')
             .populate('classData.subject')
             .populate('classData.folder')
+            .skip(pageSize * (pageNumber - 1))
             .limit(pageSize)
-            .skip(pageSize * (page - 1)) // Retrieve periods for the requested page
 
-        const filteredPeriods = periods.map(period => {
-            const filteredAccessedFiles = period.accessedFiles.filter(access => access.duration !== 0)
-            return { ...period.toObject(), accessedFiles: filteredAccessedFiles }
+        // Initialize totals
+        let totalLoginTimeSum = 0
+        let totalDurationSum = 0
+        let totalResourceTimeSum = 0
+
+        periods = periods.map(period => {
+            // Calculate total login time
+            const loggedOutTime = period.loggedOut || period.updatedAt
+            const loginTime = period.loggedIn ? new Date(period.loggedIn) : new Date()
+            const logoutTime = new Date(loggedOutTime)
+            const totalLoginTime = (logoutTime - loginTime) / 60000 // Duration in minutes
+
+            // Calculate total duration and total resource time
+            let totalDuration = 0
+            let totalResourceTime = 0
+
+            period.accessedFiles = period.accessedFiles.filter(file => {
+                const fileDuration = file.duration / 60000 // Duration in minutes
+                totalDuration += fileDuration
+
+                if (file.fromTime && file.toTime) {
+                    const fromTime = new Date(file.fromTime)
+                    const toTime = new Date(file.toTime)
+                    const resourceTime = (toTime - fromTime) / 60000 // Resource time in minutes
+                    totalResourceTime += resourceTime
+                }
+
+                return fileDuration >= 0.01
+            })
+
+            // Add to overall sums
+            totalLoginTimeSum += totalLoginTime
+            totalDurationSum += totalDuration
+            totalResourceTimeSum += totalResourceTime
+
+            // Add totals to the period object
+            return {
+                ...period.toObject(),
+                totalLoginTime,
+                totalDuration,
+                totalResourceTime
+            }
         })
 
-        res.json({ periods: filteredPeriods, page, pages: Math.ceil(count / pageSize) })
-    } catch (err) {
-        const error = new HttpError("Something Went Wrong", 500)
-        return next(error)
+        res.json({
+            periods,
+            page: pageNumber,
+            pages: Math.ceil(count / pageSize),
+            totalLoginTimeSum, // Sum of all login times
+            totalDurationSum, // Sum of all durations
+            totalResourceTimeSum // Sum of all resource times
+        })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
     }
-};
+}
 
 export const getAllPeriodsReport = async (req, res, next) => {
     try {

@@ -12,14 +12,21 @@ export const periodSlice = apiSlice.injectEndpoints({
             keepUnusedDataFor: 5,
         }),
         getAllPeriods: builder.query({
-            query: ({ pageNumber }) => ({
-                url: `${PERIOD_URL}/all`,
-                params: {
-                    pageNumber
+            query: ({ pageNumber, startDate, endDate, teacherId }) => {
+                // Construct query parameters
+                const params = new URLSearchParams()
+                if (pageNumber) params.append('pageNumber', pageNumber)
+                if (startDate) params.append('startDate', startDate)
+                if (endDate) params.append('endDate', endDate)
+                if (teacherId) params.append('teacherId', teacherId)
+
+                return {
+                    url: `${PERIOD_URL}/all?${params.toString()}`, 
+                    method: 'GET'
                 }
-            }),
-            keepUnusedDataFor: 5,
+            }
         }),
+        
         getAllPeriodsChart: builder.query({
             query: () => ({
                 url: `${PERIOD_URL}/chart`,

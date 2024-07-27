@@ -1,0 +1,51 @@
+.sidebar {
+    transition: width 0.3s ease;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+.sidebar.collapsed {
+    width: 80px;
+    /* Adjust based on your design */
+}
+
+.toggle-btn {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.nav-link:hover {
+    background-color: #e9ecef;
+}
+
+.icon {
+    font-size: 20px;
+    /* Adjust icon size as needed */
+    margin-right: 10px;
+}
+
+.nav-text {
+    font-size: 16px;
+    /* Adjust font size as needed */
+}
+
+.nav-text.d-none {
+    display: none;
+}

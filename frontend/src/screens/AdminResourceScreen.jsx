@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useMemo } from "react"
 import { Row, Col, Button, Form, Container, Modal } from "react-bootstrap"
 import { LinkContainer } from "react-router-bootstrap"
 import { toast } from "react-toastify"
@@ -14,6 +14,8 @@ import { useGetClassesQuery } from "../slices/classApiSlice"
 import Message from "../components/Message"
 import Loader from "../components/Loader"
 import { useGetTeachersQuery } from "../slices/teacherApiSlice"
+import { Typeahead } from "react-bootstrap-typeahead"
+import "react-bootstrap-typeahead/css/Typeahead.css"
 
 const AdminResourceScreen = () => {
   const [showModal, setShowModal] = useState(false)
@@ -22,6 +24,9 @@ const AdminResourceScreen = () => {
   const [selectedSubjects, setSelectedSubjects] = useState([])
   const [selectedClasses, setSelectedClasses] = useState([])
   const [selectedTeachers, setSelectedTeachers] = useState([])
+  const [sortOrder, setSortOrder] = useState("asc")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [searchResults, setSearchResults] = useState([])
 
   const { data: sections } = useGetSectionsQuery()
   const { data: subjects } = useGetSubjectsQuery()
@@ -103,6 +108,33 @@ const AdminResourceScreen = () => {
     }
   }
 
+  const handleSortOrderChange = () => {
+    setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"))
+  }
+
+  const sortedFolders = useMemo(() => {
+    if (!allFolders) return []
+    return allFolders.slice().sort((a, b) => {
+      if (sortOrder === "asc") {
+        return a.folderTitle.localeCompare(b.folderTitle)
+      } else {
+        return b.folderTitle.localeCompare(a.folderTitle)
+      }
+    })
+  }, [allFolders, sortOrder])
+
+  const handleSearch = (query) => {
+    setSearchQuery(query)
+    if (query.length > 0) {
+      const results = sortedFolders.filter((folder) =>
+        folder.folderTitle.toLowerCase().includes(query.toLowerCase())
+      )
+      setSearchResults(results)
+    } else {
+      setSearchResults([])
+    }
+  }
+
   return (
     <AdminLayout>
       <Container className="py-3 justify-content-between ">
@@ -111,8 +143,33 @@ const AdminResourceScreen = () => {
             <Button onClick={() => setShowModal(true)}>New Folder</Button>
           </Col>
         </Row>
+        <Row className="align-items-center mb-3">
+          <Col>
+            <h3>List Folders</h3>
+          </Col>
+          <Col className="text-end">
+            <Button onClick={handleSortOrderChange}>
+              Sort {sortOrder === "asc" ? "Descending" : "Ascending"}
+            </Button>
+          </Col>
+        </Row>
+        <Row className="mb-3">
+          <Col>
+            <Typeahead
+              id="search-box"
+              onChange={(selected) => {
+                if (selected.length > 0) {
+                  handleSearch(selected[0])
+                }
+              }}
+              onInputChange={(text) => handleSearch(text)}
+              options={sortedFolders.map((folder) => folder.folderTitle)}
+              placeholder="Search for folders..."
+              selected={searchQuery ? [searchQuery] : []}
+            />
+          </Col>
+        </Row>
         <Row>
-          <h3>List Folders</h3>
           {isLoading ? (
             <Loader />
           ) : error ? (
@@ -123,24 +180,24 @@ const AdminResourceScreen = () => {
             </p>
           ) : (
             <Row xs={3} md={6} lg={8} className="g-4">
-              {allFolders.map((folder) => (
-                <Col key={folder.id}>
-                  <LinkContainer to={`/admin/resource/${folder.folderName}`}>
-                    <Col xs="auto" className="text-center">
-                      <FaFolder
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          // color: "gold",
-                          color: "white",
-
-                        }}
-                      />
-                      <p className="fw-bold">{folder.folderTitle}</p>
-                    </Col>
-                  </LinkContainer>
-                </Col>
-              ))}
+              {(searchResults.length > 0 ? searchResults : sortedFolders).map(
+                (folder) => (
+                  <Col key={folder.id}>
+                    <LinkContainer to={`/admin/resource/${folder.folderName}`}>
+                      <Col xs="auto" className="text-center">
+                        <FaFolder
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            color: "gold",
+                          }}
+                        />
+                        <p className="fw-bold">{folder.folderTitle}</p>
+                      </Col>
+                    </LinkContainer>
+                  </Col>
+                )
+              )}
             </Row>
           )}
         </Row>
