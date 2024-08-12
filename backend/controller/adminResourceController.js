@@ -390,7 +390,6 @@ export const uploadFilesSubfolder = async (req, res, next) => {
                 const filePath = `/${subfolderData.parentFolder.folderName}/${subfolderName}/${file.originalname}`
                 // Create an object with file details
                 const newResources = {
-                    portionTitle: req.body.portionTitle || null,
                     filePath: filePath,
                     portionTitle: file.originalname,
                     fileName: file.originalname,
@@ -657,7 +656,7 @@ export const getNestedSubfolders = async (req, res, next) => {
 }
 
 
-export const getSingleNestedSubfolderData = async (req, res, next) => {
+export const getSingleNestedSubfolders = async (req, res, next) => {
     try {
         const { folderName, subfolderName } = req.params
 
@@ -678,10 +677,42 @@ export const getSingleNestedSubfolderData = async (req, res, next) => {
             parentFolder: folderData._id,
             parentSubfolder: subfolder._id,
             'isDeleted.status': false
-        }).populate('parentFolder')
+        }).populate('parentFolder').populate('parentSubfolder')
 
         // Return both subfolder and nested subfolders
         res.status(200).json({ subfolder, nestedSubfolders })
+    } catch (err) {
+        return next(new HttpError('Fetching subfolder and nested subfolders failed', 500))
+    }
+}
+
+export const getSingleNestedSubfolderData = async (req, res, next) => {
+    try {
+        const { folderName, subfolderName, nestedSubfolderName } = req.params
+
+        // Find the folder
+        const folderData = await Folder.findOne({ folderName, 'isDeleted.status': false })
+        if (!folderData) {
+            return next(new HttpError('Folder not found', 404))
+        }
+        
+        // Find the subfolder
+        const subfolder = await Subfolder.findOne({ subfolderName, parentFolder: folderData._id, 'isDeleted.status': false }).populate('parentFolder')
+        if (!subfolder) {
+            return next(new HttpError('Subfolder not found', 404))
+        }
+        
+        // Find the nested subfolders
+        const nestedSubfolders = await NestedSubfolder.findOne({
+            nestedSubfolderName: nestedSubfolderName,
+            parentFolder: folderData._id,
+            parentSubfolder: subfolder._id,
+            'isDeleted.status': false
+        }).populate('parentFolder').populate('parentSubfolder')
+        
+        console.log(nestedSubfolders,'1212')
+        // Return both subfolder and nested subfolders
+        res.status(200).json(nestedSubfolders )
     } catch (err) {
         return next(new HttpError('Fetching subfolder and nested subfolders failed', 500))
     }
@@ -744,7 +775,7 @@ export const uploadFilesNestedSubfolder = async (req, res, next) => {
 
         // Create an object with file details
         const newResource = {
-            portionTitle: req.body.portionTitle || null,
+            portionTitle: file.originalname || null,
             filePath: filePath,
             fileName: file.originalname,
             fileType: file.mimetype,

@@ -16,12 +16,18 @@ export const loginTeacher = async (req, res, next) => {
 
         // Check if there's an existing period for the teacher
         const existingPeriod = await Period.findOne({ teacher: teacher._id, expired: false })
-
         if (existingPeriod) {
-            // If there's an existing period with expired: false, update it to expired: true
-            await Period.findByIdAndUpdate(existingPeriod._id, { expired: true })
-        }
+            // Fetch the existing period document to get the current updatedAt value
+            const periodToUpdate = await Period.findById(existingPeriod._id)
 
+            if (periodToUpdate) {
+                // Update the period to set expired: true and loggedOut to the current updatedAt value
+                await Period.findByIdAndUpdate(existingPeriod._id, {
+                    expired: true,
+                    loggedOut: periodToUpdate.updatedAt // Set loggedOut to the existing updatedAt value
+                })
+            }
+        }
         if (teacher && await teacher.matchPassword(password)) {
             generateToken(res, teacher._id)
 

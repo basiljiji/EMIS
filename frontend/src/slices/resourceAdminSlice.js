@@ -125,6 +125,47 @@ export const resourceAdminSlice = apiSlice.injectEndpoints({
                 body: data
             })
         }),
+        getNestedSubfolders: builder.query({
+            query: (folderName, subfolderName) => ({
+                url: `${RESOURCE_URL}/${folderName}/${subfolderName}`,
+                method: 'GET'
+            })
+        }),
+        getSingleNestedSubfolders: builder.query({
+            query: ({ folderName, subfolderName }) => ({
+                url: `${RESOURCE_URL}/nestedsubfolder/${folderName}/${subfolderName}`,
+                method: 'GET',
+            })
+        }),
+        getSingleNestedSubfolderData: builder.query({
+            query: ({ folderName, subfolderName, nestedSubfolderName }) => ({
+                url: `${RESOURCE_URL}/nestedsubfolder/${folderName}/${subfolderName}/${nestedSubfolderName}`,
+                method: 'GET',
+            })
+        }),
+        addNestedSubfolder: builder.mutation({
+            query: (data) => ({
+                url: `${RESOURCE_URL}/${data.folderName}/${data.subfolderName}`,
+                method: 'POST',
+                body: data
+            })
+        }),
+        uploadFilesSubfolder: builder.mutation({
+            query: ({ folderName, subfolderName, formData }) => ({
+                url: `${RESOURCE_URL}/upload/${folderName}/${subfolderName}`,
+                method: 'POST',
+                body: formData
+            }),
+            keepUnusedDataFor: 5,
+        }),
+        uploadFilesNestedSubfolder: builder.mutation({
+            query: ({ folderName, subfolderName, nestedSubfolderName, formData }) => ({
+                url: `${RESOURCE_URL}/upload/${folderName}/${subfolderName}/${nestedSubfolderName}`,
+                method: 'POST',
+                body: formData
+            }),
+            keepUnusedDataFor: 5,
+        }),
     })
 })
 
@@ -146,5 +187,9 @@ export const {
     useGetResourceByFolderQuery,
     useRenameFolderResourcesMutation,
     useRenameSubfolderResourcesMutation,
-    useDeleteSubfolderResourceMutation
+    useDeleteSubfolderResourceMutation,
+    useGetSingleNestedSubfoldersQuery,
+    useAddNestedSubfolderMutation,
+    useGetSingleNestedSubfolderDataQuery,
+    useUploadFilesNestedSubfolderMutation
 } = resourceAdminSlice

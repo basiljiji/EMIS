@@ -57,8 +57,8 @@ const AdminLoginScreen = () => {
               <Form.Control
                 required
                 type="text"
-                placeholder="First name"
-                name="firstName"
+                placeholder="Email"
+                name="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />

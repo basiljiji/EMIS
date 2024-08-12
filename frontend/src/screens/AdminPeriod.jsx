@@ -27,6 +27,8 @@ const AdminPeriod = () => {
 
   const periods = data?.periods || []
 
+  // console.log(data.totalLoginTimeSum,"123")
+
   useEffect(() => {
     if (fetchData) {
       refetch()
@@ -70,30 +72,12 @@ const AdminPeriod = () => {
   const pdfHandler = () => {
     const doc = new jsPDF()
 
+    // Use pre-calculated totals from the response data
+    const totalLoginTimeSum = data?.totalLoginTimeSum || 0
+    const totalDurationSum = data?.totalDurationSum || 0
+    const totalResourceTimeSum = data?.totalResourceTimeSum || 0
+
     const filteredPeriods = handleFilterChange()
-
-    // Calculate totals
-    let totalLoginTimeSum = 0
-    let totalDurationSum = 0
-    let totalResourceTimeSum = 0
-
-    filteredPeriods.forEach(period => {
-      const loggedOutTime = period.loggedOut || period.updatedAt
-      const loginTime = period.loggedIn ? new Date(period.loggedIn) : new Date()
-      const logoutTime = new Date(loggedOutTime)
-      totalLoginTimeSum += (logoutTime - loginTime) / 60000
-
-      period.accessedFiles.forEach(file => {
-        const fileDuration = file.duration / 60000
-        totalDurationSum += fileDuration
-
-        if (file.fromTime && file.toTime) {
-          const fromTime = new Date(file.fromTime)
-          const toTime = new Date(file.toTime)
-          totalResourceTimeSum += (toTime - fromTime) / 60000
-        }
-      })
-    })
 
     const columns = [
       { header: "Date", dataKey: "date" },
@@ -134,47 +118,64 @@ const AdminPeriod = () => {
 
     doc.setFontSize(12)
 
-    // Teacher and Date Range on Same Line
+    // Teacher on one line and Date Range below it
     const headerMargin = 30
     const teacherText = `Teacher: ${teacherFullName}`
     const dateRangeText = `Date Range: ${startDate} to ${endDate}`
 
-    const teacherTextWidth = doc.getTextWidth(teacherText)
-    const dateRangeTextWidth = doc.getTextWidth(dateRangeText)
+    doc.text(teacherText, 15, headerMargin)
+    doc.text(dateRangeText, 15, headerMargin + 10)
 
-    // Position teacher and date range on the same line
-    doc.text(dateRangeText, pageWidth - teacherTextWidth - 15, headerMargin)
-    doc.text( teacherText, 15, headerMargin)
+    // Convert totals from minutes to hours and format them
+    const totalLoginTimeHours = (totalLoginTimeSum / 60).toFixed(2)
+    const totalDurationHours = (totalDurationSum / 60).toFixed(2)
+    const totalResourceTimeHours = (totalResourceTimeSum / 60).toFixed(2)
 
     // Total Sums
-    const totalText = `Total Login Time: ${totalLoginTimeSum.toFixed(2)} min  |  Total Duration: ${totalDurationSum.toFixed(2)} min  |  Total Resource Time: ${totalResourceTimeSum.toFixed(2)} min`
+    const totalText = `Total Login Time: ${totalLoginTimeHours} hours  |  Total Duration: ${totalDurationHours} hours  |  Total Resource Time: ${totalResourceTimeHours} hours`
     const totalTextWidth = doc.getTextWidth(totalText)
     doc.text(totalText, (pageWidth - totalTextWidth) / 2, headerMargin + 20)
 
+    // First Page Table
     doc.autoTable({
       columns: columns,
       body: rows,
-      startY: headerMargin + 40,
+      startY: headerMargin + 30,
       headStyles: { fillColor: [100, 100, 255] },
       styles: {
         overflow: 'linebreak',
         cellWidth: 'auto',
         valign: 'top',
-        fontSize: 10
+        fontSize: 10,
       },
       columnStyles: {
         filename: { cellWidth: 50 },
         duration: { cellWidth: 30 },
         resource: { cellWidth: 40 },
       },
-      margin: { top: headerMargin + 50 },
+      didDrawPage: (data) => {
+        if (data.pageNumber > 1) {
+          doc.setFontSize(10)
+          doc.setTextColor(0, 0, 0)
+          doc.text(`Continued from page ${data.pageNumber - 1}`, data.settings.margin.left, data.settings.margin.top - 10)
+        }
+      },
     })
+
+    // Generate the PDF filename with the teacher's name
+    const formattedTeacherName = teacherFullName.replace(/ /g, "_") // Replace spaces with underscores
+    const pdfFilename = `${formattedTeacherName}_Report.pdf`
 
     const pdfBlob = doc.output("blob")
     const pdfUrl = URL.createObjectURL(pdfBlob)
 
-    window.open(pdfUrl, "_blank")
-  }
+    // Save the PDF with the generated filename
+    doc.save(pdfFilename)
+    window.open(pdfUrl, "_blank");
+  };
+
+
+
 
 
   const handleFetch = () => {
@@ -201,15 +202,25 @@ const AdminPeriod = () => {
                 >
                   <option value="">All</option>
                   {teachers &&
-                    teachers.map((teacher, index) => (
-                      <option
-                        key={`${teacher.firstName}-${teacher.lastName}-${index}`}
-                      >
-                        {`${teacher.firstName} ${teacher.lastName}`}
-                      </option>
-                    ))}
+                    teachers
+                      .slice()
+                      .sort((a, b) => {
+                        const nameA = `${a.firstName} ${a.lastName}`.toLowerCase()
+                        const nameB = `${b.firstName} ${b.lastName}`.toLowerCase()
+                        if (nameA < nameB) return -1
+                        if (nameA > nameB) return 1
+                        return 0
+                      })
+                      .map((teacher, index) => (
+                        <option
+                          key={`${teacher.firstName}-${teacher.lastName}-${index}`}
+                        >
+                          {`${teacher.firstName} ${teacher.lastName}`}
+                        </option>
+                      ))}
                 </Form.Control>
               </Form.Group>
+
             </Col>
             <Col xs="auto">
               <Form.Group controlId="dateRange">
@@ -221,6 +232,7 @@ const AdminPeriod = () => {
                       placeholder="Start Date"
                       value={startDate}
                       onChange={(e) => setStartDate(e.target.value)}
+                      required
                     />
                   </Col>
                   <Col>
@@ -229,6 +241,7 @@ const AdminPeriod = () => {
                       placeholder="End Date"
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
+                      required
                     />
                   </Col>
                 </Row>

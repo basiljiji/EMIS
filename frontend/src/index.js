@@ -33,6 +33,8 @@ import TeacherSubfolderScreen from './screens/TeacherSubfolderScreen'
 import AdminResourceViewerScreen from './screens/AdminResourceViewerScreen'
 import DocCanvas from './components/DocCanvas'
 import AdminSubfolderResourcesScreen from './screens/AdminSubfolderResourcesScreen'
+import AdminNestedSubfolderScreen from './screens/AdminNestedSubfolderScreen'
+import TeacherNestedFolderResourceScreen from './screens/TeacherNestedFolderResourceScreen'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -50,6 +52,7 @@ const router = createBrowserRouter(
         <Route path='/resource/canvas' element={<CanvasComponent />} />
         <Route path='/resource/doc' element={<DocCanvas />} />
         <Route path='/resource/:id/:sid' element={<TeacherSubfolderScreen />} />
+        <Route path='/resource/:id/:sid/:nid' element={<TeacherNestedFolderResourceScreen />} />
 
       </Route>
 
@@ -69,6 +72,7 @@ const router = createBrowserRouter(
         <Route path='/admin/resource/:id/:sid' element={<AdminSubfoldersScreen />} />
         <Route path='/admin/resource/:id/:sid/resources' element={<AdminSubfolderResourcesScreen />} />
         <Route path='/admin/viewer' element={<AdminResourceViewerScreen />} />
+        <Route path='/admin/resource/:id/:sid/:nid' element={<AdminNestedSubfolderScreen />} />
       </Route>
 
     </Route>

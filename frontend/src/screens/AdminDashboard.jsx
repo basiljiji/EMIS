@@ -353,8 +353,8 @@ const AdminDashboard = () => {
                     <td>{periodsData[personName].totalDuration}</td>
                     <td>{periodsData[personName].totalLoggedInTime}</td>
                     <td>{periodsData[personName].totalResourceTime}</td>
-                    <td>{new Date(periodsData[personName].fromDate).toLocaleString()}</td>
-                    <td>{new Date(periodsData[personName].toDate).toLocaleString()}</td>
+                    <td>{new Date(periodsData[personName].fromDate).toLocaleDateString()}</td>
+                    <td>{new Date(periodsData[personName].toDate).toLocaleDateString()}</td>
                   </tr>
                 ))}
               </tbody>

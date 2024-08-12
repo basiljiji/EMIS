@@ -3,10 +3,12 @@ import HttpError from "../utils/httpErrorMiddleware.js"
 
 export const addAccessData = async (req, res, next) => {
     try {
-        const { fileUrl, fromTime, toTime, duration, portionTitle } = req.body
+        const { fileUrl, fromTime, toTime, duration } = req.body
         const teacherId = req.teacher
 
         const calculatedDuration = duration ? duration : toTime - fromTime
+
+        const portionTitle = fileUrl.split('/').pop();
 
         const period = await Period.findOneAndUpdate({
             teacher: teacherId,
@@ -148,6 +150,7 @@ export const getAllPeriodsReport = async (req, res, next) => {
                 loggedOut,
                 accessedFiles,
                 createdAt,
+                updatedAt, // Ensure updatedAt is included
             } = period
 
             const teacherName = `${teacher.firstName} ${teacher.lastName}`
@@ -176,7 +179,7 @@ export const getAllPeriodsReport = async (req, res, next) => {
             const totalDuration = calculateTotalDuration(accessedFiles)
             teacherData[teacherName].totalDuration += totalDuration
 
-            const totalLoggedInTime = calculateTotalLoggedInTime(loggedIn, loggedOut)
+            const totalLoggedInTime = calculateTotalLoggedInTime(loggedIn, loggedOut, updatedAt)
             teacherData[teacherName].totalLoggedInTime += totalLoggedInTime
 
             const totalResourceTime = calculateTotalResourceTime(accessedFiles)
@@ -185,16 +188,11 @@ export const getAllPeriodsReport = async (req, res, next) => {
 
         // Format durations to hh:mm format
         for (const teacherName in teacherData) {
-            const { totalDuration, totalLoggedInTime, totalResourceTime } =
-                teacherData[teacherName]
+            const { totalDuration, totalLoggedInTime, totalResourceTime } = teacherData[teacherName]
 
             teacherData[teacherName].totalDuration = formatHoursMinutes(totalDuration)
-            teacherData[teacherName].totalLoggedInTime = formatHoursMinutes(
-                totalLoggedInTime
-            )
-            teacherData[teacherName].totalResourceTime = formatHoursMinutes(
-                totalResourceTime
-            )
+            teacherData[teacherName].totalLoggedInTime = formatHoursMinutes(totalLoggedInTime)
+            teacherData[teacherName].totalResourceTime = formatHoursMinutes(totalResourceTime)
         }
 
         res.json(teacherData)
@@ -204,22 +202,19 @@ export const getAllPeriodsReport = async (req, res, next) => {
     }
 }
 
-// Function to calculate total duration in minutes from accessedFiles
 const calculateTotalDuration = (accessedFiles) => {
     return accessedFiles.reduce((totalDuration, file) => {
         return totalDuration + file.duration
     }, 0) / 60000 // Convert total duration to minutes
 }
 
-// Function to calculate total logged-in time in minutes
-const calculateTotalLoggedInTime = (loggedIn, loggedOut) => {
+const calculateTotalLoggedInTime = (loggedIn, loggedOut, updatedAt) => {
     const loggedInTime = new Date(loggedIn)
-    const loggedOutTime = new Date(loggedOut)
+    const loggedOutTime = loggedOut ? new Date(loggedOut) : new Date(updatedAt) // Use updatedAt if loggedOut is not available
     const timeDifference = loggedOutTime - loggedInTime // Difference in milliseconds
     return timeDifference / (1000 * 60) // Convert difference to minutes
 }
 
-// Function to calculate total resource time in minutes from accessedFiles
 const calculateTotalResourceTime = (accessedFiles) => {
     return accessedFiles.reduce((totalTime, file) => {
         const fromTime = new Date(file.fromTime)
@@ -229,12 +224,12 @@ const calculateTotalResourceTime = (accessedFiles) => {
     }, 0)
 }
 
-// Function to format duration in hours and minutes (hh:mm)
 const formatHoursMinutes = (duration) => {
     const hours = Math.floor(duration / 60)
     const minutes = Math.round(duration % 60)
     return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`
-}
+};
+
 
 export const getPeriodsByTeacher = async (req, res, next) => {
     try {

@@ -2,9 +2,12 @@ import React, { useState } from "react"
 import { Card, Col, Row, Container, Button, Breadcrumb } from "react-bootstrap"
 import { LinkContainer } from "react-router-bootstrap"
 import { useParams, useNavigate } from "react-router-dom"
-import { useGetSingleSubfolderDataQuery } from "../slices/resourceAdminSlice"
+import { useGetSingleNestedSubfoldersQuery, useGetSingleSubfolderDataQuery } from "../slices/resourceAdminSlice"
 import pdfThumbnail from "../assets/pdf.gif"
 import videoThumbnail from "../assets/video.gif"
+import { FaFolder } from "react-icons/fa"
+import Loader from "../components/Loader"
+import Message from "../components/Message"
 
 
 const TeacherSubfolderScreen = () => {
@@ -16,6 +19,15 @@ const TeacherSubfolderScreen = () => {
     isLoading,
     error,
   } = useGetSingleSubfolderDataQuery({ folderName, subfolderName })
+
+
+  const {
+    data: nestedSubfolders,
+    isLoading: nestedSubfoldersLoading,
+    error: nestedSubfoldersError,
+    refetch: nestedSubfolderRefetch,
+  } = useGetSingleNestedSubfoldersQuery({ folderName, subfolderName })
+
 
   const [selectedFile, setSelectedFile] = useState(null)
 
@@ -71,6 +83,49 @@ const TeacherSubfolderScreen = () => {
           </LinkContainer>
           <Breadcrumb.Item active>{subfolderName}</Breadcrumb.Item>
         </Breadcrumb>
+      </Row>
+      <Row>
+        {nestedSubfoldersLoading ? (
+          <Loader />
+        ) : nestedSubfoldersError ? (
+          <p>
+            <Message variant="danger">
+              {nestedSubfoldersError?.data?.message || nestedSubfoldersError.error}
+            </Message>
+          </p>
+        ) : (
+          <Row>
+            {nestedSubfoldersLoading ? (
+              <Loader />
+            ) : nestedSubfoldersError ? (
+              <p>
+                <Message variant="danger">
+                  {nestedSubfoldersError?.data?.message || nestedSubfoldersError.error}
+                </Message>
+              </p>
+            ) : (
+              <Row xs={3} md={6} lg={8} className="g-4">
+                {(nestedSubfolders?.nestedSubfolders || []).map((folder) => (
+                  <Col key={folder._id}>
+                    <LinkContainer to={`/resource/${folder.parentFolder.folderName}/${folder.parentSubfolder.subfolderName}/${folder.nestedSubfolderName}`}>
+                      <Col xs="auto" className="text-center">
+                        <FaFolder
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            color: "white",
+                          }}
+                        />
+                        <p className="fw-bold">{folder.nestedSubfolderName}</p>
+                      </Col>
+                    </LinkContainer>
+                  </Col>
+                )) || <p>No nested subfolders available.</p>}
+              </Row>
+            )}
+          </Row>
+
+        )}
       </Row>
       <Row>
         {Array.isArray(subfolderResources?.resources) &&

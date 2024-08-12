@@ -17,6 +17,8 @@ const PdfCanvas = () => {
   const fileUrl = location.state?.fileUrl || ""
   const portionTitle = location.state?.portionTitle || ""
 
+  console.log(fileUrl,"unn")
+
   const [file, setFile] = useState(fileUrl)
 
   const [addAccessedFiles] = useAddAccessedFilesMutation()
