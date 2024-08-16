@@ -27,7 +27,6 @@ const AdminPeriod = () => {
 
   const periods = data?.periods || []
 
-  // console.log(data.totalLoginTimeSum,"123")
 
   useEffect(() => {
     if (fetchData) {
@@ -169,8 +168,6 @@ const AdminPeriod = () => {
     const pdfBlob = doc.output("blob")
     const pdfUrl = URL.createObjectURL(pdfBlob)
 
-    // Save the PDF with the generated filename
-    doc.save(pdfFilename)
     window.open(pdfUrl, "_blank");
   };
 

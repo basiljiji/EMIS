@@ -1,5 +1,6 @@
 import Period from "../models/periodModel.js"
 import HttpError from "../utils/httpErrorMiddleware.js"
+import moment from 'moment' // Import moment.js for date manipulation
 
 export const addAccessData = async (req, res, next) => {
     try {
@@ -132,9 +133,21 @@ export const getAllPeriods = async (req, res, next) => {
     }
 }
 
+
 export const getAllPeriodsReport = async (req, res, next) => {
     try {
-        const periods = await Period.find({})
+        // Calculate the start and end dates for the current month
+        const now = moment()
+        const startOfMonth = now.startOf('month').toDate() // First day of the current month
+        const endOfMonth = now.endOf('month').toDate() // Last day of the current month
+
+        // Fetch periods within the current month
+        const periods = await Period.find({
+            createdAt: {
+                $gte: startOfMonth,
+                $lte: endOfMonth
+            }
+        })
             .populate("teacher")
             .populate("classData.class")
             .populate("classData.section")
@@ -229,6 +242,7 @@ const formatHoursMinutes = (duration) => {
     const minutes = Math.round(duration % 60)
     return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`
 };
+
 
 
 export const getPeriodsByTeacher = async (req, res, next) => {

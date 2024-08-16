@@ -68,9 +68,9 @@ const router = createBrowserRouter(
         <Route path='/admin/period/:pageNumber' element={<AdminPeriod />} />
         <Route path='/admin/folder' element={<AdminFolderManagement />} />
         <Route path='/admin/folder/edit/:id' element={<AdminEditAccessScreen />} />
-        <Route path='/admin/folder/:id' element={<AdminResourceManagement />} />
         <Route path='/admin/resource/:id/:sid' element={<AdminSubfoldersScreen />} />
-        <Route path='/admin/resource/:id/:sid/resources' element={<AdminSubfolderResourcesScreen />} />
+        <Route path='/admin/folder/:id' element={<AdminResourceManagement />} />
+        <Route path='/admin/folder/:id/:sid/' element={<AdminSubfolderResourcesScreen />} />
         <Route path='/admin/viewer' element={<AdminResourceViewerScreen />} />
         <Route path='/admin/resource/:id/:sid/:nid' element={<AdminNestedSubfolderScreen />} />
       </Route>

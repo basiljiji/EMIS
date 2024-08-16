@@ -155,7 +155,7 @@ const AdminResourceManagement = () => {
                     <td>-</td> {/* No size for folders */}
                     <td>
                       <LinkContainer
-                        to={`/admin/resource/${folderName}/${subfolder.subfolderName}/resources`}
+                        to={`/admin/folder/${folderName}/${subfolder.subfolderName}`}
                       >
                         <Button variant="success" className="me-2">
                           Manage

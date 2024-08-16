@@ -1,5 +1,5 @@
 import express from 'express'
-import { addFolder, addNestedSubfolder, addSubfolder, deleteFolder, deleteResource, deleteSubfolder, deleteSubfolderResource, editAccessFolder, getAllFolders, getNestedSubfolders, getSingleFolderData, getSingleNestedSubfolderData, getSingleNestedSubfolders, getSingleSubfolderData, getSubfolders, renameFolder, renameFolderResource, renameNestedSubfolder, renameSubfolder, renameSubfolderResource, uploadFile, uploadFilesNestedSubfolder, uploadFilesSubfolder } from '../controller/adminResourceController.js'
+import { addFolder, addNestedSubfolder, addSubfolder, deleteFolder, deleteNestedSubfolder, deleteNestedSubfolderResource, deleteResource, deleteSubfolder, deleteSubfolderResource, editAccessFolder, getAllFolders, getNestedSubfolders, getSingleFolderData, getSingleNestedSubfolderData, getSingleNestedSubfolders, getSingleSubfolderData, getSubfolders, renameFolder, renameFolderResource, renameNestedSubfolder, renameSubfolder, renameSubfolderResource, uploadFile, uploadFilesNestedSubfolder, uploadFilesSubfolder } from '../controller/adminResourceController.js'
 import upload from '../utils/multer.js'
 import { authenticateAdmin } from '../utils/authMiddleware.js'
 
@@ -36,6 +36,8 @@ router.get('/nestedsubfolder/:folderName/:subfolderName', authenticateAdmin, get
 router.get('/nestedsubfolder/:folderName/:subfolderName/:nestedSubfolderName', authenticateAdmin, getSingleNestedSubfolderData)
 router.patch('/nestedsubfolder/rename/:id', authenticateAdmin, renameNestedSubfolder)
 router.post('/upload/:folderName/:subfolderName/:nestedSubfolderName', authenticateAdmin, upload.array('files', 100), uploadFilesNestedSubfolder)
+router.patch('/nestedSubfolder/delete/:id', authenticateAdmin, deleteNestedSubfolder)
+router.patch('/subfilename/:folderName/:subfolderName/:nestedSubfolderName/:resourceId', authenticateAdmin, deleteNestedSubfolderResource)
 
 
 

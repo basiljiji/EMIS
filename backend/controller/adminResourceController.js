@@ -800,3 +800,116 @@ export const uploadFilesNestedSubfolder = async (req, res, next) => {
 }
 
 
+
+
+
+
+
+export const deleteNestedSubfolder = async (req, res, next) => {
+    try {
+        const nestedSubfolderId = req.params.id
+        const deleteFolderDetail = await Subfolder.findById(nestedSubfolderId).populate('parentFolder').populate('parentSubfolder')
+
+        if (deleteFolderDetail) {
+            // Construct the folder path
+            const folderPath = `./uploads/${deleteFolderDetail.parentFolder.folderName}/${deleteFolderDetail.parentSubfolder.subfolderName}/${deleteFolderDetail.nestedSubfolderName}`
+
+            // Remove the folder directory and its contents
+            if (fs.existsSync(folderPath)) {
+                fs.rmdirSync(folderPath, { recursive: true })
+            }
+
+            // Mark the folder as deleted in the database
+            deleteFolderDetail.isDeleted.status = true
+            deleteFolderDetail.isDeleted.deletedBy = req.admin
+            deleteFolderDetail.isDeleted.deletedTime = Date.now()
+
+            await deleteFolderDetail.save()
+
+            res.status(200).json({ message: "Folder Deleted" })
+        } else {
+            res.status(404).json({ message: "Folder not found" })
+        }
+    } catch (err) {
+        const error = new HttpError('Deletion Failed', 500)
+        return next(error)
+    }
+}
+
+
+export const deleteNestedSubfolderResource = async (req, res, next) => {
+    try {
+        const folderName = req.params.folderName
+        const subfolderName = req.params.subfolderName
+        const resourceId = req.params.resourceId
+
+        const folder = await Folder.findOne({ folderName, 'isDeleted.status': false })
+
+        if (!folder) {
+            return res.status(404).json({ message: 'Folder not found' })
+        } else {
+            const subfolder = await Subfolder.findOne({ parentFolder: folder._id, subfolderName, 'isDeleted.status': false })
+
+            const resourceIndex = subfolder.resources.findIndex(resource => resource._id.equals(resourceId))
+
+            if (resourceIndex === -1) {
+                return res.status(404).json({ message: 'Resource not found' })
+            }
+
+            const deletedResource = subfolder.resources.splice(resourceIndex, 1)[0]
+
+            await subfolder.save()
+
+            const filePath = `./uploads/${deletedResource.filePath}`
+
+            const normalizedPath = path.normalize(filePath)
+
+            // Delete the file from the file system
+            await fs.unlink(normalizedPath, (err) => {
+                if (err) {
+                    console.error('Error deleting file:', err)
+                }
+            })
+
+            // Return a success message
+            res.status(200).json({ message: 'Resource deleted successfully' })
+        }
+
+
+    } catch (err) {
+        const error = new HttpError('Something Went Wrong', 500)
+        return next(error)
+    }
+}
+
+
+export const renameNestedSubfolderResource = async (req, res, next) => {
+    try {
+        const folderName = req.params.folderName
+        const subfolderName = req.params.subfolderName
+        const resourceId = req.params.resourceid
+        const { portionTitle } = req.body
+
+        const folder = await Folder.findOne({ folderName: folderName, 'isDeleted.status': false })
+
+        if (folder) {
+            const subfolder = await Subfolder.findOneAndUpdate(
+                {
+                    subfolderName: subfolderName,
+                    "isDeleted.status": false,
+                    "resources._id": resourceId
+                },
+                {
+                    $set: { "resources.$.portionTitle": portionTitle }
+                },
+                { new: true }
+            )
+        }
+
+        res.status(200).json({ message: "File Renamed" })
+
+    } catch (err) {
+        const error = new HttpError('Rename Failed', 500)
+        return next(error)
+    }
+}
