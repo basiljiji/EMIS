@@ -166,6 +166,34 @@ export const resourceAdminSlice = apiSlice.injectEndpoints({
             }),
             keepUnusedDataFor: 5,
         }),
+        renameNestedSubfolder: builder.mutation({
+            query: (data) => ({
+                url: `${RESOURCE_URL}/subfolder/rename/${data.subfolderId}`,
+                method: 'PATCH',
+                body: data
+            })
+        }),
+        renameNestedSubfolderResources: builder.mutation({
+            query: (data) => ({
+                url: `${RESOURCE_URL}/subfolder/resrename/${data.folderName}/${data.subfolderName}/${data.subfolderName}/${data.resourceId}`,
+                method: 'PATCH',
+                body: data
+            })
+        }),
+        deleteNestedSubfolder: builder.mutation({
+            query: (data) => ({
+                url: `${RESOURCE_URL}/subfolder/delete/${data.nestedsubfolderId}`,
+                method: 'PATCH',
+                body: data
+            })
+        }),
+        deleteNestedSubfolderResource: builder.mutation({
+            query: (data) => ({
+                url: `${RESOURCE_URL}/subfilename/${data.folderName}/${data.subfolderName}/${data.nestedSubfolderName}/${data.resourceId}`,
+                method: 'PATCH',
+                body: data
+            })
+        }),
     })
 })
 
@@ -191,5 +219,10 @@ export const {
     useGetSingleNestedSubfoldersQuery,
     useAddNestedSubfolderMutation,
     useGetSingleNestedSubfolderDataQuery,
-    useUploadFilesNestedSubfolderMutation
+    useUploadFilesNestedSubfolderMutation,
+    
+    useRenameNestedSubfolderMutation,
+    useRenameNestedSubfolderResourcesMutation,
+    useDeleteNestedSubfolderMutation,
+    useDeleteNestedSubfolderResourceMutation
 } = resourceAdminSlice

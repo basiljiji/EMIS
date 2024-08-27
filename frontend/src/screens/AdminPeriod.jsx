@@ -168,8 +168,8 @@ const AdminPeriod = () => {
     const pdfBlob = doc.output("blob")
     const pdfUrl = URL.createObjectURL(pdfBlob)
 
-    window.open(pdfUrl, "_blank");
-  };
+    window.open(pdfUrl, "_blank")
+  }
 
 
 
@@ -185,152 +185,156 @@ const AdminPeriod = () => {
 
   return (
     <AdminLayout>
-      <h4 className="mt-3">Periods</h4>
-      <Container>
-        <Form>
-          <Row className="justify-content-between">
-            <Col md={5} xs="auto">
-              <Form.Group controlId="teacherName">
-                <Form.Label>Teacher Name</Form.Label>
-                <Form.Control
-                  as="select"
-                  value={teacherName}
-                  onChange={(e) => setTeacherName(e.target.value)}
-                >
-                  <option value="">All</option>
-                  {teachers &&
-                    teachers
-                      .slice()
-                      .sort((a, b) => {
-                        const nameA = `${a.firstName} ${a.lastName}`.toLowerCase()
-                        const nameB = `${b.firstName} ${b.lastName}`.toLowerCase()
-                        if (nameA < nameB) return -1
-                        if (nameA > nameB) return 1
-                        return 0
-                      })
-                      .map((teacher, index) => (
-                        <option
-                          key={`${teacher.firstName}-${teacher.lastName}-${index}`}
-                        >
-                          {`${teacher.firstName} ${teacher.lastName}`}
-                        </option>
-                      ))}
-                </Form.Control>
-              </Form.Group>
+      <>
+        <Container>
+          <h4 className="mt-3">Periods</h4>
+          <Container>
+            <Form>
+              <Row className="justify-content-between">
+                <Col md={5} xs="auto">
+                  <Form.Group controlId="teacherName">
+                    <Form.Label>Teacher Name</Form.Label>
+                    <Form.Control
+                      as="select"
+                      value={teacherName}
+                      onChange={(e) => setTeacherName(e.target.value)}
+                    >
+                      <option value="">All</option>
+                      {teachers &&
+                        teachers
+                          .slice()
+                          .sort((a, b) => {
+                            const nameA = `${a.firstName} ${a.lastName}`.toLowerCase()
+                            const nameB = `${b.firstName} ${b.lastName}`.toLowerCase()
+                            if (nameA < nameB) return -1
+                            if (nameA > nameB) return 1
+                            return 0
+                          })
+                          .map((teacher, index) => (
+                            <option
+                              key={`${teacher.firstName}-${teacher.lastName}-${index}`}
+                            >
+                              {`${teacher.firstName} ${teacher.lastName}`}
+                            </option>
+                          ))}
+                    </Form.Control>
+                  </Form.Group>
 
-            </Col>
-            <Col xs="auto">
-              <Form.Group controlId="dateRange">
-                <Row>
-                  <Form.Label>Date Range</Form.Label>
-                  <Col>
-                    <Form.Control
-                      type="date"
-                      placeholder="Start Date"
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                      required
-                    />
-                  </Col>
-                  <Col>
-                    <Form.Control
-                      type="date"
-                      placeholder="End Date"
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                      required
-                    />
-                  </Col>
-                </Row>
-              </Form.Group>
-            </Col>
+                </Col>
+                <Col xs="auto">
+                  <Form.Group controlId="dateRange">
+                    <Row>
+                      <Form.Label>Date Range</Form.Label>
+                      <Col>
+                        <Form.Control
+                          type="date"
+                          placeholder="Start Date"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
+                          required
+                        />
+                      </Col>
+                      <Col>
+                        <Form.Control
+                          type="date"
+                          placeholder="End Date"
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                          required
+                        />
+                      </Col>
+                    </Row>
+                  </Form.Group>
+                </Col>
+              </Row>
+            </Form>
+          </Container>
+          <Row className="my-3 text-end">
+            <Button onClick={handleFetch} className="mb-5">
+              Fetch Periods
+            </Button>
+            <Button onClick={pdfHandler} className="mb-5">
+              Generate Report
+            </Button>
           </Row>
-        </Form>
-      </Container>
-      <Row className="my-3 text-end">
-        <Button onClick={handleFetch} className="mb-5">
-          Fetch Periods
-        </Button>
-        <Button onClick={pdfHandler} className="mb-5">
-          Generate Report
-        </Button>
-      </Row>
-      {teacherName && (
-        <h5 className="mb-3">Teacher: {teacherName}</h5>
-      )}
-      {isLoading && <Loader />}
-      {error && <Message>{error?.data?.message || error.error}</Message>}
-      {periods && periods.length > 0 && (
-        <Table striped bordered hover className="my-2">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Class</th>
-              <th>LoggedIn</th>
-              <th>LoggedOut</th>
-              <th>File Name</th>
-              <th>Duration(in Mins)</th>
-              <th>Resource</th>
-            </tr>
-          </thead>
-          <tbody>
-            {handleFilterChange().map((period, index) => (
-              <tr key={index}>
-                <td>{formatDate(period.day)}</td>
-                <td>
-                  {period.classData.map((classData, classDataIndex) => (
-                    <div key={classDataIndex}>
-                      <div>{classData.class.class}</div>
-                      <div>{classData.section.section}</div>
-                      <div>{classData.subject.subject}</div>
-                    </div>
-                  ))}
-                </td>
-                <td>{formatTime(period.loggedIn)}</td>
-                <td>{formatTime(period.loggedOut)}</td>
-                <td className="word-wrap">
-                  {period.accessedFiles.length > 0 ? (
-                    period.accessedFiles.map((file, fileIndex) => (
-                      <div key={fileIndex}>
-                        {file.portionTitle || "N/A"}
-                      </div>
-                    ))
-                  ) : (
-                    "N/A"
-                  )}
-                </td>
-                <td>
-                  {period.accessedFiles.length > 0 ? (
-                    period.accessedFiles.map(
-                      (access, accessIndex) =>
-                        access.duration > 0 && (
-                          <div key={accessIndex}>
-                            {(access.duration / 60000).toFixed(2)} min
+          {teacherName && (
+            <h5 className="mb-3">Teacher: {teacherName}</h5>
+          )}
+          {isLoading && <Loader />}
+          {error && <Message>{error?.data?.message || error.error}</Message>}
+          {periods && periods.length > 0 && (
+            <Table striped bordered hover className="my-2">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Class</th>
+                  <th>LoggedIn</th>
+                  <th>LoggedOut</th>
+                  <th>File Name</th>
+                  <th>Duration(in Mins)</th>
+                  <th>Resource</th>
+                </tr>
+              </thead>
+              <tbody>
+                {handleFilterChange().map((period, index) => (
+                  <tr key={index}>
+                    <td>{formatDate(period.day)}</td>
+                    <td>
+                      {period.classData.map((classData, classDataIndex) => (
+                        <div key={classDataIndex}>
+                          <div>{classData.class.class}</div>
+                          <div>{classData.section.section}</div>
+                          <div>{classData.subject.subject}</div>
+                        </div>
+                      ))}
+                    </td>
+                    <td>{formatTime(period.loggedIn)}</td>
+                    <td>{formatTime(period.loggedOut)}</td>
+                    <td className="word-wrap">
+                      {period.accessedFiles.length > 0 ? (
+                        period.accessedFiles.map((file, fileIndex) => (
+                          <div key={fileIndex}>
+                            {file.portionTitle || "N/A"}
                           </div>
+                        ))
+                      ) : (
+                        "N/A"
+                      )}
+                    </td>
+                    <td>
+                      {period.accessedFiles.length > 0 ? (
+                        period.accessedFiles.map(
+                          (access, accessIndex) =>
+                            access.duration > 0 && (
+                              <div key={accessIndex}>
+                                {(access.duration / 60000).toFixed(2)} min
+                              </div>
+                            )
                         )
-                    )
-                  ) : (
-                    "N/A"
-                  )}
-                </td>
-                <td>
-                  {period.accessedFiles.length > 0 ? (
-                    period.accessedFiles.map((file, fileIndex) => (
-                      <div key={fileIndex}>
-                        {calculateDuration(file.fromTime, file.toTime)} min
-                      </div>
-                    ))
-                  ) : (
-                    "N/A"
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      )}
-      <Paginate pages={data?.pages} page={data?.page} />
-      {periods && periods.length === 0 && <p>No periods found.</p>}
+                      ) : (
+                        "N/A"
+                      )}
+                    </td>
+                    <td>
+                      {period.accessedFiles.length > 0 ? (
+                        period.accessedFiles.map((file, fileIndex) => (
+                          <div key={fileIndex}>
+                            {calculateDuration(file.fromTime, file.toTime)} min
+                          </div>
+                        ))
+                      ) : (
+                        "N/A"
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          )}
+          <Paginate pages={data?.pages} page={data?.page} />
+          {periods && periods.length === 0 && <p>No periods found.</p>}
+        </Container>
+      </>
     </AdminLayout>
   )
 }

@@ -695,13 +695,13 @@ export const getSingleNestedSubfolderData = async (req, res, next) => {
         if (!folderData) {
             return next(new HttpError('Folder not found', 404))
         }
-        
+
         // Find the subfolder
         const subfolder = await Subfolder.findOne({ subfolderName, parentFolder: folderData._id, 'isDeleted.status': false }).populate('parentFolder')
         if (!subfolder) {
             return next(new HttpError('Subfolder not found', 404))
         }
-        
+
         // Find the nested subfolders
         const nestedSubfolders = await NestedSubfolder.findOne({
             nestedSubfolderName: nestedSubfolderName,
@@ -709,10 +709,9 @@ export const getSingleNestedSubfolderData = async (req, res, next) => {
             parentSubfolder: subfolder._id,
             'isDeleted.status': false
         }).populate('parentFolder').populate('parentSubfolder')
-        
-        console.log(nestedSubfolders,'1212')
+
         // Return both subfolder and nested subfolders
-        res.status(200).json(nestedSubfolders )
+        res.status(200).json(nestedSubfolders)
     } catch (err) {
         return next(new HttpError('Fetching subfolder and nested subfolders failed', 500))
     }
@@ -738,61 +737,59 @@ export const renameNestedSubfolder = async (req, res, next) => {
 
 export const uploadFilesNestedSubfolder = async (req, res, next) => {
     try {
-    if (!req.files || req.files.length === 0) {
-        throw new HttpError('No files uploaded', 400)
-    }
-
-    const { folderName, subfolderName, nestedSubfolderName } = req.params
-
-    // Ensure all parameters are provided
-    if (!folderName || !subfolderName || !nestedSubfolderName) {
-        throw new HttpError('Missing parameters', 400)
-    }
-    
-    // Find the parent folder
-    const folder = await Folder.findOne({ folderName, 'isDeleted.status': false })
-    if (!folder) {
-        throw new HttpError('Parent folder not found', 404)
-    }
-    
-    const subfolder = await Subfolder.findOne({ subfolderName, parentFolder: folder._id, 'isDeleted.status': false }).populate('parentFolder')
-    if (!subfolder) {
-        throw new HttpError('Subfolder not found', 404)
-    }
-    
-    const nestedSubfolder = await NestedSubfolder.findOne({ nestedSubfolderName, parentFolder: folder._id, parentSubfolder: subfolder._id, 'isDeleted.status': false }).populate('parentFolder').populate('parentSubfolder')
-    if (!nestedSubfolder) {
-        throw new HttpError('Nested subfolder not found', 404)
-    }
-    
-    console.log(nestedSubfolder, "1212")
-    
-    
-    req.files.forEach(async (file) => {
-        
-        const filePath = `/${nestedSubfolder.parentFolder.folderName}/${nestedSubfolder.parentSubfolder.subfolderName}/${nestedSubfolder.nestedSubfolderName}/${file.originalname}`
-        
-
-        // Create an object with file details
-        const newResource = {
-            portionTitle: file.originalname || null,
-            filePath: filePath,
-            fileName: file.originalname,
-            fileType: file.mimetype,
-            fileSize: file.size
+        if (!req.files || req.files.length === 0) {
+            throw new HttpError('No files uploaded', 400)
         }
 
-        // Push the new resource into the nested subfolder's resources array
-        nestedSubfolder.resources.push(newResource)
-    })
+        const { folderName, subfolderName, nestedSubfolderName } = req.params
 
-    // Save the nested subfolder document with the new resources
-    await nestedSubfolder.save()
+        // Ensure all parameters are provided
+        if (!folderName || !subfolderName || !nestedSubfolderName) {
+            throw new HttpError('Missing parameters', 400)
+        }
 
-    res.status(200).json({
-        message: 'Files uploaded successfully',
-        resources: nestedSubfolder.resources
-    })
+        // Find the parent folder
+        const folder = await Folder.findOne({ folderName, 'isDeleted.status': false })
+        if (!folder) {
+            throw new HttpError('Parent folder not found', 404)
+        }
+
+        const subfolder = await Subfolder.findOne({ subfolderName, parentFolder: folder._id, 'isDeleted.status': false }).populate('parentFolder')
+        if (!subfolder) {
+            throw new HttpError('Subfolder not found', 404)
+        }
+
+        const nestedSubfolder = await NestedSubfolder.findOne({ nestedSubfolderName, parentFolder: folder._id, parentSubfolder: subfolder._id, 'isDeleted.status': false }).populate('parentFolder').populate('parentSubfolder')
+        if (!nestedSubfolder) {
+            throw new HttpError('Nested subfolder not found', 404)
+        }
+
+
+        req.files.forEach(async (file) => {
+
+            const filePath = `/${nestedSubfolder.parentFolder.folderName}/${nestedSubfolder.parentSubfolder.subfolderName}/${nestedSubfolder.nestedSubfolderName}/${file.originalname}`
+
+
+            // Create an object with file details
+            const newResource = {
+                portionTitle: file.originalname || null,
+                filePath: filePath,
+                fileName: file.originalname,
+                fileType: file.mimetype,
+                fileSize: file.size
+            }
+
+            // Push the new resource into the nested subfolder's resources array
+            nestedSubfolder.resources.push(newResource)
+        })
+
+        // Save the nested subfolder document with the new resources
+        await nestedSubfolder.save()
+
+        res.status(200).json({
+            message: 'Files uploaded successfully',
+            resources: nestedSubfolder.resources
+        })
     } catch (err) {
         const error = new HttpError('File upload failed', 500)
         return next(error)
@@ -808,7 +805,8 @@ export const uploadFilesNestedSubfolder = async (req, res, next) => {
 export const deleteNestedSubfolder = async (req, res, next) => {
     try {
         const nestedSubfolderId = req.params.id
-        const deleteFolderDetail = await Subfolder.findById(nestedSubfolderId).populate('parentFolder').populate('parentSubfolder')
+
+        const deleteFolderDetail = await NestedSubfolder.findById(nestedSubfolderId).populate('parentFolder').populate('parentSubfolder')
 
         if (deleteFolderDetail) {
             // Construct the folder path
@@ -839,71 +837,87 @@ export const deleteNestedSubfolder = async (req, res, next) => {
 
 export const deleteNestedSubfolderResource = async (req, res, next) => {
     try {
-        const folderName = req.params.folderName
-        const subfolderName = req.params.subfolderName
-        const resourceId = req.params.resourceId
+        const { folderName, subfolderName, nestedSubfolderName, resourceId } = req.params
 
         const folder = await Folder.findOne({ folderName, 'isDeleted.status': false })
 
         if (!folder) {
             return res.status(404).json({ message: 'Folder not found' })
-        } else {
-            const subfolder = await Subfolder.findOne({ parentFolder: folder._id, subfolderName, 'isDeleted.status': false })
-
-            const resourceIndex = subfolder.resources.findIndex(resource => resource._id.equals(resourceId))
-
-            if (resourceIndex === -1) {
-                return res.status(404).json({ message: 'Resource not found' })
-            }
-
-            const deletedResource = subfolder.resources.splice(resourceIndex, 1)[0]
-
-            await subfolder.save()
-
-            const filePath = `./uploads/${deletedResource.filePath}`
-
-            const normalizedPath = path.normalize(filePath)
-
-            // Delete the file from the file system
-            await fs.unlink(normalizedPath, (err) => {
-                if (err) {
-                    console.error('Error deleting file:', err)
-                }
-            })
-
-            // Return a success message
-            res.status(200).json({ message: 'Resource deleted successfully' })
         }
 
+        const subfolder = await Subfolder.findOne({ parentFolder: folder._id, subfolderName, 'isDeleted.status': false })
+
+        if (!subfolder) {
+            return res.status(404).json({ message: 'Subfolder not found' })
+        }
+
+        const nestedSubfolder = await NestedSubfolder.findOne({
+            parentFolder: folder._id,
+            parentSubfolder: subfolder._id,
+            nestedSubfolderName,
+            'isDeleted.status': false
+        })
+
+        if (!nestedSubfolder) {
+            return res.status(404).json({ message: 'Nested subfolder not found' })
+        }
+
+        const resourceIndex = nestedSubfolder.resources.findIndex(resource => resource._id.equals(resourceId))
+
+        if (resourceIndex === -1) {
+            return res.status(404).json({ message: 'Resource not found' })
+        }
+
+        const deletedResource = nestedSubfolder.resources.splice(resourceIndex, 1)[0]
+
+        await nestedSubfolder.save()
+
+        const filePath = `./uploads/${deletedResource.filePath}`
+        const normalizedPath = path.normalize(filePath)
+
+        // Delete the file from the file system
+        fs.unlink(normalizedPath, (err) => {
+            if (err) {
+                console.error('Error deleting file:', err)
+            }
+        })
+
+        // Return a success message
+        res.status(200).json({ message: 'Resource deleted successfully' })
 
     } catch (err) {
         const error = new HttpError('Something Went Wrong', 500)
         return next(error)
     }
-}
-
+};
 
 export const renameNestedSubfolderResource = async (req, res, next) => {
     try {
         const folderName = req.params.folderName
         const subfolderName = req.params.subfolderName
+        const nestedsubfolderName = req.params.nestedsubfolderName
         const resourceId = req.params.resourceid
         const { portionTitle } = req.body
 
         const folder = await Folder.findOne({ folderName: folderName, 'isDeleted.status': false })
 
         if (folder) {
-            const subfolder = await Subfolder.findOneAndUpdate(
-                {
-                    subfolderName: subfolderName,
-                    "isDeleted.status": false,
-                    "resources._id": resourceId
-                },
-                {
-                    $set: { "resources.$.portionTitle": portionTitle }
-                },
-                { new: true }
-            )
+            const subfolder = await Subfolder.findOne({ parentFolder: folder._id, subfolderName, 'isDeleted.status': false })
+
+            if(subfolder){
+                const nestedsubfolder = await NestedSubfolder.findOneAndUpdate(
+                    {
+                        nestedSubfolderName: nestedsubfolderName,
+                        "isDeleted.status": false,
+                        "resources._id": resourceId
+                    },
+                    {
+                        $set: { "resources.$.portionTitle": portionTitle }
+                    },
+                    { new: true }
+                )
+            }
+           
         }
 
         res.status(200).json({ message: "File Renamed" })

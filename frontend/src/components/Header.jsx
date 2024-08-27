@@ -1,15 +1,17 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { Navbar, Nav, Container, NavDropdown, Button } from "react-bootstrap"
 import { LinkContainer } from "react-router-bootstrap"
 import { useNavigate } from "react-router-dom"
 import { useSelector, useDispatch } from "react-redux"
-import { FaUser } from "react-icons/fa"
+import { FaBars, FaUser } from "react-icons/fa"
 import { useLogoutMutation } from "../slices/teacherAuthApiSlice"
 import { logout } from "../slices/authSlice"
 import logo from "../assets/logo.png"
 import { useAdminLogoutMutation } from "../slices/adminAuthApiSlice"
+import "../App.css"
 
-const Header = () => {
+
+const Header = ({ onSidebarToggle }) => {
   const { userInfo } = useSelector((state) => state.auth)
 
   const dispatch = useDispatch()
@@ -58,7 +60,18 @@ const Header = () => {
   return (
     <header>
       <Navbar expand="lg" collapseOnSelect className="py-3 navbar">
+        
         <Container>
+          {userInfo && userInfo.role === "admin" ? (
+            <>
+              <Button onClick={onSidebarToggle} className="sidebar-toggle">
+                <FaBars className="white-icon" />
+              </Button>
+            </>
+          ) : (
+            <div className="sidebar-footer">
+            </div>
+          )}
           <LinkContainer to="/dashboard">
             <Navbar.Brand>
               <img src={logo} alt="SMPS" width="30px" height="30px" />
@@ -70,15 +83,15 @@ const Header = () => {
           />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              {userInfo && userInfo.role === "admin" ? (
-                <LinkContainer to="/admin/dashboard">
-                  <Nav.Link className="text-light">Home</Nav.Link>
-                </LinkContainer>
-              ) : (
-                <LinkContainer to="/dashboard">
-                  <Nav.Link className="text-light">Home</Nav.Link>
-                </LinkContainer>
-              )}
+              {userInfo ? (
+                userInfo.role === "admin" ? (
+                  <p></p>
+                ) : (
+                  <LinkContainer to="/dashboard">
+                    <Nav.Link className="text-light">Home</Nav.Link>
+                  </LinkContainer>
+                )
+              ) : null}
             </Nav>
             <Nav className="ms-auto">
               {userInfo ? (

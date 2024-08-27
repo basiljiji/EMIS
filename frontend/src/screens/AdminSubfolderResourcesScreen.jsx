@@ -3,12 +3,17 @@ import { useParams } from "react-router-dom"
 import { toast } from "react-toastify"
 import { LinkContainer } from "react-router-bootstrap"
 import {
+  useDeleteNestedSubfolderMutation,
+  useDeleteNestedSubfolderResourceMutation,
   useDeleteResourceMutation,
   useDeleteSubfolderMutation,
   useDeleteSubfolderResourceMutation,
   useGetSingleFolderDataQuery,
+  useGetSingleNestedSubfoldersQuery,
   useGetSingleSubfolderDataQuery,
   useGetSubFoldersQuery,
+  useRenameNestedSubfolderMutation,
+  useRenameNestedSubfolderResourcesMutation,
   useRenameSubfolderMutation,
   useRenameSubfolderResourcesMutation,
 } from "../slices/resourceAdminSlice"
@@ -35,9 +40,8 @@ const AdminSubfolderResourcesScreen = () => {
   const [selectedResourceId, setSelectedResourceId] = useState("")
 
   const [showRenameResourceModal, setshowRenameResourceModal] = useState(false)
-  const [renameSubfolderResource] = useRenameSubfolderResourcesMutation()
-
-
+  
+  
   const handleClose = () => {
     setShowModal(false)
   }
@@ -63,6 +67,18 @@ const AdminSubfolderResourcesScreen = () => {
 
 
   const [deleteSubfolderResource] = useDeleteSubfolderResourceMutation()
+  const [renameSubfolderResource] = useRenameSubfolderResourcesMutation()
+
+  //Nested Folder
+  const { data: nestedSubfolders, refetch: nestedSubfoldersRefetch } =
+    useGetSingleNestedSubfoldersQuery({ folderName, subfolderName })
+
+    console.log(nestedSubfolders,"123")
+
+  // const [deleteNestedfolderResource] = useDeleteNestedSubfolderResourceMutation()
+  // const [renameNestedFolderResource] = useRenameNestedSubfolderResourcesMutation()
+  const [deleteNestedSubfolder] = useDeleteNestedSubfolderMutation()
+  const [renameNestedSubfolder] = useRenameNestedSubfolderMutation()
 
   const bytesToMB = (bytes) => {
     if (bytes === 0) return "0 MB"
@@ -79,6 +95,19 @@ const AdminSubfolderResourcesScreen = () => {
       })
       refetch()
       toast.success("Resource Deleted")
+    } catch (err) {
+      toast.error(err?.data?.message || err.error)
+    }
+  }
+
+
+  const deleteNestedSubfolderHandler = async (subfolderId) => {
+    try {
+      const result = await deleteNestedSubfolder({
+        subfolderId: subfolderId,
+      })
+      nestedSubfoldersRefetch()
+      toast.success("Folder Deleted")
     } catch (err) {
       toast.error(err?.data?.message || err.error)
     }
@@ -125,6 +154,37 @@ const AdminSubfolderResourcesScreen = () => {
               </tr>
             </thead>
             <tbody>
+              {(nestedSubfolders?.nestedSubfolders || []).map((nestedSubfolder) => (
+                  <tr key={nestedSubfolder._id}>
+                    <td>{nestedSubfolder.folderTitle}</td>
+                    <td>Nested SubFolder</td>
+                    <td>-</td> {/* No size for folders */}
+                    <td>
+                      <LinkContainer
+                      to={`/admin/folder/${folderName}/${subfolderName}/${nestedSubfolder.nestedSubfolderName}`}
+                      >
+                        <Button variant="success" className="me-2">
+                          Manage
+                        </Button>
+                      </LinkContainer>
+                      <Button
+                        variant="primary"
+                        className="me-2"
+                        onClick={() =>
+                          handleRename(nestedSubfolder._id, nestedSubfolder.folderTitle)
+                        }
+                      >
+                        Rename
+                      </Button>
+                      <Button
+                        variant="danger"
+                        onClick={() => deleteNestedSubfolderHandler(nestedSubfolder._id)}
+                      >
+                        Delete
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
               {/* Render resources if they exist */}
               {subfolderResources.resources &&
                 subfolderResources.resources.length > 0 &&

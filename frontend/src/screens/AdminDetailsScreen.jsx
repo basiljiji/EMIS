@@ -349,6 +349,7 @@ const AdminDetailsScreen = () => {
                     <tr>
                       <th>#</th>
                       <th>Section Name</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -419,6 +420,7 @@ const AdminDetailsScreen = () => {
                     <tr>
                       <th>#</th>
                       <th>Subject Name</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>

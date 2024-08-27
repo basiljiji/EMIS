@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { Table, Button, Modal, Form } from "react-bootstrap"
+import { Table, Button, Modal, Form, Container } from "react-bootstrap"
 import { toast } from "react-toastify"
 import { LinkContainer } from "react-router-bootstrap"
 import AdminLayout from "../components/AdminLayout"
@@ -78,6 +78,8 @@ const AdminFolderManagement = () => {
 
   return (
     <AdminLayout>
+      <>
+      <Container>
       <Table striped bordered hover>
         <thead>
           <tr>
@@ -147,6 +149,8 @@ const AdminFolderManagement = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+    </Container >
+    </>
     </AdminLayout>
   )
 }

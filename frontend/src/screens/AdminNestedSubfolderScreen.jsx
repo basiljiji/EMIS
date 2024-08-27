@@ -41,7 +41,6 @@ const AdminNestedSubfolderScreen = () => {
     error,
   } = useGetSingleNestedSubfolderDataQuery({ folderName, subfolderName, nestedSubfolderName })
 
-  console.log(nestedSubfolderResources, "1212")
 
   const [uploadResources] = useUploadFilesNestedSubfolderMutation()
 
