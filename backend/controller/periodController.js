@@ -55,7 +55,7 @@ export const getAllPeriodsChart = async (req, res, next) => {
 export const getAllPeriods = async (req, res, next) => {
     try {
         const { pageNumber = 1, startDate, endDate, teacherId } = req.query
-        const pageSize = 10
+        const pageSize = 50
         const query = {}
 
         if (startDate && endDate) {
@@ -82,29 +82,45 @@ export const getAllPeriods = async (req, res, next) => {
         let totalResourceTimeSum = 0
 
         periods = periods.map(period => {
+            // Combine duplicate class entries
+            const uniqueClasses = {}
+            period.classData.forEach(data => {
+                const classKey = `${data.class._id}-${data.section._id}-${data.subject._id}`
+                if (!uniqueClasses[classKey]) {
+                    uniqueClasses[classKey] = { ...data.toObject() }
+                } else {
+                    // If duplicate, you can aggregate or merge additional properties here
+                }
+            })
+
+            period.classData = Object.values(uniqueClasses)
+
+            // Combine duplicate accessedFiles entries
+            const fileMap = {}
+            let totalDuration = 0
+            let totalResourceTime = 0
+            period.accessedFiles.forEach(file => {
+                const fileId = file.fileId // Assuming fileId is a unique identifier for files
+                if (!fileMap[fileId]) {
+                    fileMap[fileId] = { ...file.toObject() }
+                } else {
+                    // Aggregate durations and resource times
+                    fileMap[fileId].duration += file.duration
+                    if (file.fromTime && file.toTime) {
+                        const fromTime = new Date(file.fromTime)
+                        const toTime = new Date(file.toTime)
+                        fileMap[fileId].resourceTime += (toTime - fromTime) / 60000
+                    }
+                }
+            })
+
+            period.accessedFiles = Object.values(fileMap)
+
             // Calculate total login time
             const loggedOutTime = period.loggedOut || period.updatedAt
             const loginTime = period.loggedIn ? new Date(period.loggedIn) : new Date()
             const logoutTime = new Date(loggedOutTime)
             const totalLoginTime = (logoutTime - loginTime) / 60000 // Duration in minutes
-
-            // Calculate total duration and total resource time
-            let totalDuration = 0
-            let totalResourceTime = 0
-
-            period.accessedFiles = period.accessedFiles.filter(file => {
-                const fileDuration = file.duration / 60000 // Duration in minutes
-                totalDuration += fileDuration
-
-                if (file.fromTime && file.toTime) {
-                    const fromTime = new Date(file.fromTime)
-                    const toTime = new Date(file.toTime)
-                    const resourceTime = (toTime - fromTime) / 60000 // Resource time in minutes
-                    totalResourceTime += resourceTime
-                }
-
-                return fileDuration >= 0.01
-            })
 
             // Add to overall sums
             totalLoginTimeSum += totalLoginTime
@@ -134,14 +150,24 @@ export const getAllPeriods = async (req, res, next) => {
 }
 
 
+
+
+
 export const getAllPeriodsReport = async (req, res, next) => {
     try {
-        // Calculate the start and end dates for the current month
-        const now = moment()
-        const startOfMonth = now.startOf('month').toDate() // First day of the current month
-        const endOfMonth = now.endOf('month').toDate() // Last day of the current month
+        // Extract year and month from query parameters
+        const { year, month } = req.query
 
-        // Fetch periods within the current month
+        // Default to current year and month if not provided
+        const now = moment()
+        const selectedYear = year ? parseInt(year) : now.year()
+        const selectedMonth = month ? moment().month(month).format('MMMM') : now.format('MMMM')
+
+        // Calculate the start and end dates for the selected month
+        const startOfMonth = moment().year(selectedYear).month(selectedMonth).startOf('month').toDate()
+        const endOfMonth = moment().year(selectedYear).month(selectedMonth).endOf('month').toDate()
+
+        // Fetch periods within the selected month
         const periods = await Period.find({
             createdAt: {
                 $gte: startOfMonth,
@@ -163,7 +189,7 @@ export const getAllPeriodsReport = async (req, res, next) => {
                 loggedOut,
                 accessedFiles,
                 createdAt,
-                updatedAt, // Ensure updatedAt is included
+                updatedAt,
             } = period
 
             const teacherName = `${teacher.firstName} ${teacher.lastName}`
@@ -178,7 +204,6 @@ export const getAllPeriodsReport = async (req, res, next) => {
                 }
             }
 
-            // Update fromDate and toDate based on createdAt
             const currentFromDate = new Date(teacherData[teacherName].fromDate)
             const currentToDate = new Date(teacherData[teacherName].toDate)
             const periodCreatedAt = new Date(createdAt)
@@ -199,7 +224,6 @@ export const getAllPeriodsReport = async (req, res, next) => {
             teacherData[teacherName].totalResourceTime += totalResourceTime
         })
 
-        // Format durations to hh:mm format
         for (const teacherName in teacherData) {
             const { totalDuration, totalLoggedInTime, totalResourceTime } = teacherData[teacherName]
 
@@ -218,22 +242,22 @@ export const getAllPeriodsReport = async (req, res, next) => {
 const calculateTotalDuration = (accessedFiles) => {
     return accessedFiles.reduce((totalDuration, file) => {
         return totalDuration + file.duration
-    }, 0) / 60000 // Convert total duration to minutes
+    }, 0) / 60000
 }
 
 const calculateTotalLoggedInTime = (loggedIn, loggedOut, updatedAt) => {
     const loggedInTime = new Date(loggedIn)
-    const loggedOutTime = loggedOut ? new Date(loggedOut) : new Date(updatedAt) // Use updatedAt if loggedOut is not available
-    const timeDifference = loggedOutTime - loggedInTime // Difference in milliseconds
-    return timeDifference / (1000 * 60) // Convert difference to minutes
+    const loggedOutTime = loggedOut ? new Date(loggedOut) : new Date(updatedAt)
+    const timeDifference = loggedOutTime - loggedInTime
+    return timeDifference / (1000 * 60)
 }
 
 const calculateTotalResourceTime = (accessedFiles) => {
     return accessedFiles.reduce((totalTime, file) => {
         const fromTime = new Date(file.fromTime)
         const toTime = new Date(file.toTime)
-        const timeDifference = toTime - fromTime // Difference in milliseconds
-        return totalTime + (timeDifference / (1000 * 60)) // Convert difference to minutes
+        const timeDifference = toTime - fromTime
+        return totalTime + (timeDifference / (1000 * 60))
     }, 0)
 }
 
@@ -241,7 +265,8 @@ const formatHoursMinutes = (duration) => {
     const hours = Math.floor(duration / 60)
     const minutes = Math.round(duration % 60)
     return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`
-};
+}
+
 
 
 

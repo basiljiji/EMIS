@@ -46,10 +46,17 @@ export const periodSlice = apiSlice.injectEndpoints({
             })
         }),
         getPeriodsReportAll: builder.query({
-            query: () => ({
-                url: `${PERIOD_URL}/report`,
-                method: 'GET'
-            })
+            query: ({ year, month }) => {
+                // Construct query parameters if year and month are provided
+                const params = new URLSearchParams()
+                if (year) params.append('year', year)
+                if (month) params.append('month', month)
+
+                return {
+                    url: `${PERIOD_URL}/report?${params.toString()}`,
+                    method: 'GET'
+                }
+            }
         })
     })
 })

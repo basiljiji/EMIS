@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import AdminLayout from "../components/AdminLayout"
 import { useGetPeriodsReportAllQuery } from "../slices/periodApiSlice"
 import { Form, Container, Table, Row, Col, Button } from "react-bootstrap"
@@ -7,8 +7,10 @@ import autoTable from "jspdf-autotable"
 import Loader from "../components/Loader"
 
 const AdminDashboard = () => {
-  const { data: periodsData, isLoading: reportLoading, error: reportError } = useGetPeriodsReportAllQuery()
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
+  const [selectedMonth, setSelectedMonth] = useState(new Date().toLocaleString('en', { month: 'long' }))
 
+  const { data: periodsData, isLoading: reportLoading, error: reportError, refetch } = useGetPeriodsReportAllQuery({ year: selectedYear, month: selectedMonth })
 
   // Generate options for months dropdown
   const monthsOptions = Array.from({ length: 12 }, (_, index) => {
@@ -32,19 +34,6 @@ const AdminDashboard = () => {
       </option>
     )
   })
-
-  // Generate options for teachers dropdown
-  let teachersOptions = []
-  if (periodsData) {
-    const uniqueTeachers = new Set(
-      Object.keys(periodsData).map((personName) => personName)
-    )
-    teachersOptions = Array.from(uniqueTeachers).map((teacher, index) => (
-      <option key={index} value={teacher}>
-        {teacher}
-      </option>
-    ))
-  }
 
   // Function to handle printing the table as PDF
   const pdfHandler = () => {
@@ -85,16 +74,17 @@ const AdminDashboard = () => {
     window.open(pdfUrl, "_blank")
   }
 
+  const handleFetchReport = () => {
+    refetch()
+  }
+
   return (
     <AdminLayout>
       <Container>
-
-        {reportLoading && <Loader />}
-        {reportError && <p>Error: {reportError.message}</p>}
         <div>
-          <Row>
+          <Row className="my-3">
             <Col>
-              <h1>Periods Report</h1>
+              <h5>Periods Report</h5>
             </Col>
             <Col className="text-end">
               <Button variant="primary" onClick={pdfHandler}>
@@ -102,8 +92,39 @@ const AdminDashboard = () => {
               </Button>
             </Col>
           </Row>
+          <Row>
+            <Col md={4}>
+              <Form.Group controlId="yearSelect">
+                <Form.Label>Year</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(e.target.value)}
+                >
+                  {nextTenYearsOptions}
+                </Form.Control>
+              </Form.Group>
+            </Col>
+            <Col md={4}>
+              <Form.Group controlId="monthSelect">
+                <Form.Label>Month</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                >
+                  {monthsOptions}
+                </Form.Control>
+              </Form.Group>
+            </Col>
+            <Col md={4} className="d-flex align-items-end">
+              <Button variant="primary" onClick={handleFetchReport}>
+                Fetch Report
+              </Button>
+            </Col>
+          </Row>
           {reportLoading ? (
-            <div><Loader /></div>
+            <Loader />
           ) : reportError ? (
             <div>Error: {reportError.message}</div>
           ) : !periodsData || Object.keys(periodsData).length === 0 ? (

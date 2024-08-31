@@ -51,7 +51,7 @@ const AdminPeriod = () => {
     if (!fromTime || !toTime) return "N/A"
     const from = new Date(fromTime)
     const to = new Date(toTime)
-    return ((to - from) / 60000).toFixed(2)
+    return ((to - from) / 3600000).toFixed(2) // Duration in hours
   }
 
   const handleFilterChange = () => {
@@ -95,7 +95,7 @@ const AdminPeriod = () => {
           loggedOut: formatTime(period.loggedOut),
           filename: file.portionTitle || "N/A",
           duration: (file.duration / 60000).toFixed(2) || "N/A",
-          resource: calculateDuration(file.fromTime, file.toTime),
+          resource: calculateDuration(file.fromTime, file.toTime) || "N/A",
         }
       })
     })
@@ -170,7 +170,6 @@ const AdminPeriod = () => {
 
     window.open(pdfUrl, "_blank")
   }
-
 
 
 
@@ -271,7 +270,7 @@ const AdminPeriod = () => {
                   <th>LoggedIn</th>
                   <th>LoggedOut</th>
                   <th>File Name</th>
-                  <th>Duration(in Mins)</th>
+                  <th>Duration(in Hrs)</th>
                   <th>Resource</th>
                 </tr>
               </thead>

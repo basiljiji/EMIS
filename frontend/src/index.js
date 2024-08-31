@@ -62,19 +62,19 @@ const router = createBrowserRouter(
         <Route path='/admin/dashboard' element={<AdminDashboard />} />
         <Route path='/admin/teacher' element={<TeacherManagement />} />
         <Route path='/teacher/edit/:id' element={<EditTeacher />} />
-        <Route path='/admin/resource' element={<AdminResourceScreen />} />
-        <Route path='/admin/resource/:id' element={<ResourceScreen />} />
         <Route path='/admin/details' element={<AdminDetailsScreen />} />
         <Route path='/admin/period' element={<AdminPeriod />} />
         <Route path='/admin/period/:pageNumber' element={<AdminPeriod />} />
         <Route path='/admin/folder' element={<AdminFolderManagement />} />
         <Route path='/admin/folder/edit/:id' element={<AdminEditAccessScreen />} />
+        <Route path='/admin/resource' element={<AdminResourceScreen />} />
+        <Route path='/admin/resource/:id' element={<ResourceScreen />} />
         <Route path='/admin/resource/:id/:sid' element={<AdminSubfoldersScreen />} />
+        <Route path='/admin/resource/:id/:sid/:nid' element={<AdminNestedSubfolderScreen />} />
         <Route path='/admin/folder/:id' element={<AdminResourceManagement />} />
         <Route path='/admin/folder/:id/:sid/' element={<AdminSubfolderResourcesScreen />} />
         <Route path='/admin/folder/:id/:sid/:nid' element={<AdminNestedFolderResource />} />
         <Route path='/admin/viewer' element={<AdminResourceViewerScreen />} />
-        <Route path='/admin/resource/:id/:sid/:nid' element={<AdminNestedSubfolderScreen />} />
       </Route>
 
     </Route>

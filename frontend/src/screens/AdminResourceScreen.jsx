@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import { Row, Col, Button, Form, Container, Modal } from "react-bootstrap"
 import { LinkContainer } from "react-router-bootstrap"
+import { Typeahead } from "react-bootstrap-typeahead"
 import { toast } from "react-toastify"
 import AdminLayout from "../components/AdminLayout"
 import { FaFolder } from "react-icons/fa"
@@ -22,6 +23,7 @@ const AdminResourceScreen = () => {
   const [selectedSubjects, setSelectedSubjects] = useState([])
   const [selectedClasses, setSelectedClasses] = useState([])
   const [selectedTeachers, setSelectedTeachers] = useState([])
+  const [selectedFolder, setSelectedFolder] = useState([])
 
   const { data: sections } = useGetSectionsQuery()
   const { data: subjects } = useGetSubjectsQuery()
@@ -34,6 +36,7 @@ const AdminResourceScreen = () => {
     refetch,
     error,
   } = useGetAllFoldersQuery()
+
   const handleClassToggle = (classId) => {
     setSelectedClasses((prevSelected) =>
       prevSelected.includes(classId)
@@ -41,6 +44,7 @@ const AdminResourceScreen = () => {
         : [...prevSelected, classId]
     )
   }
+
   const handleSectionToggle = (sectionId) => {
     setSelectedSections((prevSelected) =>
       prevSelected.includes(sectionId)
@@ -48,6 +52,7 @@ const AdminResourceScreen = () => {
         : [...prevSelected, sectionId]
     )
   }
+
   const handleSubjectToggle = (subjectId) => {
     setSelectedSubjects((prevSelected) =>
       prevSelected.includes(subjectId)
@@ -55,6 +60,7 @@ const AdminResourceScreen = () => {
         : [...prevSelected, subjectId]
     )
   }
+
   const handleTeacherToggle = (teacherId) => {
     setSelectedTeachers((prevSelected) =>
       prevSelected.includes(teacherId)
@@ -62,10 +68,12 @@ const AdminResourceScreen = () => {
         : [...prevSelected, teacherId]
     )
   }
+
   const isSectionChecked = (sectionId) => selectedSections.includes(sectionId)
   const isSubjectChecked = (subjectId) => selectedSubjects.includes(subjectId)
   const isClassChecked = (classId) => selectedClasses.includes(classId)
   const isTeacherChecked = (teacherId) => selectedTeachers.includes(teacherId)
+
   const folderHandler = async () => {
     try {
       const checkedClasses = selectedClasses.filter((classId) =>
@@ -100,12 +108,26 @@ const AdminResourceScreen = () => {
     <AdminLayout>
       <Container className="py-3 justify-content-between ">
         <Row className="justify-content-between">
+          <Col>
+            <h3>List Folders</h3>
+          </Col>
           <Col className="text-end">
             <Button onClick={() => setShowModal(true)}>New Folder</Button>
           </Col>
         </Row>
-        <Row>
-          <h3>List Folders</h3>
+        <Row className="mt-3">
+          <Col>
+            <Typeahead
+              id="folder-search"
+              labelKey="folderTitle"
+              onChange={setSelectedFolder}
+              options={allFolders}
+              placeholder="Search for a folder..."
+              selected={selectedFolder}
+            />
+          </Col>
+        </Row>
+        <Row className="mt-3">
           {isLoading ? (
             <Loader />
           ) : error ? (
@@ -124,9 +146,7 @@ const AdminResourceScreen = () => {
                         style={{
                           width: "80px",
                           height: "80px",
-                          // color: "gold",
                           color: "white",
-
                         }}
                       />
                       <p className="fw-bold">{folder.folderTitle}</p>
