@@ -27,6 +27,8 @@ const AdminPeriod = () => {
 
   const periods = data?.periods || []
 
+  console.log(periods,"1212")
+
 
   useEffect(() => {
     if (fetchData) {
@@ -51,7 +53,7 @@ const AdminPeriod = () => {
     if (!fromTime || !toTime) return "N/A"
     const from = new Date(fromTime)
     const to = new Date(toTime)
-    return ((to - from) / 3600000).toFixed(2) // Duration in hours
+    return ((to - from) / 60000).toFixed(2) // Duration in hours
   }
 
   const handleFilterChange = () => {
