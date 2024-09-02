@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Row, Col, Button, Form, Container, Modal } from "react-bootstrap"
 import { LinkContainer } from "react-router-bootstrap"
 import { Typeahead } from "react-bootstrap-typeahead"
@@ -24,6 +24,8 @@ const AdminResourceScreen = () => {
   const [selectedClasses, setSelectedClasses] = useState([])
   const [selectedTeachers, setSelectedTeachers] = useState([])
   const [selectedFolder, setSelectedFolder] = useState([])
+  const [searchQuery, setSearchQuery] = useState("")
+  const [filteredFolders, setFilteredFolders] = useState([])
 
   const { data: sections } = useGetSectionsQuery()
   const { data: subjects } = useGetSubjectsQuery()
@@ -36,6 +38,16 @@ const AdminResourceScreen = () => {
     refetch,
     error,
   } = useGetAllFoldersQuery()
+
+  useEffect(() => {
+    if (allFolders) {
+      setFilteredFolders(
+        allFolders.filter((folder) =>
+          folder.folderTitle.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      )
+    }
+  }, [searchQuery, allFolders])
 
   const handleClassToggle = (classId) => {
     setSelectedClasses((prevSelected) =>
@@ -121,9 +133,10 @@ const AdminResourceScreen = () => {
               id="folder-search"
               labelKey="folderTitle"
               onChange={setSelectedFolder}
-              options={allFolders}
+              options={filteredFolders}
               placeholder="Search for a folder..."
               selected={selectedFolder}
+              onInputChange={(input) => setSearchQuery(input)}
             />
           </Col>
         </Row>
@@ -138,22 +151,26 @@ const AdminResourceScreen = () => {
             </p>
           ) : (
             <Row xs={3} md={6} lg={8} className="g-4">
-              {allFolders.map((folder) => (
-                <Col key={folder.id}>
-                  <LinkContainer to={`/admin/resource/${folder.folderName}`}>
-                    <Col xs="auto" className="text-center">
-                      <FaFolder
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          color: "white",
-                        }}
-                      />
-                      <p className="fw-bold">{folder.folderTitle}</p>
-                    </Col>
-                  </LinkContainer>
-                </Col>
-              ))}
+              {allFolders
+                .filter((folder) =>
+                  folder.folderTitle.toLowerCase().includes(searchQuery.toLowerCase())
+                )
+                .map((folder) => (
+                  <Col key={folder.id}>
+                    <LinkContainer to={`/admin/resource/${folder.folderName}`}>
+                      <Col xs="auto" className="text-center">
+                        <FaFolder
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            color: "white",
+                          }}
+                        />
+                        <p className="fw-bold">{folder.folderTitle}</p>
+                      </Col>
+                    </LinkContainer>
+                  </Col>
+                ))}
             </Row>
           )}
         </Row>
@@ -270,4 +287,5 @@ const AdminResourceScreen = () => {
     </AdminLayout>
   )
 }
+
 export default AdminResourceScreen

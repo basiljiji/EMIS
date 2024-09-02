@@ -82,45 +82,29 @@ export const getAllPeriods = async (req, res, next) => {
         let totalResourceTimeSum = 0
 
         periods = periods.map(period => {
-            // Combine duplicate class entries
-            const uniqueClasses = {}
-            period.classData.forEach(data => {
-                const classKey = `${data.class._id}-${data.section._id}-${data.subject._id}`
-                if (!uniqueClasses[classKey]) {
-                    uniqueClasses[classKey] = { ...data.toObject() }
-                } else {
-                    // If duplicate, you can aggregate or merge additional properties here
-                }
-            })
-
-            period.classData = Object.values(uniqueClasses)
-
-            // Combine duplicate accessedFiles entries
-            const fileMap = {}
-            let totalDuration = 0
-            let totalResourceTime = 0
-            period.accessedFiles.forEach(file => {
-                const fileId = file.fileId // Assuming fileId is a unique identifier for files
-                if (!fileMap[fileId]) {
-                    fileMap[fileId] = { ...file.toObject() }
-                } else {
-                    // Aggregate durations and resource times
-                    fileMap[fileId].duration += file.duration
-                    if (file.fromTime && file.toTime) {
-                        const fromTime = new Date(file.fromTime)
-                        const toTime = new Date(file.toTime)
-                        fileMap[fileId].resourceTime += (toTime - fromTime) / 60000
-                    }
-                }
-            })
-
-            period.accessedFiles = Object.values(fileMap)
-
             // Calculate total login time
             const loggedOutTime = period.loggedOut || period.updatedAt
             const loginTime = period.loggedIn ? new Date(period.loggedIn) : new Date()
             const logoutTime = new Date(loggedOutTime)
             const totalLoginTime = (logoutTime - loginTime) / 60000 // Duration in minutes
+
+            // Calculate total duration and total resource time
+            let totalDuration = 0
+            let totalResourceTime = 0
+
+            period.accessedFiles = period.accessedFiles.filter(file => {
+                const fileDuration = file.duration / 60000 // Duration in minutes
+                totalDuration += fileDuration
+
+                if (file.fromTime && file.toTime) {
+                    const fromTime = new Date(file.fromTime)
+                    const toTime = new Date(file.toTime)
+                    const resourceTime = (toTime - fromTime) / 60000 // Resource time in minutes
+                    totalResourceTime += resourceTime
+                }
+
+                return fileDuration >= 0.01
+            })
 
             // Add to overall sums
             totalLoginTimeSum += totalLoginTime
