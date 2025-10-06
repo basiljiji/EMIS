@@ -18,6 +18,7 @@ import adminResourceRoute from './routes/adminResource.js'
 import teacherResourceRoute from './routes/teacherResourceRoutes.js'
 import periodRoute from './routes/periodRoutes.js'
 
+import seedAdminIfMissing from './utils/seedAdmin.js'
 
 connectDB()
 
@@ -28,7 +29,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const app = express()
 
-app.use(cors())
+app.use(cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    credentials: true // This allows cookies to be sent with requests
+}))
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -62,6 +66,11 @@ if (process.env.NODE_ENV === 'production') {
         res.send('API IS RUNNING..!')
     })
 }
+
+// Ensure default admin exists on startup
+seedAdminIfMissing().catch((err) => {
+    console.error('Failed to seed admin:', err)
+})
 
 app.use(notFound)
 app.use(errorHandler)

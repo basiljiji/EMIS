@@ -1,6 +1,6 @@
 // export const BASE_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : ''
 
-export const BASE_URL = ''
+export const BASE_URL = 'http://localhost:5001'
 export const TEACHER_AUTH_URL = '/api'
 export const TEACHER_URL = '/api/teacher'
 export const ADMIN_URL = '/api/admin'

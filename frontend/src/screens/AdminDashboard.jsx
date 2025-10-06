@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import AdminLayout from "../components/AdminLayout"
 import { useGetPeriodsReportAllQuery } from "../slices/periodApiSlice"
 import { Form, Container, Table, Row, Col, Button } from "react-bootstrap"
 import jsPDF from "jspdf"
-import autoTable from "jspdf-autotable"
 import Loader from "../components/Loader"
 
 const AdminDashboard = () => {
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
+  const currentYear = new Date().getFullYear()
+  const startYear = 2023
+  const defaultYear = currentYear >= startYear && currentYear < startYear + 10 ? currentYear : startYear
+  const [selectedYear, setSelectedYear] = useState(defaultYear)
   const [selectedMonth, setSelectedMonth] = useState(new Date().toLocaleString('en', { month: 'long' }))
 
   const { data: periodsData, isLoading: reportLoading, error: reportError, refetch } = useGetPeriodsReportAllQuery({ year: selectedYear, month: selectedMonth })
@@ -24,10 +26,9 @@ const AdminDashboard = () => {
     )
   })
 
-  // Generate options for next 10 years dropdown
-  const currentYear = new Date().getFullYear()
+  // Generate options for next 10 years dropdown starting from 2023
   const nextTenYearsOptions = Array.from({ length: 10 }, (_, index) => {
-    const year = currentYear + index
+    const year = startYear + index
     return (
       <option key={year} value={year}>
         {year}
