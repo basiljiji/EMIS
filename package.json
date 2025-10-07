@@ -17,7 +17,7 @@
     "Server",
     "Backend"
   ],
-  "author": "Basil Jiji",
+  "author": "Basil Jiji | basiljijiwork@gmail.com",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",

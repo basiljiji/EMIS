@@ -68,7 +68,6 @@ const Sidebar = ({ isOpen, onClose }) => {
           </div>
           <Nav className="flex-column">
             <Nav.Link as={Link} to="/admin/dashboard" className="sidebar-link"><FaChartLine /> Dashboard</Nav.Link>
-            <Nav.Link as={Link} to="/admin/teacher" className="sidebar-link"><FaChalkboardTeacher /> Teacher</Nav.Link>
             <Nav.Link as={Link} to="/admin/resource" className="sidebar-link"><FaClipboardList /> Resources</Nav.Link>
             <Nav.Link as={Link} to="/admin/period" className="sidebar-link"><FaBook /> Reports</Nav.Link>
             <Nav.Link as={Link} to="/admin/details" className="sidebar-link"><FaSchool /> Classes</Nav.Link>

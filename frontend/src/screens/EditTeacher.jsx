@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react"
-import { Form, Container, Row, Col, Button } from "react-bootstrap"
+import { Form, Container, Button, Row, Col } from "react-bootstrap"
+import InputGroup from "react-bootstrap/InputGroup"
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"
 import { useParams, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 
@@ -17,6 +19,8 @@ const EditTeacher = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const { id: teacherId } = useParams()
 
@@ -44,7 +48,7 @@ const EditTeacher = () => {
     e.preventDefault()
     try {
       if (firstName || lastName || middleName || email || password) {
-        const result = await editTeacher({
+        await editTeacher({
           teacherId,
           firstName,
           middleName,
@@ -75,73 +79,109 @@ const EditTeacher = () => {
         ) : (
           teacher && (
             <Form className="my-3">
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  First Name <span className="text-danger">*</span>
-                </Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="First Name"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Middle Name <span className="text-danger">*</span>
-                </Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Middle Name"
-                  value={middleName}
-                  onChange={(e) => setMiddleName(e.target.value)}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Last Name <span className="text-danger">*</span>
-                </Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Last Name"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Email <span className="text-danger">*</span>
-                </Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  New Password <span className="text-danger">*</span>
-                </Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="New Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Confirm New Password <span className="text-danger">*</span>
-                </Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Confirm New Password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-              </Form.Group>
-              <Button className="mt-3 bg-secondary" onClick={submitEditHandler}>
+              <Row>
+                <Col md={4} className="mb-2">
+                  <Form.Group>
+                    <Form.Label>
+                      First Name <span className="text-danger">*</span>
+                    </Form.Label>
+                    <Form.Control
+                      size="sm"
+                      type="text"
+                      placeholder="First Name"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={4} className="mb-2">
+                  <Form.Group>
+                    <Form.Label>
+                      Middle Name <span className="text-danger">*</span>
+                    </Form.Label>
+                    <Form.Control
+                      size="sm"
+                      type="text"
+                      placeholder="Middle Name"
+                      value={middleName}
+                      onChange={(e) => setMiddleName(e.target.value)}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={4} className="mb-2">
+                  <Form.Group>
+                    <Form.Label>
+                      Last Name <span className="text-danger">*</span>
+                    </Form.Label>
+                    <Form.Control
+                      size="sm"
+                      type="text"
+                      placeholder="Last Name"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={4} className="mb-2">
+                  <Form.Group>
+                    <Form.Label>
+                      Email <span className="text-danger">*</span>
+                    </Form.Label>
+                    <Form.Control
+                      size="sm"
+                      type="text"
+                      placeholder="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={4} className="mb-2">
+                  <Form.Group>
+                    <Form.Label>
+                      New Password <span className="text-danger">*</span>
+                    </Form.Label>
+                    <InputGroup size="sm">
+                      <Form.Control
+                        type={showPassword ? "text" : "password"}
+                        placeholder="New Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                      <Button
+                        variant="outline-secondary"
+                        onClick={() => setShowPassword((s) => !s)}
+                      >
+                        {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                      </Button>
+                    </InputGroup>
+                  </Form.Group>
+                </Col>
+                <Col md={4} className="mb-2">
+                  <Form.Group>
+                    <Form.Label>
+                      Confirm New Password <span className="text-danger">*</span>
+                    </Form.Label>
+                    <InputGroup size="sm">
+                      <Form.Control
+                        type={showConfirmPassword ? "text" : "password"}
+                        placeholder="Confirm New Password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                      />
+                      <Button
+                        variant="outline-secondary"
+                        onClick={() => setShowConfirmPassword((s) => !s)}
+                      >
+                        {showConfirmPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                      </Button>
+                    </InputGroup>
+                  </Form.Group>
+                </Col>
+              </Row>
+              <Button size="sm" className="mt-2 bg-secondary" onClick={submitEditHandler}>
                 Update Teacher
               </Button>
             </Form>

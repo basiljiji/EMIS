@@ -13,7 +13,6 @@ import AdminLoginScreen from './screens/AdminLoginScreen'
 import AdminDashboard from './screens/AdminDashboard'
 import PrivateRoute from './components/PrivateRoutes'
 import AdminRoute from './components/AdminRoute'
-import TeacherManagement from './screens/TeacherManagement'
 import EditTeacher from './screens/EditTeacher'
 import AdminResourceScreen from './screens/AdminResourceScreen'
 import ResourceScreen from './screens/ResourceScreen'
@@ -60,7 +59,6 @@ const router = createBrowserRouter(
 
       <Route path='/' element={<AdminRoute />}>
         <Route path='/admin/dashboard' element={<AdminDashboard />} />
-        <Route path='/admin/teacher' element={<TeacherManagement />} />
         <Route path='/teacher/edit/:id' element={<EditTeacher />} />
         <Route path='/admin/details' element={<AdminDetailsScreen />} />
         <Route path='/admin/period' element={<AdminPeriod />} />

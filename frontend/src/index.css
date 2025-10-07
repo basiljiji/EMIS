@@ -54,7 +54,7 @@ header {
   background: url(./assets/header-bg.jpg);
   background-size: cover;
   width: auto;
-  height :76px;
+  height: 76px;
   background-repeat: no-repeat;
   background-position: center;
 }
@@ -102,13 +102,100 @@ footer {
   background-color: white;
 }
 
+/* Remove search field decorations/backgrounds for a clean input */
+.no-search-decoration {
+  background-image: none !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
 
+.no-search-decoration::-webkit-search-decoration,
+.no-search-decoration::-webkit-search-cancel-button,
+.no-search-decoration::-webkit-search-results-button,
+.no-search-decoration::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+}
 
+/* File Manager Styles */
+.file-manager-container {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
 
+.file-manager-sidebar {
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+}
 
+.folder-item {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
 
+.folder-item:hover {
+  background-color: #e9ecef !important;
+}
 
+.file-item {
+  transition: all 0.2s ease;
+  border: 1px solid #dee2e6;
+}
 
+.file-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
+.list-item {
+  transition: all 0.2s ease;
+}
 
+.list-item:hover {
+  background-color: #f8f9fa !important;
+}
 
+.hover-bg-light:hover {
+  background-color: #f8f9fa !important;
+}
+
+.file-manager-toolbar {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.file-manager-content {
+  background-color: #ffffff;
+}
+
+.list-header {
+  font-size: 0.875rem;
+  border: 1px solid #dee2e6;
+}
+
+.list-item {
+  border: 1px solid transparent;
+  font-size: 0.875rem;
+}
+
+.list-item:hover {
+  border-color: #dee2e6;
+}
+
+/* Custom scrollbar for file manager */
+.file-manager-sidebar::-webkit-scrollbar,
+.file-manager-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.file-manager-sidebar::-webkit-scrollbar-track,
+.file-manager-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.file-manager-sidebar::-webkit-scrollbar-thumb,
+.file-manager-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.file-manager-sidebar::-webkit-scrollbar-thumb:hover,
+.file-manager-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
